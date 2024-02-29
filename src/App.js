@@ -18,7 +18,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="mt-20" />
+      <div className="mt-24" />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LogingPage />} />

@@ -12,7 +12,7 @@ function Print(params) {
   const dispatch = useDispatch();
   const componentRef = useRef();
   const { Print } = useSelector((state) => state.print);
-  useEffect(() => {    
+  useEffect(() => {        
     dispatch(fetchOnePrint(data.state.invoiceId));
   }, []);
   return (

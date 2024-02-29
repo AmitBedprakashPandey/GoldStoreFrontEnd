@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { fetchAllInvoices, updateInvoice } from "../Store/Slice/InvoiceSlice";
+import { fetchAllInvoices, updateInvoice } from "../Store/Slice/QuatationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
 import moment from "moment";
-import { Check, Eye, View, ViewIcon, X } from "lucide-react";
-import Print from "../Components/PrintWithGST";
+import { Check, Eye, X } from "lucide-react";
+
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
@@ -16,28 +16,36 @@ function Quotation(params) {
   const [id, setId] = useState();
   const [Model, setModel] = useState(false);
   const [to, setTo] = useState();
-  const { Invoice, loading, message } = useSelector((state) => state.Invoices);
   const [invoiceArray, setInvoiceArray] = useState([]);
-
+  
   useEffect(() => {
     dispatch(fetchAllInvoices());
-  }, [Model]);
-
+  }, []);
+  
+  const { Quotation, loading } = useSelector((state) => state.Quotation
+  );
+    
   useEffect(() => {
-    setInvoiceArray(Invoice);
-  }, [Invoice]);
+    dispatch(fetchAllInvoices());
+  }, []);
+  useEffect(() => {
+    setInvoiceArray(Quotation);
+  }, [Quotation]);
 
-  const filteredArray = Invoice?.filter((bill) => {
-    const billDate = new Date(bill.quotdate);
-    const fromDateObj = from ? new Date(from) : null;
-    const toDateObj = to ? new Date(to) : null;
+  const filteredArray = Quotation
+  ? Quotation.filter((bill) => {
+      const billDate = new Date(bill.quotdate);
+      const fromDateObj = from ? new Date(from) : null;
+      const toDateObj = to ? new Date(to) : null;
 
-    const isDateInRange =
-      (!fromDateObj || billDate >= fromDateObj) &&
-      (!toDateObj || billDate <= toDateObj);
+      const isDateInRange =
+        (!fromDateObj || billDate >= fromDateObj) &&
+        (!toDateObj || billDate <= toDateObj);
 
-    return isDateInRange;
-  });
+      return isDateInRange;
+    })
+  : [];
+
   const findData = () => {
     setInvoiceArray(filteredArray);
   };
@@ -89,7 +97,7 @@ function Quotation(params) {
             </tr>
           </thead>
           <tbody className="overflow-hidden overflow-y-scroll ">
-            {invoiceArray.map((doc, index) => (
+            {invoiceArray?.map((doc, index) => (
               <tr key={index} className="text-sm bg-gray-50">
                 <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
                 <td className="py-3 px-2 w-56 text-start">
@@ -110,7 +118,21 @@ function Quotation(params) {
                 </td>
                 <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
                 <td className="py-3 px-2 w-16 text-start">
-                  {doc.status === false ? <Check size={36} strokeWidth={5} absoluteStrokeWidth color="green" /> : <X size={36} strokeWidth={5} absoluteStrokeWidth color="red"/>}
+                  {doc.status === false ? (
+                    <Check
+                      size={36}
+                      strokeWidth={5}
+                      absoluteStrokeWidth
+                      color="green"
+                    />
+                  ) : (
+                    <X
+                      size={36}
+                      strokeWidth={5}
+                      absoluteStrokeWidth
+                      color="red"
+                    />
+                  )}
                 </td>
                 <td className="py-3 px-2 w-16 text-start">
                   <button
@@ -207,7 +229,7 @@ const ViewPrint = ({ close, id }) => {
             <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
               <div className="flex flex-col">
                 <label className="text-lg">
-                  Invoice No : <span>{Print._doc?.quot}</span>
+                  Quotation No : <span>{Print._doc?.quot}</span>
                 </label>
                 <label className="text-lg">
                   Date :{" "}

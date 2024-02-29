@@ -2,7 +2,7 @@ import {
   CircleUserRound,
   Home,
   LogOut,
-  Menu,  
+  Menu,
   UserCircle,
   X,
 } from "lucide-react";
@@ -10,14 +10,20 @@ import { Modal } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Collapse } from "antd";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
+import useSelection from "antd/es/table/hooks/useSelection";
+import { useDispatch, useSelector } from "react-redux";
 function NavBar() {
   const [openMenu, setOpenMenu] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
+  const { Company } = useSelector((state) => state.Company);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(fetchByUser(localStorage.getItem("user")));
     if (!localStorage.getItem("token")) {
       navigate("/login");
-    }
+    }    
   }, [navigate]);
 
   const logout = () => {
@@ -29,13 +35,19 @@ function NavBar() {
     <>
       {openMenu && <SideMenu close={() => setOpenMenu(false)} />}
       <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md fixed top-0 left-0 right-0 z-40">
-        <div className="flex gap-5 items-center">
+        <div className="flex gap-3 items-center">
           <Menu
             size={32}
             onClick={() => setOpenMenu(!openMenu)}
             className=" lg:hidden"
           />
-          <label>Gold Store</label>
+          <img
+            src={Company?.logo}
+            className="w-10 h-10 md:w-16 md:h-16 lg:w-16 lg:h-16 overflow-hidden rounded-full bg-cover bg-center"
+          />
+          <label className="uppercase font-bold text-sm md:text-lg lg:text-xl">
+            {Company?.name}
+          </label>
         </div>
         <div className="lg:hidden flex gap-5">
           <Link to={"/"}>

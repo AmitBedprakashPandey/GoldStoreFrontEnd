@@ -220,7 +220,7 @@ function Invoice2({}) {
   const navigate = useNavigate();
 
   const printWithGST = () => {
-    navigate("/printgst", { state: { invoiceId: InvoiceId } });
+    navigate("/printgst", { state: { invoiceId: formData?._id } });
   };
   useEffect(() => {
     if (!localStorage.getItem("token")) {

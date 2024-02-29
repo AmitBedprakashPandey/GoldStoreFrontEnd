@@ -125,8 +125,7 @@ function CompanyInfo() {
               {selectedImage ? (
                 <img
                   src={selectedImage}
-                  width={150}
-                  className="rounded-full shadow-gray-500 shadow-md border"
+                  className="w-40 h-40 rounded-full shadow-gray-500 shadow-md border"
                 />
               ) : (
                 <div className="w-[120px] h-[120px] rounded-full shadow-gray-500 shadow-md border flex justify-center items-center">

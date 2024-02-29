@@ -1,14 +1,14 @@
-import { createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const url = process.env.React_APP_API_URL;
 
-export const fetchAllInvoices = createAsyncThunk(
-  "Invoice/fetchAll",
+export const fetchAllQuotationWithoutgsts = createAsyncThunk(
+  "QuotationWithoutgstWitoutGst/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${url}/invoice/${localStorage.getItem("user")}`,
+        `${url}/invoicewithoutgst/${localStorage.getItem("user")}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -23,12 +23,13 @@ export const fetchAllInvoices = createAsyncThunk(
   }
 );
 
-export const fetchOneInvoices = createAsyncThunk(
-  "Invoice/fetchOne", // Change the action type to fetchOne
+export const fetchOneQuotationWithoutgsts = createAsyncThunk(
+  "QuotationWithoutgstWitoutGst/fetchOne", // Change the action type to fetchOne
   async (id, { rejectWithValue }) => {
+    console.log(id);
     try {
       const response = await axios.get(
-        `${url}/invoice/${id}/${localStorage.getItem("user")}`,
+        `${url}/invoicewithoutgst/${id}/${localStorage.getItem("user")}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -43,11 +44,11 @@ export const fetchOneInvoices = createAsyncThunk(
   }
 );
 
-export const createInvoice = createAsyncThunk(
-  "Invoice/create",
+export const createQuotationWithoutgst = createAsyncThunk(
+  "QuotationWithoutgstWitoutGst/create",
   async (customerData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${url}/Invoice`, customerData, {
+      const response = await axios.post(`${url}/invoicewithoutgst`, customerData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -60,12 +61,12 @@ export const createInvoice = createAsyncThunk(
   }
 );
 
-export const deleteInvoice = createAsyncThunk(
-  "Invoice/delete",
+export const deleteQuotationWithoutgst = createAsyncThunk(
+  "QuotationWithoutgstWitoutGst/delete",
   async (customerId, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `${url}/Invoice/${customerId}/${localStorage.getItem("user")}`,
+        `${url}/invoicewithoutgst/${customerId}/${localStorage.getItem("user")}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -80,12 +81,12 @@ export const deleteInvoice = createAsyncThunk(
   }
 );
 
-export const updateInvoice = createAsyncThunk(
-  "Invoice/update",
+export const updateQuotationWithoutgst = createAsyncThunk(
+  "QuotationWithoutgstWitoutGst/update",
   async (newData, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `${url}/Invoice/${newData._id}/${localStorage.getItem("user")}`,
+        `${url}/invoicewithoutgst/${newData._id}/${localStorage.getItem("user")}`,
         newData,
         {
           headers: {
@@ -102,73 +103,73 @@ export const updateInvoice = createAsyncThunk(
 );
 
 const initialState = {
-  Invoice: [],
+  QuotationWithoutgst: [],
   error: null,
   loading: false,
   message: null,
 };
 
-const invoiceSlice = createSlice({
-  name: "Invoice",
+const invoiceWitoutGstSlice = createSlice({
+  name: "QuotationWithoutgst",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAllInvoices.pending, (state) => {
+      .addCase(fetchAllQuotationWithoutgsts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAllInvoices.fulfilled, (state, action) => {
+      .addCase(fetchAllQuotationWithoutgsts.fulfilled, (state, action) => {
         state.loading = false;
-        state.Invoice = action.payload;
+        state.QuotationWithoutgst = action.payload;
         state.error = null;
       })
-      .addCase(fetchAllInvoices.rejected, (state, action) => {
+      .addCase(fetchAllQuotationWithoutgsts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchOneInvoices.pending, (state) => {
+      .addCase(fetchOneQuotationWithoutgsts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchOneInvoices.fulfilled, (state, action) => {
+      .addCase(fetchOneQuotationWithoutgsts.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-        state.Invoice = action.payload;
+        state.QuotationWithoutgst = action.payload;
         state.error = null;
       })
-      .addCase(fetchOneInvoices.rejected, (state, action) => {
+      .addCase(fetchOneQuotationWithoutgsts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(createInvoice.pending, (state) => {
+      .addCase(createQuotationWithoutgst.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createInvoice.fulfilled, (state, action) => {
+      .addCase(createQuotationWithoutgst.fulfilled, (state, action) => {
         state.loading = false;
-        state.Invoice = action.payload; // assuming the payload is the newly created customer
+        state.QuotationWithoutgst = action.payload; // assuming the payload is the newly created customer
         state.error = null;
       })
-      .addCase(createInvoice.rejected, (state, action) => {
+      .addCase(createQuotationWithoutgst.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(updateInvoice.pending, (state) => {
+      .addCase(updateQuotationWithoutgst.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateInvoice.fulfilled, (state, action) => {
+      .addCase(updateQuotationWithoutgst.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
 
         state.error = null;
       })
-      .addCase(updateInvoice.rejected, (state, action) => {
+      .addCase(updateQuotationWithoutgst.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export default invoiceSlice.reducer;
+export default invoiceWitoutGstSlice.reducer;

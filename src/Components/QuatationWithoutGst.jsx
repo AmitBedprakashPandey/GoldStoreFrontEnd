@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  fetchAllInvoices,
-  updateInvoice,
-} from "../Store/Slice/InvoiceWithoutGstSlice";
+  fetchAllQuotationWithoutgsts,
+  updateQuotationWithoutgst,
+} from "../Store/Slice/QuatationWithoutgstSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
@@ -18,20 +18,20 @@ function QuotationWithoutGst(params) {
   const [id, setId] = useState();
   const [Model, setModel] = useState(false);
   const [to, setTo] = useState();
-  const { Invoice, loading, message } = useSelector(
-    (state) => state.InvoicesWithoutGst
+  const { QuotationWithoutgst, loading, message } = useSelector(
+    (state) => state.QuotationWithoutGst
   );
   const [invoiceArray, setInvoiceArray] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchAllInvoices());
+    dispatch(fetchAllQuotationWithoutgsts());
   }, [Model]);
 
   useEffect(() => {
-    setInvoiceArray(Invoice);
-  }, [Invoice]);
+    setInvoiceArray(QuotationWithoutgst);
+  }, [QuotationWithoutgst]);
 
-  const filteredArray = Invoice?.filter((bill) => {
+  const filteredArray = QuotationWithoutgst?.filter((bill) => {
     const billDate = new Date(bill.quotdate);
     const fromDateObj = from ? new Date(from) : null;
     const toDateObj = to ? new Date(to) : null;
@@ -159,14 +159,18 @@ const ViewPrint = ({ close, id }) => {
   }, []);
 
   const onCancel = () => {
-    dispatch(updateInvoice({ ...Print._doc, status: true })).then(() => {
-      dispatch(fetchOnePrint(id));
-    });
+    dispatch(updateQuotationWithoutgst({ ...Print._doc, status: true })).then(
+      () => {
+        dispatch(fetchOnePrint(id));
+      }
+    );
   };
   const onUnDoCancel = () => {
-    dispatch(updateInvoice({ ...Print._doc, status: false })).then(() => {
-      dispatch(fetchOnePrint(id));
-    });
+    dispatch(updateQuotationWithoutgst({ ...Print._doc, status: false })).then(
+      () => {
+        dispatch(fetchOnePrint(id));
+      }
+    );
   };
   return (
     <>
@@ -225,7 +229,7 @@ const ViewPrint = ({ close, id }) => {
             <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
               <div className="flex flex-col">
                 <label className="text-lg">
-                  Invoice No : <span>{Print._doc?.quot}</span>
+                  QuotationWithoutgst No : <span>{Print._doc?.quot}</span>
                 </label>
                 <label className="text-lg">
                   Date :{" "}

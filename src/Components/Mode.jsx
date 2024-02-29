@@ -116,8 +116,7 @@ const ModeFormModel = ({ close, id }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (id) {
-      const single = PyMode.filter((doc) => doc._id === id);
-      console.log(single[0].mode);
+      const single = PyMode.filter((doc) => doc._id === id);      
       setPyMode(single[0]);
     }
   }, [pyMode,id]);
