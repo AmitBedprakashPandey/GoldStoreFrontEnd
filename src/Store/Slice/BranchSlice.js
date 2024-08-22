@@ -13,6 +13,7 @@ export const fetchAllBranch = createAsyncThunk(
           Authorization: `${localStorage.getItem("token")}`,
         },
       });
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -41,7 +42,7 @@ export const deleteBranch = createAsyncThunk(
   "Branch/delete",
   async (BranchId, { rejectWithValue }) => {
     try {
-   const response =    await axios.delete(`${url}/branch/${BranchId}`, {
+      const response = await axios.delete(`${url}/branch/${BranchId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -111,6 +112,35 @@ const BranchsSlice = createSlice({
         state.error = null;
       })
       .addCase(createBranch.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateBranch.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateBranch.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.Branch.findIndex(branch => branch._id === action.payload._id);
+        if (index !== -1) {
+          state.Branch[index] = action.payload; // update the branch in the state
+        }
+        state.error = null;
+      })
+      .addCase(updateBranch.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteBranch.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteBranch.fulfilled, (state, action) => {
+        state.loading = false;
+        state.Branch = state.Branch.filter(branch => branch._id !== action.meta.arg); // remove the branch from the state
+        state.error = null;
+      })
+      .addCase(deleteBranch.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

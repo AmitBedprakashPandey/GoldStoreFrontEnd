@@ -1,11 +1,14 @@
 import {
   CircleUserRound,
+  Copyright,
   Home,
   LogOut,
   Menu,
+  User,
   UserCircle,
   X,
 } from "lucide-react";
+import { Avatar, Button, Drawer, Radio, Space } from "antd";
 import { Modal } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,8 +16,11 @@ import { Collapse } from "antd";
 import { fetchByUser } from "../Store/Slice/CompanySlice";
 import useSelection from "antd/es/table/hooks/useSelection";
 import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../Store/Slice/AuthSlice";
 function NavBar() {
   const [openMenu, setOpenMenu] = useState(false);
+
+  const [open, setOpen] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
   const { Company } = useSelector((state) => state.Company);
   const navigate = useNavigate();
@@ -23,24 +29,125 @@ function NavBar() {
     dispatch(fetchByUser(localStorage.getItem("user")));
     if (!localStorage.getItem("token")) {
       navigate("/login");
-    }    
+    }
   }, [navigate]);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const logoutBtn = () => {
+    dispatch(logout());
     navigate("/login");
   };
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+  const items = [
+    {
+      key: "0",
+      showArrow: false,
+      label: (
+        <div className="h-auto p-3 flex flex-col items-center">
+          {Company?.logo ? (
+            <Avatar size={120} src={Company.logo} />
+          ) : (
+            <Avatar size={100} icon={<User size={60} />} />
+          )}
+          <label className="font-bold uppercase italic py-3 text-3xl">
+            {Company?.name}
+          </label>
+        </div>
+      ),
+    },
+    {
+      key: "1",
+      label: "Master",
+      children: (
+        <ul className="text-base grid">
+          <Link
+            to={"/company"}
+            onClick={onClose}
+            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            CompanyInfo
+          </Link>
+          <Link
+            to={"/createcustomer"}
+            onClick={onClose}
+            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            customer master
+          </Link>
+          <Link
+            to={"/branch"}
+            onClick={onClose}
+            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            Branch master
+          </Link>
+          <Link
+            to={"/bank"}
+            onClick={onClose}
+            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            Bank
+          </Link>
+        </ul>
+      ),
+    },
+    {
+      key: "2",
+      label: "Enter Invoice",
+      children: (
+        <ul className="grid">
+          <Link
+            to={"/invoice"}
+            onClick={onClose}
+            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
+          >
+            Entry invoice Without GST
+          </Link>
+          <Link
+            to={"/invoicegst"}
+            onClick={onClose}
+            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
+          >
+            Entry invoice With GST
+          </Link>
+        </ul>
+      ),
+    },
+    {
+      key: "3",
+      label: "Reports",
+
+      children: (
+        <ul className="grid">
+          <Link
+            to={"/quotation"}
+            onClick={onClose}
+            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
+          >
+            get Quotation with gst
+          </Link>
+          <Link
+            to={"/quotationwithoutgst"}
+            onClick={onClose}
+            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
+          >
+            get Quotation without gst
+          </Link>
+        </ul>
+      ),
+    },
+  ];
   return (
     <>
-      {openMenu && <SideMenu close={() => setOpenMenu(false)} />}
       <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md fixed top-0 left-0 right-0 z-40">
         <div className="flex gap-3 items-center">
-          <Menu
-            size={32}
-            onClick={() => setOpenMenu(!openMenu)}
-            className=" lg:hidden"
-          />
+          <Menu size={32} onClick={showDrawer} className=" lg:hidden" />
           <img
             src={Company?.logo}
             className="w-10 h-10 md:w-16 md:h-16 lg:w-16 lg:h-16 overflow-hidden rounded-full bg-cover bg-center"
@@ -55,18 +162,15 @@ function NavBar() {
           </Link>
           <LogOut onClick={() => setModal2Open(true)} />
           <Modal
-            title="Vertically centered modal dialog"
             centered
             open={modal2Open}
             onOk={() => {
-              logout();
               setModal2Open(false);
             }}
+            closable={false}
             onCancel={() => setModal2Open(false)}
           >
-            <p>some contents...</p>
-            <p>some contents...</p>
-            <p>some contents...</p>
+            <label className="text-3xl">Are you sure want to logout</label>
           </Modal>
         </div>
         <div className="hidden lg:block">
@@ -174,7 +278,7 @@ function NavBar() {
                 <button
                   type="button"
                   className="w-full text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                  onClick={logout}
+                  onClick={logoutBtn}
                 >
                   Logout
                 </button>
@@ -183,128 +287,26 @@ function NavBar() {
           </ul>
         </div>
       </div>
-    </>
-  );
-}
-
-const SideMenu = ({ close }) => {
-  const items = [
-    {
-      key: "1",
-      label: "Master",
-      children: (
-        <ul className="text-base grid">
-          <Link
-            to={"/company"}
-            className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            CompanyInfo
-          </Link>
-          <Link
-            to={"/createcustomer"}
-            className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            customer master
-          </Link>
-          <Link
-            to={"/branch"}
-            className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Branch master
-          </Link>
-          <Link className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer">
-            Inventory Master
-          </Link>
-          <Link
-            to={"/bank"}
-            className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Bank
-          </Link>
-          <Link
-            to={"/mode"}
-            className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Mode
-          </Link>
-        </ul>
-      ),
-    },
-    {
-      key: "2",
-      label: "Enter Invoice",
-      children: (
-        <ul className="grid">
-          <Link
-            to={"/invoice"}
-            className="px-5 py-2 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            Entery Invice Without GST
-          </Link>
-          <Link
-            to={"/invoicegst"}
-            className="px-5 py-2 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            Entery Invice With GST
-          </Link>
-        </ul>
-      ),
-    },
-    {
-      key: "3",
-      label: "Reports",
-
-      children: (
-        <ul className="grid">
-          <Link
-            to={"/quotation"}
-            className="px-5 py-2 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            Quotation
-          </Link>
-        </ul>
-      ),
-    },
-  ];
-
-  useEffect(() => {
-    document.body.style.overflowY = "hidden";
-    return () => (document.body.style.overflowY = "scroll");
-  }, []);
-  return (
-    <>
-      <div
-        onClick={close}
-        className="p-3 z-50 fixed top-0 bottom-0 left-0 right-0"
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.65)" }}
-      />
-      <div className=" w-[80%] duration-700 bg-white z-50 fixed top-0 bottom-0">
-        <X
-          size={48}
-          className="absolute -right-11 text-white"
-          onClick={close}
-        />
-
-        <div className="flex items-center  gap-5 bg-blue-500 py-5 px-3 text-white">
-          <CircleUserRound strokeWidth={0.75} size={60} />
-          <label className="italic font-semibold text-sm">
-            {localStorage.getItem("user")}
-          </label>
-        </div>
-
+      <Drawer
+        closable={false}
+        onClose={onClose}
+        open={open}
+        placement="left"
+        style={{ padding: 0 }}
+      >
         <Collapse
           items={items}
           accordion
           bordered={false}
-          className="bg-blue-50 rounded-none"
+          className="bg-yellow-100 rounded-none p-0 "
         />
-
-        <div className="fixed bottom-0 left-0 px-5 py-3">
-          <label>Copyrigh</label>
+        <div className="py-2 absolute bottom-0 left-0 right-0 flex justify-center items-center">
+          copyright
+          <Copyright size={15} /> 2024
         </div>
-      </div>
+      </Drawer>
     </>
   );
-};
+}
 
 export default NavBar;

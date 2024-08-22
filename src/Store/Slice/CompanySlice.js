@@ -69,7 +69,11 @@ const initialState = {
 const CompanySlice = createSlice({
   name: "Company",
   initialState,
-  reducers: {},
+  reducers: {
+    getCompany: (state, action) => {
+      state.Company = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchByUser.pending, (state) => {
@@ -115,5 +119,5 @@ const CompanySlice = createSlice({
       });
   },
 });
-
+export const { getCompany } = CompanySlice.actions;
 export default CompanySlice.reducer;

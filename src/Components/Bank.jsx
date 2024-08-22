@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FilePenLine, Trash, X } from "lucide-react";
-import toast, { toastConfig } from "react-simple-toasts";
+import { BiEdit, BiTrash, BiX } from "react-icons/bi";
+import { Toast } from "primereact/toast";
 import Loading from "./Loading";
 import {
   createPyBank,
@@ -9,27 +9,34 @@ import {
   deletePyBank,
   updatePyBank,
 } from "../Store/Slice/PayBankSlice";
+
+
 export default function BankMode() {
   const dispatch = useDispatch();
   const [pybank, setPyBank] = useState();
   const [bankOpenModel, setBankOpenModel] = useState(false);
   const [bankId, setBankId] = useState();
   const { PyBank, loading } = useSelector((state) => state.Bank);
+  
   useEffect(() => {
     dispatch(fetchAllPyBank());
   }, []);
-  toastConfig({
-    duration: 2000,
-    zIndex: 1000,
-    className:
-      "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
-  });
+  
+  const toast = useRef(null);
+  const show = () => {
+    toast.current.show({
+      severity: "info",
+      summary: "Info",
+      detail: "Message Content",
+    });
+  };
+
 
   const saveBank = () => {
     dispatch(
       createPyBank({ bank: pybank, user: localStorage.getItem("user") })
     ).then((res) => {
-      toast(res?.payload?.message);
+      show(res?.payload?.message);
       setPyBank("");
       dispatch(fetchAllPyBank());
     });
@@ -38,6 +45,7 @@ export default function BankMode() {
   return (
     <>
       {loading && <Loading />}
+      <Toast ref={toast} />
 
       {bankOpenModel && (
         <BankFormModel id={bankId} close={() => setBankOpenModel(false)} />
@@ -83,7 +91,7 @@ export default function BankMode() {
                         setBankOpenModel(true);
                       }}
                     >
-                      <FilePenLine size={16} />
+                      <BiEdit size={16} />
                     </button>
                     <button
                       className="bg-red-500 rounded-full p-3 text-white "
@@ -94,7 +102,7 @@ export default function BankMode() {
                         });
                       }}
                     >
-                      <Trash size={16} />
+                      <BiTrash size={16} />
                     </button>
                   </td>
                 </tr>
@@ -111,6 +119,15 @@ const BankFormModel = ({ close, id }) => {
   const { PyBank, loading } = useSelector((state) => state.Bank);
   const [pyBank, setPyBank] = useState();
   const dispatch = useDispatch();
+  const toast = useRef(null);
+  const show = () => {
+    toast.current.show({
+      severity: "info",
+      summary: "Info",
+      detail: "Message Content",
+    });
+  };
+
   useEffect(() => {
     if (id) {
       const single = PyBank.filter((doc) => doc._id === id);
@@ -119,7 +136,7 @@ const BankFormModel = ({ close, id }) => {
   }, []);
   const update = () => {
     dispatch(updatePyBank({ _id: id, bank: pyBank })).then((res) => {
-      toast(res?.payload?.message);
+      show(res?.payload?.message);
       dispatch(fetchAllPyBank());
       close();
     });
@@ -131,7 +148,7 @@ const BankFormModel = ({ close, id }) => {
         style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
       >
         <div className="bg-white w-96 h-48 rounded-lg p-3 mx-3 flex flex-col justify-center items-center relative">
-          <X
+          <BiX
             size={20}
             onClick={close}
             className="w-10 h-10 absolute -top-5 right-0 bg-white rounded-full"

@@ -1,0 +1,40 @@
+.ant-drawer .ant-drawer-body{
+    padding: 0;
+}
+.ant-collapse>.ant-collapse-item >.ant-collapse-header{    
+    --tw-bg-opacity: 1;
+    background-color: rgb(234 179 8 / var(--tw-bg-opacity));
+    font-size: 16pt;
+}
+.ant-collapse .ant-collapse-content>.ant-collapse-content-box{
+    padding: 0px 0px; margin: 0;
+}
+.ant-modal .ant-modal-footer >.ant-btn+.ant-btn {    
+    background-color: blue;
+}
+
+.ripple-container {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    user-select: none;
+    cursor: pointer;
+  }
+  
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+  }
+  
+  @keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  
+
+  

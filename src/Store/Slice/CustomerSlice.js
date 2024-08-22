@@ -114,6 +114,35 @@ const customersSlice = createSlice({
       .addCase(createCustomer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.Customer.findIndex(customer => customer._id === action.payload._id);
+        if (index !== -1) {
+          state.Customer[index] = action.payload; // update the customer in the state
+        }
+        state.error = null;
+      })
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.Customer = state.Customer.filter(customer => customer._id !== action.meta.arg); // remove the customer from the state
+        state.error = null;
+      })
+      .addCase(deleteCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

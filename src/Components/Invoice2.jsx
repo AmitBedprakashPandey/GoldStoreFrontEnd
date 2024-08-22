@@ -20,6 +20,7 @@ import {
 import toast, { toastConfig } from "react-simple-toasts";
 import moment from "moment";
 import Loading from "./Loading";
+import { Modal } from "antd";
 function Invoice2({}) {
   const [formData, setFormData] = useState();
   toastConfig({
@@ -34,7 +35,8 @@ function Invoice2({}) {
   const [invoiceArray, setInvoiceArray] = useState([]);
   const [invoiceData, setInvoiceData] = useState();
   const [invoiceDate, setInvoiceDate] = useState();
-
+  const [modal2Open, setModal2Open] = useState(false);
+  const [modal1Open, setModal1Open] = useState(false);
   const disptch = useDispatch();
   const { Branch } = useSelector((state) => state.Branchs);
   const { Customer } = useSelector((state) => state.Customers);
@@ -201,7 +203,8 @@ function Invoice2({}) {
       createInvoice({
         ...formData,
         invoice: invoiceArray,
-        user: localStorage.getItem("user"),status:false
+        user: localStorage.getItem("user"),
+        status: false,
       })
     ).then(() =>
       disptch(updateInvoicesId(InvoiceId)).then(() =>
@@ -654,14 +657,23 @@ function Invoice2({}) {
       <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t">
         <button
           className="py-3 px-10 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
-          onClick={save}
-          disabled={buttonLable === "save" ? false : true}
+          onClick={() => setModal1Open(true)}
+          disabled={
+            buttonLable === "save" &&
+            formData?.branch &&
+            formData?.quot &&
+            formData?.quotdate &&
+            formData?.customer &&
+            invoiceArray.length != 0
+              ? false
+              : true
+          }
         >
           save
         </button>
         <button
           className="py-3 px-10 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
-          onClick={update}
+          onClick={() => setModal2Open(true)}
           disabled={buttonLable === "update" ? false : true}
         >
           update
@@ -674,6 +686,33 @@ function Invoice2({}) {
           Print
         </button>
       </div>
+      <Modal
+        centered
+        open={modal1Open}
+        onOk={() => {
+          save();
+          setModal1Open(false);
+        }}
+        closable={false}
+        onCancel={() => setModal1Open(false)}
+      >
+        <label className="text-3xl ">Are you sure want to save ?</label>
+      </Modal>
+
+      <Modal
+        centered
+        open={modal2Open}
+        onOk={() => {
+          update();
+          setModal2Open(false);
+        }}
+        closable={false}
+        onCancel={() => setModal2Open(false)}
+      >
+        <label className="text-2xl capitalize">
+          Are you sure want to update ?
+        </label>
+      </Modal>
     </div>
   );
 }

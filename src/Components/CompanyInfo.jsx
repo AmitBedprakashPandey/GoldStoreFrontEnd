@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Compress from "compress.js";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import {
   fetchByUser,
   createCompany,
@@ -9,6 +11,9 @@ import {
 import { fetchAllState } from "../Store/Slice/StateSlice";
 import toast, { toastConfig } from "react-simple-toasts";
 import { Camera } from "lucide-react";
+import { Button } from "primereact/button";
+import { BiInfoCircle } from "react-icons/bi";
+import Compressor from "compressorjs";
 function CompanyInfo() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -16,7 +21,41 @@ function CompanyInfo() {
   const [buttonName, setButtonName] = useState("s");
   const [formData, setformData] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
-  const { State } = useSelector((state) => state.State);
+
+  const [modal2Open, setModal2Open] = useState(false);
+  const [modal1Open, setModal1Open] = useState(false);
+
+  const state = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+  ];
+
   toastConfig({
     duration: 2000,
     zIndex: 1000,
@@ -35,7 +74,7 @@ function CompanyInfo() {
         setButtonName("u");
       }
     });
-  }, []);
+  }, [dispatch]);
 
   const formDataHandler = (e) => {
     setformData({
@@ -61,25 +100,89 @@ function CompanyInfo() {
     dispatch(updateCompany({ ...formData, logo: selectedImage })).then(
       (doc) => {
         if (!doc.error) {
+          dispatch(fetchByUser());
           toast(doc.payload.message);
         }
       }
     );
   };
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+  const confirm1 = () => {
+    confirmDialog({
+      message: "Are you sure you want to save ?",
+      header: "Confirmation",
+      icon: <BiInfoCircle size={20} />,
+      defaultFocus: "accept",
+      acceptClassName: "bg-cyan-500 p-3 text-white",
+      rejectClassName: "p-3 mr-3",
+      accept: onSubmit,
+    });
   };
+
+  const confirm2 = () => {
+    confirmDialog({
+      message: "Are you sure you want to update ?",
+      header: "Confirmation",
+      icon: <BiInfoCircle size={20} />,
+      defaultFocus: "accept",
+      acceptClassName: "bg-cyan-500 p-3 text-white",
+      rejectClassName: "p-3 mr-3",
+      accept: onUpdate,
+    });
+  };
+
+  const handleImageChange = async (event) => {
+    const file = await handleImageUpload(event.target.files[0]);
+    console.log(file);
+    setSelectedImage(file);
+  };
+
+  const handleImageUpload = (event) => {
+    return new Promise((resolve, reject) => {
+      const file = event; // Accessing the file from event
+
+      try {
+        new Compressor(file, {
+          quality: 0.45,
+          maxWidth: 500,
+          resize: false,
+          success: async (result) => {
+            const base64String = await blobUrlToBase64(result);
+            resolve(base64String);
+            // You may set the base64 URL to state or perform other actions here
+          },
+          error(error) {
+            console.error("Error compressing image:", error);
+            reject(error);
+          },
+        });
+      } catch (error) {
+        console.error("Error compressing image:", error);
+        reject(error);
+      }
+    });
+  };
+
+  async function blobUrlToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = (error) => {
+          reject(error);
+        };
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
   return (
     <>
+      <ConfirmDialog />
       <div
         className={`bg-sky-50 ${
           buttonName === "u"
@@ -87,29 +190,8 @@ function CompanyInfo() {
             : "absolute top-0 bottom-0 right-0 left-0 z-50"
         } flex justify-center`}
       >
-        {/* <div className="flex gap-28 relative mt-16">
-          <div className="flex flex-col items-center z-50">
-            <div className="bg-gray-500 w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold shadow-gray-400 shadow-md">
-              1
-            </div>
-            <label className="py-1 font-semibold">Logo</label>
-           
-          </div>
-          <div className="flex flex-col items-center z-50">
-            <div className="bg-gray-500 w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold shadow-gray-400 shadow-md">
-              1
-            </div>
-            <label className="py-1 font-semibold capitalize">Company Info</label>
-          </div>
-          <div className="flex flex-col items-center z-50">
-            <div className="bg-gray-500 w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold shadow-gray-400 shadow-md">
-              1
-            </div>
-            <label className="py-1 font-semibold capitalize">signature</label>
-          </div>
-        </div> */}
         <div
-          className={`w-[380px] md:w-[600px] border-gray-300 border absolute top-15 shadow-gray-400 shadow-lg rounded-lg  p-5 bg-white h-auto `}
+          className={`w-full md:w-[600px] border-gray-300 border absolute top-15 shadow-gray-400 shadow-lg rounded-lg  p-5 bg-white h-auto `}
         >
           <h1 className="text-3xl font-bold text-center py-5">Company Info</h1>
           <div className="flex flex-col gap-5 items-center">
@@ -173,9 +255,9 @@ function CompanyInfo() {
                 <option selected disabled>
                   --select State--
                 </option>
-                {State.map((doc, index) => (
-                  <option key={index} value={doc.state}>
-                    {doc.state}
+                {state.map((doc, index) => (
+                  <option key={index} value={doc}>
+                    {doc}
                   </option>
                 ))}
               </select>
@@ -258,35 +340,23 @@ function CompanyInfo() {
               />
             </div>
           </div>
-          {/* <div className="flex gap-3 my-2">
-            <div className="flex flex-col w-full">
-              <label className="py-1">Signature </label>
-              <input
-                type="file"
-                accept=".png"
-                placeholder="Enter address"
-                name="signa"
-                value={formData?.signa}
-                onChange={formDataHandler}
-                className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
-              />
-            </div>
-          </div> */}
           <div className="mt-10 ">
             {buttonName === "s" ? (
-              <button
-                onClick={onSubmit}
-                className="w-full capitalize bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-              >
-                Save
-              </button>
+              <>
+                <Button
+                  onClick={confirm1}
+                  label="save"
+                  className="w-full capitalize bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                />
+              </>
             ) : (
-              <button
-                onClick={onUpdate}
-                className="w-full capitalize bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-              >
-                update
-              </button>
+              <>
+                <Button
+                  onClick={confirm2}
+                  className="btn w-full capitalize bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold text-center"
+                  label={"update"}
+                />
+              </>
             )}
           </div>
         </div>

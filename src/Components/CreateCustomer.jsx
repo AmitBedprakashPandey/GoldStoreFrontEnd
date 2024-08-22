@@ -6,18 +6,25 @@ import {
   updateCustomer,
   deleteCustomer,
 } from "../Store/Slice/CustomerSlice";
+import { BiInfoCircle } from "react-icons/bi";
+import {confirmDialog,ConfirmDialog} from "primereact/confirmdialog"
+import {Dialog} from "primereact/dialog"
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
 import toast, { Toast, toastConfig } from "react-simple-toasts";
 import moment from "moment";
 import { fetchAllState } from "../Store/Slice/StateSlice";
+import RipppleButton from "./RippleButton";
+import { Modal } from "antd";
+import RippleButton from "./RippleButton";
+import { updateText } from "./TextUtilits";
 function CreateCustomer() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openMode, setOpenMode] = useState("");
-  const [openView, setOpenView] = useState(false);
   const [id, setId] = useState();
   const dispatch = useDispatch();
-  const { Customer, error, loading } = useSelector((state) => state.Customers);
+  const { Customer, loading } = useSelector((state) => state.Customers);
+  const [modal2Open, setModal2Open] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllCustomers());
@@ -31,21 +38,28 @@ function CreateCustomer() {
 
   return (
     <>
-      {openMenu && (
-        <Form close={() => setOpenMenu(false)} Mode={openMode} id={id} />
-      )}
-      {openView && <View close={() => setOpenView(false)} id={id} />}
+    <Dialog 
+    
+    visible={openMenu}
+    onHide={()=>setOpenMenu(false)}
+    style={{width:"50vw"}}
+    >
 
+
+    <Form close={() => setOpenMenu(false)} Mode={openMode} id={id} />
+    </Dialog>
+      
       {loading && <Loading />}
 
       <div className="lg:flex justify-center">
         <div className="">
-          <button
-            className="text-base font-semibold bg-blue-500 py-5 px-3 rounded-md m-3 ml-2 md:mx-5  uppercase text-white w-44 shadow-gray-400 shadow-md"
-            onClick={CreateBtn}
-          >
-            Add customer
-          </button>
+          <RipppleButton
+            className="text-base font-semibold bg-blue-500 py-5 px-3 rounded-md
+            m-3 ml-2 md:mx-5 uppercase text-white w-44 shadow-gray-400 text-center
+            shadow-md"
+            open={CreateBtn}
+            name={"Add customer"}
+          ></RipppleButton>
 
           <div className="relative overflow-auto lg:overflow-x-hidden mx-2 md:mx-5 max-h-96 bg-white shadow-gray-400 shadow-md">
             <table className="table-fixed">
@@ -92,27 +106,30 @@ function CreateCustomer() {
                     >
                       <FilePenLine size={18} />
                     </button>
-                    <button
+                    <RippleButton
                       className="bg-red-500 duration-300 text-white hover:bg-red-600 w-10 h-10 rounded-full px-3"
-                      onClick={() => {
+                      open={() => setModal2Open(true)}
+                      name={<Trash size={18} />}
+                    />
+
+                    <Modal
+                      centered
+                      open={modal2Open}
+                      onOk={() => {
                         dispatch(deleteCustomer(doc?._id)).then((res) => {
                           console.log(res);
                           toast(res?.payload?.message);
                           dispatch(fetchAllCustomers());
                         });
+                        setModal2Open(false);
                       }}
+                      closable={false}
+                      onCancel={() => setModal2Open(false)}
                     >
-                      <Trash size={18} />
-                    </button>
-                    <button
-                      className="bg-yellow-500 duration-300  hover:bg-yellow-600 w-10 h-10 rounded-full px-3"
-                      onClick={() => {
-                        setOpenView(true);
-                        setId(doc?._id);
-                      }}
-                    >
-                      <Eye size={18} />
-                    </button>
+                      <label className="text-3xl ">
+                        Are you sure want to delete ?
+                      </label>
+                    </Modal>
                   </td>
                 </tr>
               ))}
@@ -131,6 +148,8 @@ const Form = ({ close, Mode, id }) => {
   const dispatch = useDispatch();
   const { Customer, loading } = useSelector((state) => state.Customers);
   const { State } = useSelector((state) => state.State);
+  const [modal4Open, setModal4Open] = useState(false);
+  const [modal3Open, setModal3Open] = useState(false);
   toastConfig({
     duration: 2000,
     zIndex: 1000,
@@ -178,22 +197,41 @@ const Form = ({ close, Mode, id }) => {
     });
   };
 
+  const confirm1 = () => {
+    confirmDialog({
+      message: "Are you sure you want to save ?",
+      header: "Confirmation",
+      icon: <BiInfoCircle size={20} />,
+      defaultFocus: "accept",
+      acceptClassName: "bg-cyan-500 p-3 text-white",
+      rejectClassName: "p-3 mr-3",
+      accept: save,
+    });
+  };
+
+  const confirm2 = () => {
+    confirmDialog({
+      message: "Are you sure you want to update ?",
+      header: "Confirmation",
+      icon: <BiInfoCircle size={20} />,
+      defaultFocus: "accept",
+      acceptClassName: "bg-cyan-500 p-3 text-white",
+      rejectClassName: "p-3 mr-3",
+      accept: save,
+    });
+  };
+
   return (
     <>
-      <div
-        className="absolute left-0 right-0 bottom-0 top-0 z-50"
-        style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
-      />
+      
       {loading && <Loading />}
-      <div
-        div
-        className="absolute top-0 bottom-0 right-0 left-0 z-50 max-w-[800px] m-auto md:mt-16"
-      >
-        <div className="p-3 z-50 bg-white md:shadow-lg md:rounded-md relative overflow-hidden">
-          <h1>{Mode === "save" ? "Create" : "Update"} Form</h1>
+   
+        <div className="p-3 z-50 bg-white relative overflow-hidden">          
           <form className="mb-14 grid md:grid-cols-2 gap-3">
             <div className="grid grid-cols-1">
-              <label className="py-1 ">Party Name</label>
+              <label className="py-1 ">
+                Party Name<span className="text-red-500 text-3x1">*</span>
+              </label>
               <input
                 type="text"
                 placeholder="Party  Name"
@@ -205,7 +243,9 @@ const Form = ({ close, Mode, id }) => {
               />
             </div>
             <div className="grid grid-cols-1">
-              <label className="py-1 ">Enter Address</label>
+              <label className="py-1 ">
+                Enter Address<span className="text-red-500 text-3x1">*</span>
+              </label>
               <input
                 type="text"
                 name="address"
@@ -216,7 +256,9 @@ const Form = ({ close, Mode, id }) => {
               />
             </div>
             <div className="grid grid-cols-1">
-              <label className="py-1 ">Enter State</label>
+              <label className="py-1 ">
+                Enter State<span className="text-red-500 text-3x1">*</span>
+              </label>
               <select
                 className="outline outline-1 rounded-md px-2 py-3 text-sm"
                 value={customerData?.state}
@@ -234,7 +276,9 @@ const Form = ({ close, Mode, id }) => {
               </select>
             </div>
             <div className="grid grid-cols-1">
-              <label className="py-1 ">Enter City</label>
+              <label className="py-1 ">
+                Enter City<span className="text-red-500 text-3x1">*</span>
+              </label>
               <input
                 type="text"
                 placeholder="Enter City"
@@ -245,7 +289,9 @@ const Form = ({ close, Mode, id }) => {
               />
             </div>
             <div className="grid grid-cols-1">
-              <label className="py-1 ">Enter Pin Code</label>
+              <label className="py-1 ">
+                Enter Pin Code<span className="text-red-500 text-3x1">*</span>
+              </label>
               <input
                 type="tel"
                 placeholder="Enter Pin Code"
@@ -256,7 +302,10 @@ const Form = ({ close, Mode, id }) => {
               />
             </div>
             <div className="grid grid-cols-1">
-              <label className="py-1 ">Enter Mobile no.</label>
+              <label className="py-1 ">
+                Enter Mobile no.{" "}
+                <span className="text-red-500 text-3x1">*</span>
+              </label>
               <input
                 type="tel"
                 name="mobile"
@@ -339,74 +388,74 @@ const Form = ({ close, Mode, id }) => {
           </form>
           <div className="z-50 fixed md:absolute bottom-0 left-0 right-0 bg-white flex justify-end gap-4 py-3 px-5 border-t-2">
             {Mode === "save" ? (
-              <button
-                type="button"
-                className="py-2 px-4 bg-green-500 font-semibold rounded-md uppercase text-sm"
-                onClick={save}
-              >
-                save
-              </button>
+              <>
+                <RippleButton
+                  type="button"
+                  disabled={
+                    customerData?.name &&
+                    customerData?.address &&
+                    customerData?.state &&
+                    customerData?.city &&
+                    customerData?.mobile &&
+                    customerData?.pincode
+                      ? false
+                      : true
+                  }
+                  className="py-2 px-4 bg-green-500 font-semibold rounded-md uppercase text-sm disabled:bg-green-700 text-white"
+                  open={() => setModal4Open(true)}
+                  name={"save"}
+                />
+                <Modal
+                  centered
+                  open={modal4Open}
+                  onOk={() => {
+                    save();
+                    setModal4Open(false);
+                  }}
+                  closable={false}
+                  onCancel={() => setModal4Open(false)}
+                >
+                  <label className="text-3xl ">
+                    Are you sure want to save ?
+                  </label>
+                </Modal>
+              </>
             ) : (
-              <button
-                type="button"
-                className="py-2 px-4 bg-blue-500 font-semibold rounded-md uppercase text-sm"
-                onClick={update}
-              >
-                Update
-              </button>
+              <>
+                <RippleButton
+                  type="button"
+                  className="py-2 px-4 bg-blue-500 font-semibold rounded-md uppercase text-sm text-white"
+                  open={() => setModal3Open(true)}
+                  name={"update"}
+                />
+                <Modal
+                  centered
+                  open={modal3Open}
+                  onOk={() => {
+                    update();
+                    setModal3Open(false);
+                  }}
+                  closable={false}
+                  onCancel={() => setModal3Open(false)}
+                >
+                  <label className="text-3xl      ">
+                    Are you sure want to update ?
+                  </label>
+                </Modal>
+              </>
             )}
             <button
               type="button"
               onClick={close}
-              className="py-2 px-4 bg-red-500 font-semibold uppercase rounded-md  text-sm"
+              className="py-2 px-4 bg-red-500 font-semibold uppercase rounded-md  text-sm text-white"
             >
               close
             </button>
           </div>
         </div>
-      </div>
+ 
     </>
   );
 };
-const View = ({ close, id }) => {
-  const [customerData, setCustomerData] = useState([]);
-  const { Customer, error, loading } = useSelector((state) => state.Customers);
-  useEffect(() => {
-    if (id) {
-      const single = Customer.filter((doc) => doc._id === id);
-      setCustomerData(single[0]);
-    }
-  }, []);
-  return (
-    <>
-      {loading && <Loading />}
 
-      <div
-        className="absolute top-0 bottom-0 left-0 right-0 z-50"
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.55)" }}
-        onClick={close}
-      />
-      <div className="w-96 h-2/4 p-5 rounded-md shadow-lg absolute top-0 bottom-0 left-0 right-0 m-auto bg-white z-50 ">
-        <X className="absolute right-0 top-0" onClick={close} size={48} />
-        <div className="flex items-center gap-3">
-          <label className="text-sm">Party Name : </label>
-          <span className="text-xs">{customerData.name}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="text-sm">Party Name : </label>
-          <span className="text-xs">Amit</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="text-sm">Party Name : </label>
-          <span className="text-xs">Amit</span>
-        </div>
-        <div className="absolute bottom-5 ">
-          <button className="bg-blue-500 px-10 py-3 uppercase text-white rounded-md">
-            Export
-          </button>
-        </div>
-      </div>
-    </>
-  );
-};
 export default CreateCustomer;

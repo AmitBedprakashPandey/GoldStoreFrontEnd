@@ -14,7 +14,8 @@ function Print(params) {
   const { Print } = useSelector((state) => state.print);
   useEffect(() => {        
     dispatch(fetchOnePrint(data.state.invoiceId));
-  }, []);
+    console.log(Print?.company);
+  }, [Print]);
   return (
     <>
       <ReactToPrint
@@ -28,7 +29,9 @@ function Print(params) {
       <div className="A4Page p-3" ref={componentRef}>
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
-            <div className="w-28 h-28 border-black border"></div>
+            <div className="w-28 h-28 flex justify-center items-center">
+              <img src={Print?.company?.logo} />
+            </div>
             <div className="text-center">
             <h3 className="text-lg font-semibold">JAI MATA DI</h3>
               <h1 className="font-bold text-3xl uppercase">{Print?.company?.name}</h1>

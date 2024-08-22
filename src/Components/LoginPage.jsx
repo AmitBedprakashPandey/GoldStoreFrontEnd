@@ -21,7 +21,7 @@ export default function LogingPage(params) {
   const loginBtn = async () => {
     dispatch(loginUser(formData)).then(()=>{
       if(localStorage.getItem('token')){
-            navigate('/')
+            navigate('/company')
       }
     });
   }
@@ -70,13 +70,7 @@ export default function LogingPage(params) {
                 >
                   Password
                 </label>
-                <div className="text-sm">
-                  {/* <a
-                    href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Forgot password?
-                  </a> */}
+                <div className="text-sm">            
                 </div>
               </div>
               <div className="mt-2">
