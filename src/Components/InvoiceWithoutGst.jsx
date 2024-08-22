@@ -84,7 +84,7 @@ function Invoice2({}) {
     });
   };
   useEffect(() => {
-    setInvoiceId(Number(invoiceId.invoiceid));
+    setInvoiceId(Number(invoiceId?.invoiceid));
   }, [invoiceId]);
 
   const updateInvoiceInpt = () => {
