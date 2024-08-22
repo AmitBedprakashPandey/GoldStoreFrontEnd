@@ -166,6 +166,7 @@ function NavBar() {
             open={modal2Open}
             onOk={() => {
               setModal2Open(false);
+              logoutBtn()
             }}
             closable={false}
             onCancel={() => setModal2Open(false)}
