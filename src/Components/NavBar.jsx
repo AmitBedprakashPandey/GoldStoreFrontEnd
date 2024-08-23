@@ -1,40 +1,57 @@
 import {
-  CircleUserRound,
-  Copyright,
-  Home,
-  LogOut,
-  Menu,
-  User,
-  UserCircle,
-  X,
-} from "lucide-react";
-import { Avatar, Button, Drawer, Radio, Space } from "antd";
-import { Modal } from "antd";
+  FaUserCircle,
+  FaCopyright,
+  FaHome,
+  FaPowerOff,
+  FaBars,
+} from "react-icons/fa";
+import { Modal, Avatar, Drawer } from "antd";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Collapse } from "antd";
 import { fetchByUser } from "../Store/Slice/CompanySlice";
-import useSelection from "antd/es/table/hooks/useSelection";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Store/Slice/AuthSlice";
+import { fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
+import Mode from "./Mode";
+import { fetchOneInvoiceNumberGst } from "../Store/Slice/InvoiceNumbergstSlice";
 function NavBar() {
   const [openMenu, setOpenMenu] = useState(false);
-
   const [open, setOpen] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
   const { Company } = useSelector((state) => state.Company);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(fetchByUser(localStorage.getItem("user")));
     if (!localStorage.getItem("token")) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [dispatch, navigate]);
+
+  useEffect(() => {
+    dispatch(fetchOneInvoicesNumber(Company._id));
+    dispatch(fetchOneInvoiceNumberGst(Company._id));
+  }, [Company, dispatch]);
 
   const logoutBtn = () => {
     dispatch(logout());
     navigate("/login");
+  };
+
+  const confirm1 = () => {
+    confirmDialog({
+      closable: false,
+      message: "Are you sure you want to logout ?",
+      header: "Confirmation",
+      icon: "pi pi-exclamation-triangle",
+      defaultFocus: "accept",
+      acceptClassName: "bg-cyan-500 px-6 py-3 text-white",
+      rejectClassName: "py-3 px-6 mr-3 border",
+      accept: logoutBtn,
+    });
   };
 
   const showDrawer = () => {
@@ -53,7 +70,7 @@ function NavBar() {
           {Company?.logo ? (
             <Avatar size={120} src={Company.logo} />
           ) : (
-            <Avatar size={100} icon={<User size={60} />} />
+            <Avatar size={100} icon={<FaUserCircle size={60} />} />
           )}
           <label className="font-bold uppercase italic py-3 text-3xl">
             {Company?.name}
@@ -93,6 +110,13 @@ function NavBar() {
             className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
           >
             Bank
+          </Link>
+          <Link
+            to={"/mode"}
+            onClick={onClose}
+            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            Mode
           </Link>
         </ul>
       ),
@@ -147,10 +171,10 @@ function NavBar() {
     <>
       <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md fixed top-0 left-0 right-0 z-40">
         <div className="flex gap-3 items-center">
-          <Menu size={32} onClick={showDrawer} className=" lg:hidden" />
+          <FaBars size={32} onClick={showDrawer} className=" lg:hidden" />
           <img
             src={Company?.logo}
-            className="w-10 h-10 md:w-16 md:h-16 lg:w-16 lg:h-16 overflow-hidden rounded-full bg-cover bg-center"
+            className="w-10 h-10 md:w-16 md:h-16 lg:w-16 lg:h-16 overflow-hidden rounded-lg bg-cover bg-center"
           />
           <label className="uppercase font-bold text-sm md:text-lg lg:text-xl">
             {Company?.name}
@@ -158,21 +182,11 @@ function NavBar() {
         </div>
         <div className="lg:hidden flex gap-5">
           <Link to={"/"}>
-            <Home />
+            <FaHome />
           </Link>
-          <LogOut onClick={() => setModal2Open(true)} />
-          <Modal
-            centered
-            open={modal2Open}
-            onOk={() => {
-              setModal2Open(false);
-              logoutBtn()
-            }}
-            closable={false}
-            onCancel={() => setModal2Open(false)}
-          >
-            <label className="text-3xl">Are you sure want to logout</label>
-          </Modal>
+          <button onClick={confirm1}>
+            <FaPowerOff />
+          </button>
         </div>
         <div className="hidden lg:block">
           <ul className=" flex gap-10 items-center">
@@ -270,7 +284,7 @@ function NavBar() {
             </li>
             <li className=" relative">
               <div className="dropdownbtn flex items-center gap-3 py-2">
-                <UserCircle />{" "}
+                <FaUserCircle />
                 <span className="text-base italic truncate">
                   {localStorage.getItem("user")}
                 </span>
@@ -278,10 +292,10 @@ function NavBar() {
               <div className="dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute  top-9 right-0 z-50">
                 <button
                   type="button"
-                  className="w-full text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
+                  className="w-full flex items-center gap-3 text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
                   onClick={logoutBtn}
                 >
-                  Logout
+                  <FaPowerOff /> Logout
                 </button>
               </div>
             </li>
@@ -303,7 +317,7 @@ function NavBar() {
         />
         <div className="py-2 absolute bottom-0 left-0 right-0 flex justify-center items-center">
           copyright
-          <Copyright size={15} /> 2024
+          <FaCopyright size={15} /> 2024
         </div>
       </Drawer>
     </>

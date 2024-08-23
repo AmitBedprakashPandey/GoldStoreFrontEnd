@@ -6,22 +6,25 @@ import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOnePrint } from "../Store/Slice/PrintSlice";
 import moment from "moment";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
 
 function Print(params) {
   const data = useLocation();
   const dispatch = useDispatch();
   const componentRef = useRef();
   const { Print } = useSelector((state) => state.print);
+  const { Company } = useSelector((state) => state.Company);
+
   useEffect(() => {        
     dispatch(fetchOnePrint(data.state.invoiceId));
-    console.log(Print?.company);
-  }, [Print]);
+        dispatch(fetchByUser(localStorage.getItem("user")));
+  }, [Print,dispatch]);
   return (
     <>
       <ReactToPrint
         trigger={() => (
           <button className="m-3 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3">
-            Print
+            Prints
           </button>
         )}
         content={() => componentRef.current}
@@ -30,7 +33,7 @@ function Print(params) {
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
             <div className="w-28 h-28 flex justify-center items-center">
-              <img src={Print?.company?.logo} />
+              <img src={Company?.logo} />
             </div>
             <div className="text-center">
             <h3 className="text-lg font-semibold">JAI MATA DI</h3>

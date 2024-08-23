@@ -14,6 +14,7 @@ import { Camera } from "lucide-react";
 import { Button } from "primereact/button";
 import { BiInfoCircle } from "react-icons/bi";
 import Compressor from "compressorjs";
+import { state } from "./TextUtilits";
 function CompanyInfo() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -25,36 +26,7 @@ function CompanyInfo() {
   const [modal2Open, setModal2Open] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
 
-  const state = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-  ];
+
 
   toastConfig({
     duration: 2000,

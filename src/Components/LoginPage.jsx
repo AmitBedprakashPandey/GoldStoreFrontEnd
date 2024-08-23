@@ -7,6 +7,7 @@ export default function LogingPage(params) {
   const [formData, setFormData] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { Company } = useSelector((state) => state.Company);
   const { error } = useSelector((state) => state.Auth);
   const formDataHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,7 +22,11 @@ export default function LogingPage(params) {
   const loginBtn = async () => {
     dispatch(loginUser(formData)).then(()=>{
       if(localStorage.getItem('token')){
-            navigate('/company')
+        if(Company){
+          navigate("/");
+        }else{
+          navigate('/company')
+        }
       }
     });
   }

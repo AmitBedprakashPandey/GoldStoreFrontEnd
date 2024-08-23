@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Dialog } from "primereact/dialog";
+import { confirmDialog } from "primereact/confirmdialog";
 import { FilePenLine, Trash, X } from "lucide-react";
 import toast, { toastConfig } from "react-simple-toasts";
 import Loading from "./Loading";
@@ -23,12 +25,15 @@ export default function Mode() {
   useEffect(() => {
     dispatch(fetchAllPyMode());
   }, [dispatch]);
+
   toastConfig({
     duration: 2000,
     zIndex: 1000,
     className:
       "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
   });
+
+
   const saveMode = () => {
     dispatch(
       createPyMode({ mode: pymode, user: localStorage.getItem("user") })
@@ -42,11 +47,17 @@ export default function Mode() {
   return (
     <>
       {loading && <Loading />}
-      {modeOpenModel && (
-        <ModeFormModel id={modeId} close={() => setModeOpenModel(false)} />
-      )}
-      <div className="flex justify-center">
-        <div className="grid place-content-center mx-2 bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+      <Dialog
+      header={'Update Mode'}
+      visible={modeOpenModel}
+      onHide={() => setModeOpenModel(false)}
+      className="w-96 mx-10"
+      >
+      <ModeFormModel id={modeId} />
+
+      </Dialog>
+      <div className="flex justify-center pt-5 ">
+        <div className="grid place-content-center mx-2 border bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
           <div className="my-5 text uppercase font-bold">
             <label className="">Payment Mode</label>
           </div>
@@ -114,37 +125,35 @@ const ModeFormModel = ({ close, id }) => {
   const { PyMode, loading } = useSelector((state) => state.Mode);
   const [pyMode, setPyMode] = useState();
   const dispatch = useDispatch();
+  const pyModeHandler=(e)=>{
+    setPyMode({...pyMode,[e.target.name]:e.target.value})
+  }
   useEffect(() => {
     if (id) {
-      const single = PyMode.filter((doc) => doc._id === id);      
+      const single = PyMode.filter((doc) => doc._id === id);
       setPyMode(single[0]);
     }
-  }, [pyMode,id]);
+  }, [id]);
   const update = () => {
-    dispatch(updatePyMode({ _id: id, mode: pyMode })).then((res) => {
+    dispatch(updatePyMode(pyMode)).then((res) => {
       toast(res?.payload?.message);
       dispatch(fetchAllPyMode());
-      close();
     });
   };
+
+
+
+
   return (
     <>
       {loading && <Loading />}
-      <div
-        className="absolute top-0 bottom-0 right-0 left-0 z-50 flex justify-center items-center"
-        style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
-      >
-        <div className="bg-white w-96 h-48 rounded-lg p-3 mx-3 flex flex-col justify-center items-center relative">
-          <X
-            size={20}
-            onClick={close}
-            className="w-10 h-10 absolute -top-5 right-0 bg-white rounded-full"
-          />
-          <label className="my-3">Update</label>
+        <div className="bg-white rounded-lg flex flex-col justify-center items-center relative">
+       
           <input
             className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
+            name="mode"
             value={pyMode?.mode}
-            onChange={(e) => setPyMode(e.target.value)}
+            onChange={pyModeHandler}
           />
           <button
             className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
@@ -153,7 +162,6 @@ const ModeFormModel = ({ close, id }) => {
             Update
           </button>
         </div>
-      </div>
     </>
   );
 };

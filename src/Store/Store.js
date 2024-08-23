@@ -14,6 +14,7 @@ import PrintWithoutGstSlice from "./Slice/PrintWithoutGstSlice";
 import StateSlice from "./Slice/StateSlice";
 import QuatationSlice from "./Slice/QuatationSlice";
 import QuatationWithoutGst from "./Slice/QuatationWithoutgstSlice";
+import InvoiceNumbergstSlice from "./Slice/InvoiceNumbergstSlice";
 
 export const Store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const Store = configureStore({
     Invoices: InvoiceSlice,
     InvoicesWithoutGst: InvoiceWithoutGstSlice,
     InvoiceID: InvoiceIdSlice,
+    InvoiceNumberGst: InvoiceNumbergstSlice,
     InvoiceWithoutGstID: InvoiceWithoutGstIdSlice,
     Auth: AuthSlice,
     Company: CompnaySlice,

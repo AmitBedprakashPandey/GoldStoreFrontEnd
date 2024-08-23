@@ -13,6 +13,7 @@ import { fetchAllBranch } from "../Store/Slice/BranchSlice";
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
 import { fetchAllPyBank } from "../Store/Slice/PayBankSlice";
 import { fetchAllPyMode } from "../Store/Slice/PayModeSlice";
+import { UpdateInvoicesNumber,fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
 import {
   fetchOneInvoicesId,
   updateInvoicesId,
@@ -23,6 +24,7 @@ import moment from "moment";
 import Loading from "./Loading";
 function Invoice2({}) {
   const [formData, setFormData] = useState();
+
   toastConfig({
     duration: 2000,
     zIndex: 1000,
@@ -31,12 +33,12 @@ function Invoice2({}) {
   });
 
   const [buttonLable, setButtonLable] = useState("save");
-
   const [invoiceArray, setInvoiceArray] = useState([]);
   const [invoiceData, setInvoiceData] = useState();
   const [invoiceDate, setInvoiceDate] = useState();
 
   const disptch = useDispatch();
+  
   const { Branch } = useSelector((state) => state.Branchs);
   const { Customer } = useSelector((state) => state.Customers);
   const { invoiceId } = useSelector((state) => state.InvoiceWithoutGstID);
@@ -47,7 +49,11 @@ function Invoice2({}) {
   const { Invoice, error, loading, message } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
-  const [InvoiceId, setInvoiceId] = useState(invoiceId?.invoiceid);
+  const { InvoicesNumber  } = useSelector(
+    (state) => state.InvoiceID
+  );
+  const { Company } = useSelector((state) => state.Company);
+  const [InvoiceId, setInvoiceId] = useState();
 
   const formDataHandler = (e) => {
     setFormData({
@@ -69,7 +75,7 @@ function Invoice2({}) {
     disptch(fetchAllPyBank());
     disptch(fetchAllPyMode());
     setInvoiceDate(moment().format("YYYY-MM-DD"));
-  }, []);
+  }, [disptch]);
 
   const quotionIdHandler = (e) => {
     disptch(fetchOneInvoices(InvoiceId)).then((req, res) => {
@@ -83,9 +89,10 @@ function Invoice2({}) {
       setInvoiceArray(req.payload.data?.invoice);
     });
   };
+
   useEffect(() => {
-    setInvoiceId(Number(invoiceId?.invoiceid));
-  }, [invoiceId]);
+    setInvoiceId(Number(InvoicesNumber?.number));
+  }, [InvoicesNumber]);
 
   const updateInvoiceInpt = () => {
     const t =
@@ -138,7 +145,7 @@ function Invoice2({}) {
       mcharg: "",
       total: "",
       disc: "",
-      nettotal: "",
+      nettotal: 0,
     });
   };
 
@@ -188,38 +195,41 @@ function Invoice2({}) {
         status: false,
       })
     ).then(() =>
-      disptch(updateInvoicesId(InvoiceId)).then(() => {
-        disptch(fetchOneInvoicesId());
+      disptch(UpdateInvoicesNumber(Company._id)).then(() => {
+        disptch(fetchOneInvoicesNumber(Company._id));
         setInvoiceData({
           ...invoiceData,
           desc: "",
-          hsn: "",
-          purity: "",
-          weight: "",
-          rate: "",
-          qty: "",
-          mcharg: "",
-          total: "",
-          disc: "",
-          nettotal: "",
-        });
-        setInvoiceArray([]);
-        setFormData({
-          branch: "",
-          customer: "",
-          total: "",
-          ttax: "",
-          gtotal: "",
-          mode: "",
-          bank: "",
-          pycheq: "",
-          paidamt: "",
-          belamt: "",
-        });
-        setButtonLable("save");
-      })
-    );
-  };
+          hsn: 0,
+          purity: 0,
+          weight: 0,
+        rate: 0,
+        qty: 0,
+        mcharg: 0,
+        total: 0,
+        disc: 0,
+        nettotal: 0,
+      });
+      setInvoiceArray([]);
+      setFormData({...formData,
+        branch: null,
+        customer:null ,
+        total: 0,
+        ttax: 0,
+        gtotal: 0,
+        mode: "",
+        bank: "",
+        pycheq: "",
+        paidamt: 0,
+        belamt: 0,
+      });
+      setButtonLable("save");
+      
+      
+      
+    })
+  );
+      };
 
   const update = () => {
     disptch(updateInvoice({ ...formData, invoice: invoiceArray })).then(() => {
@@ -238,11 +248,12 @@ function Invoice2({}) {
       navigate("/login");
     }
   }, [navigate]);
+
   return (
     <div className="lg:mx-16 ">
       {loading && <Loading />}
       {error && error}
-      <div className="mb-20 mt-10 p-3 bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
+      <div className="mb-20 mt-10 p-3 border bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
             <label className="">Branch Name : </label>
@@ -336,7 +347,7 @@ function Invoice2({}) {
                   name="hsn"
                   value={invoiceData?.hsn}
                   onChange={invoiceDataHandler}
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
               <div className="m-3 grid">
@@ -347,11 +358,11 @@ function Invoice2({}) {
                   name="purity"
                   value={invoiceData?.purity}
                   onChange={invoiceDataHandler}
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
               <div className="m-3 grid">
-                <label className="">Weight (grams) </label>
+                <label className="">Weight (g) </label>
                 <input
                   type="number"
                   placeholder="0000"
@@ -372,7 +383,7 @@ function Invoice2({}) {
                   name="rate"
                   value={invoiceData?.rate}
                   onChange={invoiceDataHandler}
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
               <div className="m-3 grid">
@@ -383,12 +394,12 @@ function Invoice2({}) {
                   name="qty"
                   value={invoiceData?.qty}
                   onChange={invoiceDataHandler}
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
               <div className="m-3 grid">
                 <label className="text-sm">
-                  Making Charges <strong>%</strong>{" "}
+                  Making Charg.<strong>%</strong>
                 </label>
                 <input
                   type="tel"
@@ -410,7 +421,7 @@ function Invoice2({}) {
                   name="total"
                   value={invoiceData?.total}
                   onChange={invoiceDataHandler}
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
               <div className="m-3 grid">
@@ -423,23 +434,23 @@ function Invoice2({}) {
                   name="disc"
                   value={invoiceData?.disc}
                   onChange={invoiceDataHandler}
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-            </div>
-            <div className="flex">
               <div className=" m-3 grid">
-                <label className="">NET TOTAL </label>
+                <label className="">Net total </label>
                 <input
                   type="tel"
                   placeholder="0000"
                   name="nettotal"
-                  value={invoiceData?.nettotal}
+                  value={invoiceData?.nettotal || 0}
                   onChange={invoiceDataHandler}
                   disabled
-                  className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
+            </div>
+            <div className="flex">
             </div>
           </div>
           <button
@@ -450,16 +461,16 @@ function Invoice2({}) {
           </button>
         </div>
 
-        <div className="relative overflow-x-auto mx-0 py-3 flex justify-center ">
-          <table className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border">
+        <div className="relative overflow-x-auto mx-0 py-3 flex md:justify-center ">
+          <table border={1} className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border">
             <tr className="text-sm bg-gray-100 flex">
-              <th className="w-36 py-3 px-2 flex ">Description</th>
-              <th className=" w-20 flex py-3 px-2 ">Wight</th>
+              <th className="w-48 py-3 px-2 flex ">Description</th>
+              <th className="w-20 flex py-3 px-2 ">Wight</th>
               <th className="w-10 flex py-3 px-2  ">Qty.</th>
-              <th className="w-28 flex py-3 px-2  ">Making Charges %</th>
+              <th className="w-32 flex py-3 px-2  ">Make Charg.%</th>
               <th className="w-16 flex py-3 px-2  ">Rate</th>
               <th className="w-16 flex py-3 px-2  ">Amt.</th>
-              <th className="w-24 flex py-3 px-2  ">Discount %</th>
+              <th className="w-28 flex py-3 px-2  ">Discount %</th>
               <th className="w-28 flex py-3 px-2  ">Net Tot.</th>
               <th className="flex py-3 px-2  ">Action</th>
             </tr>
@@ -485,8 +496,8 @@ function Invoice2({}) {
                     {doc?.total}
                   </td>
 
-                  <td className="w-24 flex py-3 px-10">{doc?.disc}</td>
-                  <td className="w-24 flex py-3 px-2  ">
+                  <td className="w-full flex py-3 px-10">{doc?.disc}</td>
+                  <td className="w-full flex py-3 px-2  ">
                     {parseFloat(doc?.nettotal).toFixed(2)}
                   </td>
 
@@ -503,8 +514,9 @@ function Invoice2({}) {
             </div>
           </table>
         </div>
-        <div className="md:grid grid-cols-2">
-          <div className="flex flex-wrap  gap-3 py-3">
+
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-8">
+        
             <div className=" grid">
               <label className="">Total Amt.</label>
               <input
@@ -514,7 +526,7 @@ function Invoice2({}) {
                 name="tamt"
                 value={formData?.tamt}
                 onChange={formDataHandler}
-                className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className=" grid">
@@ -526,10 +538,9 @@ function Invoice2({}) {
                 name="tdisc"
                 value={formData?.tdisc}
                 onChange={formDataHandler}
-                className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
-
             <div className=" grid">
               <label className="">Grand Amt. </label>
               <input
@@ -539,12 +550,9 @@ function Invoice2({}) {
                 name="gtotal"
                 value={parseFloat(formData?.gtotal).toFixed(2)}
                 onChange={formDataHandler}
-                className="w-24 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3 py-3">
             <div className=" grid">
               <label className="">Mode </label>
               <select
@@ -601,7 +609,7 @@ function Invoice2({}) {
                     ? formDataHandler
                     : ""
                 }
-                className="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-200"
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-200"
               />
             </div>
             <div className=" grid">
@@ -612,7 +620,7 @@ function Invoice2({}) {
                 name="paidamt"
                 value={formData?.paidamt || 0}
                 onChange={formDataHandler}
-                className="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className=" grid">
@@ -624,10 +632,10 @@ function Invoice2({}) {
                 disabled
                 value={formData?.belamt}
                 onChange={formDataHandler}
-                className="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
-          </div>
+  
         </div>
       </div>
       <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t">

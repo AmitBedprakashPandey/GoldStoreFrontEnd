@@ -7,13 +7,19 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { BiEdit, BiInfoCircle, BiTrash, BiX } from "react-icons/bi";
-import { Toast } from "primereact/toast";
+import toast, { Toast, toastConfig } from "react-simple-toasts";
 import Loading from "./Loading";
 import { Dialog } from "primereact/dialog";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Modal } from "antd";
 import { Button } from "primereact/button";
 
+toastConfig({
+  duration: 2000,
+  zIndex: 2080,
+  className:
+    "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
+});
 export default function Branch(params) {
   const [openModel, setOpenModel] = useState(false);
   const [branch, setBranch] = useState();
@@ -23,15 +29,6 @@ export default function Branch(params) {
   const dispatch = useDispatch();
   const { Branch, loading } = useSelector((state) => state.Branchs);
 
-  const toast = useRef(null);
-  const show = (message) => {
-    toast.current.show({
-      severity: "info",
-      summary: "Info",
-      detail: message,
-    });
-  };
-
   useEffect(() => {
     dispatch(fetchAllBranch());
   }, []);
@@ -40,14 +37,14 @@ export default function Branch(params) {
     dispatch(
       createBranch({ branch: branch, user: localStorage.getItem("user") })
     ).then((res) => {
-      show(res?.payload?.message);
+      toast(res?.payload?.message);
       dispatch(fetchAllBranch());
     });
   };
 
   const deleteData = (id) => {
     dispatch(deleteBranch(id)).then((res) => {
-      show(res?.payload?.message);
+      toast(res?.payload?.message);
       setModal2Open(false);
     });
   };
@@ -66,20 +63,23 @@ export default function Branch(params) {
 
   return (
     <>
-      <Toast ref={toast} />
       <ConfirmDialog />
 
       <Dialog
         header="Update"
+        maximizable={false}
         visible={openModel}
+        
         onHide={() => setOpenModel(!openModel)}
-        style={{ width: "20vw" }}
+        className="w-full mx-10"
       >
         <FormModel close={() => setOpenModel(!openModel)} id={id} />
       </Dialog>
+
       {loading && <Loading />}
-      <div className="flex justify-center">
-        <div className="grid place-content-center mx-2 bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+
+      <div className="flex justify-center bg-white pt-5">
+        <div className="grid place-content-center mx-2 border w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
           <div className="grid">
             <label>Enter Branch</label>
             <input
@@ -149,14 +149,7 @@ const FormModel = ({ close, id }) => {
   const [branch, setBranch] = useState();
   const [model1Open, setModel1open] = useState();
   const dispatch = useDispatch();
-  const toast = useRef(null);
-  const show = (message) => {
-    toast.current.show({
-      severity: "info",
-      summary: "Info",
-      detail: message,
-    });
-  };
+
   useEffect(() => {
     if (id) {
       const single = Branch.filter((doc) => doc._id === id);
@@ -165,7 +158,7 @@ const FormModel = ({ close, id }) => {
   }, []);
   const update = () => {
     dispatch(updateBranch({ _id: id, branch: branch })).then((res) => {
-      show(res?.payload?.message);
+      toast(res?.payload?.message);
     });
   };
 
@@ -175,12 +168,13 @@ const FormModel = ({ close, id }) => {
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
       defaultFocus: "accept",
+      acceptClassName: "bg-cyan-500 p-3 text-white",
+      rejectClassName: "p-3 mr-3",
       accept: update,
     });
   };
   return (
     <>
-      <Toast ref={toast} />
       <div className="bg-white w-full h-full flex flex-col justify-center items-center relative">
         <input
           className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"

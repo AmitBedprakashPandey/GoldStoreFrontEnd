@@ -47,7 +47,7 @@ export const createInvoice = createAsyncThunk(
   "Quotation/create",
   async (customerData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${url}/Quotation`, customerData, {
+      const response = await axios.post(`${url}/invoice`, customerData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -65,7 +65,7 @@ export const deleteInvoice = createAsyncThunk(
   async (customerId, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `${url}/Quotation/${customerId}/${localStorage.getItem("user")}`,
+        `${url}/invoice/${customerId}/${localStorage.getItem("user")}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -84,8 +84,10 @@ export const updateInvoice = createAsyncThunk(
   "Quotation/update",
   async (newData, { rejectWithValue }) => {
     try {
+      console.table(newData);
+      
       const response = await axios.put(
-        `${url}/Quotation/${newData._id}/${localStorage.getItem("user")}`,
+        `${url}/invoice/${newData._id}/${localStorage.getItem("user")}`,
         newData,
         {
           headers: {

@@ -12,6 +12,7 @@ import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
 import { fetchOnePrint } from "../Store/Slice/PrintWithoutGstSlice";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
 function QuotationWithoutGst(params) {
   const dispatch = useDispatch();
   const [from, setFrom] = useState();
@@ -154,8 +155,11 @@ const ViewPrint = ({ close, id }) => {
   const dispatch = useDispatch();
   const componentRef = useRef();
   const { Print } = useSelector((state) => state.Printwithoutgst);
+  const { Company } = useSelector((state) => state.Company);
+
   useEffect(() => {
     dispatch(fetchOnePrint(id));
+    dispatch(fetchByUser(localStorage.getItem("user")));
   }, []);
 
   const onCancel = () => {
@@ -202,34 +206,36 @@ const ViewPrint = ({ close, id }) => {
         >
           <X />
         </button>
-        <div className="A4Page p-3" ref={componentRef}>
+        <div className="A4Page p-3 relative" ref={componentRef}>
           {Print._doc?.status === true ? (
             <img
               src={Cancel}
               alt="cancel logo"
-              className="absolute bottom-20 left-60 w-[400px]"
+              className="absolute left-52 bottom-80 w-96"
             />
           ) : (
-            "cancel"
+            ""
           )}
           <div className="border-black border-2">
             <div className="flex justify-between items-center p-2">
-              <div className="w-28 h-28 border-black border"></div>
+              <div className="w-28 h-24 ">
+              <img src={Company.logo} className="w-full h-full" alt="holmart" />
+              </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold">JAI MATA DI</h3>
                 <h1 className="font-bold text-3xl uppercase">
-                  {Print.company?.name}
+                  {Company?.name}
                 </h1>
                 <h3 className="text-lg font-semibold">TAX INVOICE</h3>
               </div>
-              <div>
+              <div className="w-28 h-24">
                 <img src={Holmark} width={100} alt="holmart" />
               </div>
             </div>
             <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
               <div className="flex flex-col">
                 <label className="text-lg">
-                  QuotationWithoutgst No : <span>{Print._doc?.quot}</span>
+                  Invoice No : <span>{Print._doc?.quot}</span>
                 </label>
                 <label className="text-lg">
                   Date :{" "}
@@ -256,43 +262,43 @@ const ViewPrint = ({ close, id }) => {
 
             <div className="flex justify-between">
               <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
-                <div className="px-3 h-32 ">
-                  <label className="flex text-lg">
-                    <label className="w-[120px]">Billed to :</label>
-                    <ul className="text-sm mt-1 capitalize">
-                      <li>{Print.company?.name}</li>
-                      <li>{Print.company?.address}</li>
+                <div className="px-3 py-2 h-32 ">
+                  <label className="flex">
+                    <label className="w-[120px] font-bold">Billed to :</label>
+                    <ul className="">
+                      <li className="text-md text-blue-700 font-bold mt-1 capitalize">{Print.company?.name}</li>
+                      <li className="text-sm text-blue-700 font-normal">{Print.company?.address}</li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
-                  <label className="text-sm">
-                    Party PAN : <span>{Print.company?.pan}</span>
+                  <label className="text-sm font-bold">
+                    Party PAN : <span className="font-normal">{Print.company?.pan}</span>
                   </label>
-                  <label className="text-sm">
-                    Party Mobile No. : <span>{Print.company?.mobile}</span>
+                  <label className="text-sm font-bold">
+                    Party Mobile No. : <span className="font-normal">{Print.company?.mobile}</span>
                   </label>
-                  <label className="text-sm">
-                    GSTIN / UIN : <span>{Print.company?.gst}</span>
+                  <label className="text-sm font-bold">
+                    GSTIN / UIN : <span className="font-normal">{Print.company?.gst}</span>
                   </label>
                 </div>
               </div>
               <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
-                <div className="px-3 h-32 ">
+                <div className="px-3 py-2 h-32 ">
                   <label className="flex text-lg">
-                    <label className="w-[120px]">Shipped to :</label>
-                    <ul className="text-sm mt-1 capitalize">
-                      <li>{Print.customer?.name}</li>
+                    <label className="w-[120px] text-sm font-bold">Shipped to :</label>
+                    <ul className="text-sm capitalize">
+                      <li className="font-bold text-md">{Print.customer?.name}</li>
                       <li>{Print.customer?.address}</li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
-                  <label className="text-sm">
-                    Party PAN : <span>{Print?.customer?.pan}</span>
+                  <label className="text-sm font-bold">
+                    Party PAN : <span className="font-normal">{Print?.customer?.pan}</span>
                   </label>
-                  <label className="text-sm">
-                    Party Mobile No. : <span>{Print?.customer?.mobile}</span>
+                  <label className="text-sm font-bold">
+                    Party Mobile No. : <span className="font-normal">{Print?.customer?.mobile}</span>
                   </label>
                 </div>
               </div>

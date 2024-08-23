@@ -4,10 +4,10 @@ import axios from "axios";
 const url = process.env.React_APP_API_URL;
 
 export const createInvoicesId = createAsyncThunk(
-  "InvoiceId/create",
+  "invoicegst/create",
   async (BranchData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${url}/invoiceid`, BranchData, {
+      const response = await axios.post(`${url}/invoicegst`, BranchData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -20,13 +20,13 @@ export const createInvoicesId = createAsyncThunk(
   }
 );
 
-export const fetchOneInvoicesNumber = createAsyncThunk(
-  "InvoiceId/fetchAll",
+export const fetchOneInvoiceNumberGst = createAsyncThunk(
+  "invoicegst/fetchAll",
   async (id, { rejectWithValue }) => {
     try {
 
 
-      const response = await axios.get(`${url}/invoiceid/${id}`, {
+      const response = await axios.get(`${url}/invoicegst/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -39,13 +39,13 @@ export const fetchOneInvoicesNumber = createAsyncThunk(
   }
 );
 
-export const UpdateInvoicesNumber = createAsyncThunk(
-  "InvoiceId/update",
+export const UpdateInvoiceNumberGst = createAsyncThunk(
+  "invoicegst/update",
   async (data, { rejectWithValue }) => {
     try {
         console.log("slice",data);
 
-      const response = await axios.put(`${url}/invoiceid/${data}`,
+      const response = await axios.put(`${url}/invoicegst/${data}`,
         {headers: {    
           "Content-Type": "application/json",
            Authorization: `${localStorage.getItem("token")}`,
@@ -60,29 +60,29 @@ export const UpdateInvoicesNumber = createAsyncThunk(
 );
 
 const initialState = {
-  InvoicesNumber: [],
+  InvoiceNumberGst: [],
   error: null,
   loading: false,
 };
 
-const InvoiceIdSlice = createSlice({
-  name: "InvoiceId",
+const invoicegstSlice = createSlice({
+  name: "invoicegst",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchOneInvoicesNumber.pending, (state) => {
+      .addCase(fetchOneInvoiceNumberGst.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchOneInvoicesNumber.fulfilled, (state, action) => {
+      .addCase(fetchOneInvoiceNumberGst.fulfilled, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber = action.payload;
+        state.InvoiceNumberGst = action.payload;
         state.error = null;
       })
-      .addCase(fetchOneInvoicesNumber.rejected, (state, action) => {
+      .addCase(fetchOneInvoiceNumberGst.rejected, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber = [];
+        state.InvoiceNumberGst = [];
         state.error = action.payload;
       })
       .addCase(createInvoicesId.pending, (state) => {
@@ -91,27 +91,27 @@ const InvoiceIdSlice = createSlice({
       })
       .addCase(createInvoicesId.fulfilled, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber.push(action.payload); // assuming the payload is the newly created invoiceid
+        state.InvoiceNumberGst.push(action.payload); // assuming the payload is the newly created invoicegst
         state.error = null;
       })
       .addCase(createInvoicesId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(UpdateInvoicesNumber.pending, (state) => {
+      .addCase(UpdateInvoiceNumberGst.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(UpdateInvoicesNumber.fulfilled, (state, action) => {
+      .addCase(UpdateInvoiceNumberGst.fulfilled, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber = action.payload; // assuming the payload is the newly created invoiceid
+        state.InvoiceNumberGst = action.payload; // assuming the payload is the newly created invoicegst
         state.error = null;
       })
-      .addCase(UpdateInvoicesNumber.rejected, (state, action) => {
+      .addCase(UpdateInvoiceNumberGst.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export default InvoiceIdSlice.reducer;
+export default invoicegstSlice.reducer;

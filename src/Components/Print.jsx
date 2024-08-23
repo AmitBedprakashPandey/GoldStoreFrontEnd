@@ -6,14 +6,19 @@ import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOnePrint } from "../Store/Slice/PrintWithoutGstSlice";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
 function Print() {
   const dispatch = useDispatch();
   const data = useLocation();
   const { Print } = useSelector((state) => state.Printwithoutgst);
+  const { Company } = useSelector((state) => state.Company);
   const componentRef = useRef();
   useEffect(() => {    
+    dispatch(fetchByUser(localStorage.getItem("user")));
     dispatch(fetchOnePrint(data.state.invoiceId));    
-  }, []);
+    console.log(Company);
+    
+  }, [dispatch]);
   return (
     <>
       <ReactToPrint
@@ -28,7 +33,7 @@ function Print() {
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
             <div className="w-28 h-28 flex justify-between items-center">
-              <img src={Print?.company?.logo}/>
+              <img src={Company?.logo} />
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">JAI MATA DI</h3>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiEdit, BiTrash, BiX } from "react-icons/bi";
-import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import toast, { Toast, toastConfig } from "react-simple-toasts";
 import Loading from "./Loading";
 import {
   createPyBank,
@@ -10,33 +11,28 @@ import {
   updatePyBank,
 } from "../Store/Slice/PayBankSlice";
 
-
+toastConfig({
+  duration: 2000,
+  zIndex: 2080,
+  className:
+    "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
+});
 export default function BankMode() {
   const dispatch = useDispatch();
   const [pybank, setPyBank] = useState();
   const [bankOpenModel, setBankOpenModel] = useState(false);
   const [bankId, setBankId] = useState();
   const { PyBank, loading } = useSelector((state) => state.Bank);
-  
+
   useEffect(() => {
     dispatch(fetchAllPyBank());
   }, []);
-  
-  const toast = useRef(null);
-  const show = () => {
-    toast.current.show({
-      severity: "info",
-      summary: "Info",
-      detail: "Message Content",
-    });
-  };
-
 
   const saveBank = () => {
     dispatch(
       createPyBank({ bank: pybank, user: localStorage.getItem("user") })
     ).then((res) => {
-      show(res?.payload?.message);
+      toast(res?.payload?.message);
       setPyBank("");
       dispatch(fetchAllPyBank());
     });
@@ -45,13 +41,17 @@ export default function BankMode() {
   return (
     <>
       {loading && <Loading />}
-      <Toast ref={toast} />
+      <Dialog
+        header="Update Bank"
+        visible={bankOpenModel}
+        onHide={() => setBankOpenModel(false)}
+        className="w-96 mx-10"
+      >
+        <BankFormModel id={bankId} />
+      </Dialog>
 
-      {bankOpenModel && (
-        <BankFormModel id={bankId} close={() => setBankOpenModel(false)} />
-      )}
-      <div className="flex justify-center">
-        <div className=" grid place-content-center mx-2 bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+      <div className="flex justify-center pt-5 ">
+        <div className=" grid place-content-center mx-2 border bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
           <div className="my-5 text uppercase font-bold">
             <label className="">Payment Bank</label>
           </div>
@@ -115,18 +115,10 @@ export default function BankMode() {
   );
 }
 
-const BankFormModel = ({ close, id }) => {
+const BankFormModel = ({ id }) => {
   const { PyBank, loading } = useSelector((state) => state.Bank);
   const [pyBank, setPyBank] = useState();
   const dispatch = useDispatch();
-  const toast = useRef(null);
-  const show = () => {
-    toast.current.show({
-      severity: "info",
-      summary: "Info",
-      detail: "Message Content",
-    });
-  };
 
   useEffect(() => {
     if (id) {
@@ -136,36 +128,24 @@ const BankFormModel = ({ close, id }) => {
   }, []);
   const update = () => {
     dispatch(updatePyBank({ _id: id, bank: pyBank })).then((res) => {
-      show(res?.payload?.message);
+      toast(res?.payload?.message);
       dispatch(fetchAllPyBank());
-      close();
     });
   };
   return (
     <>
-      <div
-        className="absolute top-0 bottom-0 right-0 left-0 z-50 flex justify-center items-center"
-        style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
-      >
-        <div className="bg-white w-96 h-48 rounded-lg p-3 mx-3 flex flex-col justify-center items-center relative">
-          <BiX
-            size={20}
-            onClick={close}
-            className="w-10 h-10 absolute -top-5 right-0 bg-white rounded-full"
-          />
-          <label className="my-3">Update</label>
-          <input
-            className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
-            value={pyBank?.bank}
-            onChange={(e) => setPyBank(e.target.value)}
-          />
-          <button
-            className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
-            onClick={update}
-          >
-            Update
-          </button>
-        </div>
+      <div className="bg-white flex flex-col justify-center items-center relative">
+        <input
+          className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
+          value={pyBank?.bank}
+          onChange={(e) => setPyBank(e.target.value)}
+        />
+        <button
+          className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
+          onClick={update}
+        >
+          Update
+        </button>
       </div>
     </>
   );

@@ -11,7 +11,7 @@ function HomePage(params) {
 
   return (
     <>
-      {/* <img src={imgs} className="w-screen h-screen -mt-5" /> */}
+      <img src={imgs} className="w-screen h-screen -mt-5" />
     </>
   );
 }

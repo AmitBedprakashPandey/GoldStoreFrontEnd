@@ -10,6 +10,7 @@ import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
 import { fetchOnePrint } from "../Store/Slice/PrintSlice";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
 function Quotation(params) {
   const dispatch = useDispatch();
   const [from, setFrom] = useState();
@@ -28,6 +29,7 @@ function Quotation(params) {
   useEffect(() => {
     dispatch(fetchAllInvoices());
   }, []);
+
   useEffect(() => {
     setInvoiceArray(Quotation);
   }, [Quotation]);
@@ -51,7 +53,7 @@ function Quotation(params) {
   };
 
   return (
-    <div className="">
+    <div className="pt-5">
       {loading && <Loading />}
       {Model && <ViewPrint id={id} close={() => setModel(false)} />}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 m-3 max-w-[600px] mx-3 lg:mx-auto bg-white p-3 shadow-gray-400 shadow-md border-gray-300 border rounded-md">
@@ -158,8 +160,11 @@ const ViewPrint = ({ close, id }) => {
   const dispatch = useDispatch();
   const componentRef = useRef();
   const { Print } = useSelector((state) => state.print);
+  const { Company } = useSelector((state) => state.Company);
+
   useEffect(() => {
     dispatch(fetchOnePrint(id));
+    dispatch(fetchByUser(localStorage.getItem("user")));
   }, []);
 
   const onCancel = () => {
@@ -175,10 +180,10 @@ const ViewPrint = ({ close, id }) => {
   return (
     <>
       <div
-        className="fixed top-0 bottom-0 left-0 right-0 z-50"
+        className="fixed top-0 bottom-0 left-0 right-0 z-50 overflow-y-auto overflow-x-hidden"
         style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
       >
-        <div className="fixed top-0 z-50 m-3">
+        <div className="md:fixed flex items-center top-0 z-50 m-3">
           <ReactToPrint
             trigger={() => (
               <button className="rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3 uppercase">
@@ -187,49 +192,51 @@ const ViewPrint = ({ close, id }) => {
             )}
             content={() => componentRef.current}
           />
-          <button
-            className="ml-3 rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 fixed uppercase"
+         <button
+            className="ml-3 rounded-md text-xs md:text-sm text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
             onClick={Print._doc?.status === true ? onUnDoCancel : onCancel}
           >
             {Print._doc?.status === true ? "undo cancel" : "cancel"}
           </button>
-        </div>
 
         <button
           type="button"
           onClick={close}
-          className="fixed top-5 right-10 bg-white p-3 rounded-full"
-        >
-          <X />
+           className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-2.5 uppercase"
+          >
+         Close
         </button>
+          </div>
         <div className="A4Page p-3 relative" ref={componentRef}>
-          {Print._doc?.status === true ? (
+        {Print._doc?.status === true ? (
             <img
               src={Cancel}
               alt="cancel logo"
-              className="absolute bottom-20 left-60 w-[400px]"
+              className="absolute left-52 bottom-80 w-96"
             />
           ) : (
-            "cancel"
+            ""
           )}
           <div className="border-black border-2">
             <div className="flex justify-between items-center p-2">
-              <div className="w-28 h-28 border-black border"></div>
+            <div className="w-28 h-24 ">
+              <img src={Company.logo} className="w-full h-full" alt="holmart" />
+              </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold">JAI MATA DI</h3>
                 <h1 className="font-bold text-3xl uppercase">
-                  {Print?.company?.name}
+                  {Company?.name}
                 </h1>
                 <h3 className="text-lg font-semibold">TAX INVOICE</h3>
               </div>
-              <div>
+              <div className="w-28 h-24">
                 <img src={Holmark} width={100} alt="holmart" />
               </div>
             </div>
             <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
               <div className="flex flex-col">
                 <label className="text-lg">
-                  Quotation No : <span>{Print._doc?.quot}</span>
+                Invoice No : <span>{Print._doc?.quot}</span>
                 </label>
                 <label className="text-lg">
                   Date :{" "}
@@ -270,47 +277,44 @@ const ViewPrint = ({ close, id }) => {
               </div>
             </div>
             <div className="flex justify-between">
-              <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
-                <div className="px-3 h-32 ">
-                  <label className="flex text-lg">
-                    <label className="w-[120px]">Billed to :</label>
-                    <ul className="text-sm mt-1 capitalize">
-                      <li>{Print.company?.name}</li>
-                      <li>{Print.company?.address}</li>
+            <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
+                <div className="px-3 py-2 h-32 ">
+                  <label className="flex">
+                    <label className="w-[120px] font-bold">Billed to :</label>
+                    <ul className="">
+                      <li className="text-md text-blue-700 font-bold mt-1 capitalize">{Print.company?.name}</li>
+                      <li className="text-sm text-blue-700 font-normal">{Print.company?.address}</li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
-                  <label className="text-sm">
-                    Party PAN : <span>{Print.company?.pan}</span>
+                  <label className="text-sm font-bold">
+                    Party PAN : <span className="font-normal">{Print.company?.pan}</span>
                   </label>
-                  <label className="text-sm">
-                    Party Mobile No. : <span>{Print.company?.mobile}</span>
+                  <label className="text-sm font-bold">
+                    Party Mobile No. : <span className="font-normal">{Print.company?.mobile}</span>
                   </label>
-                  <label className="text-sm">
-                    GSTIN / UIN : <span>{Print.company?.gst}</span>
+                  <label className="text-sm font-bold">
+                    GSTIN / UIN : <span className="font-normal">{Print.company?.gst}</span>
                   </label>
                 </div>
               </div>
-              <div className="w-full border-black border border-t-0 border-b-0 border-r-0 py-2">
-                <div className="px-3 h-32 ">
+              <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
+                <div className="px-3 py-2 h-32 ">
                   <label className="flex text-lg">
-                    <label className="w-[120px]">Shipped to :</label>
-                    <ul className="text-sm mt-1">
-                      <li>{Print.customer?.name}</li>
+                    <label className="w-[120px] text-sm font-bold">Shipped to :</label>
+                    <ul className="text-sm capitalize">
+                      <li className="font-bold text-md">{Print.customer?.name}</li>
                       <li>{Print.customer?.address}</li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
-                  <label className="text-sm">
-                    Party PAN : <span>{Print.customer?.pan}</span>
+                  <label className="text-sm font-bold">
+                    Party PAN : <span className="font-normal">{Print?.customer?.pan}</span>
                   </label>
-                  <label className="text-sm">
-                    Party Mobile No. : <span>{Print.customer?.mobile}</span>
-                  </label>
-                  <label className="text-sm">
-                    GSTIN / UIN : <span>{Print.customer?.gst}</span>
+                  <label className="text-sm font-bold">
+                    Party Mobile No. : <span className="font-normal">{Print?.customer?.mobile}</span>
                   </label>
                 </div>
               </div>
