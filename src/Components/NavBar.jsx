@@ -6,7 +6,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 import { Avatar, Drawer, Collapse } from "antd";
-import { confirmDialog } from "primereact/confirmdialog";
+import { confirmDialog ,ConfirmDialog} from "primereact/confirmdialog";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -131,6 +131,7 @@ function NavBar() {
 
   return (
     <>
+    <ConfirmDialog/>
       <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md fixed top-0 left-0 right-0 z-40">
         <div className="flex gap-3 items-center">
           <FaBars size={32} onClick={showDrawer} className="lg:hidden" />
