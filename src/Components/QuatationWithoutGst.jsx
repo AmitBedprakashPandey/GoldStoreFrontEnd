@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  fetchAllQuotationWithoutgsts,
-  updateQuotationWithoutgst,
-} from "../Store/Slice/QuatationWithoutgstSlice";
+  fetchAllInvoices,
+  updateInvoice,
+} from "../Store/Slice/InvoiceWithoutGstSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
@@ -13,26 +13,28 @@ import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
 import { fetchOnePrint } from "../Store/Slice/PrintWithoutGstSlice";
 import { fetchByUser } from "../Store/Slice/CompanySlice";
+import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
 function QuotationWithoutGst(params) {
   const dispatch = useDispatch();
   const [from, setFrom] = useState();
   const [id, setId] = useState();
   const [Model, setModel] = useState(false);
   const [to, setTo] = useState();
-  const { QuotationWithoutgst, loading, message } = useSelector(
-    (state) => state.QuotationWithoutGst
+  const { invoices, loading } = useSelector(
+    (state) => state.InvoicesWithoutGst
   );
   const [invoiceArray, setInvoiceArray] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchAllQuotationWithoutgsts());
+    dispatch(fetchAllInvoices());
+    dispatch(fetchAllCustomers());
   }, [Model]);
 
   useEffect(() => {
-    setInvoiceArray(QuotationWithoutgst);
-  }, [QuotationWithoutgst]);
+    setInvoiceArray(invoices);
+  }, [invoices]);
 
-  const filteredArray = QuotationWithoutgst?.filter((bill) => {
+  const filteredArray = invoices?.filter((bill) => {
     const billDate = new Date(bill.quotdate);
     const fromDateObj = from ? new Date(from) : null;
     const toDateObj = to ? new Date(to) : null;
@@ -79,41 +81,58 @@ function QuotationWithoutGst(params) {
           </button>
         </div>
       </div>
-      <div className="relative overflow-x-auto mx-auto  max-w-[600px] bg-white shadow-gray-400 shadow-md border-gray-300 border rounded-md">
-        <table className="overflow-x-scroll">
+      <div className="relative overflow-x-auto mx-auto flex justify-center w-auto ">
+        <table className="overflow-x-scroll  shadow-gray-400 shadow-md border-gray-300 border rounded-md bg-white">
           <thead>
             <tr className="text-sm bg-gray-200">
               <th className="py-3 px-2 w-20 text-start">#</th>
-              <th className="py-3 px-2 w-56 text-start capitalize">Decription</th>
+              <th className="py-3 px-2 w-20 text-start capitalize">Bill No.</th>
+              <th className="py-3 px-2 w-56 text-start capitalize">Customer</th>
+              <th className="py-3 px-2 w-56 text-start capitalize">
+                Decription
+              </th>
               <th className="py-3 px-2 w-16 text-start capitalize">weight</th>
 
               <th className="py-3 px-2 w-16 text-start capitalize">Rate</th>
-              <th className="py-3 px-2 w-16 text-start flex capitalize">G. Amt</th>
+              <th className="py-3 px-2 w-16 text-start capitalize">
+                Bal. Amit
+              </th>
+              <th className="py-3 px-2 w-16 text-start capitalize">
+                Grnd. Amt
+              </th>
+              <th className="py-3 px-2 w-16 text-start capitalize">Mode</th>
               <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
               <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
             </tr>
           </thead>
           <tbody className="overflow-hidden overflow-y-scroll ">
-            {invoiceArray.map((doc, index) => (
-              <tr key={index} className="text-sm bg-gray-50">
+            {invoiceArray?.map((doc, index) => (
+              <tr
+                key={index}
+                className="text-sm bg-gray-50 border-b border-slate-500"
+              >
+                <td className="py-3 px-2 w-20 text-start">{index + 1}</td>
                 <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
+                <td className="py-3 px-2 w-56 text-start">{doc.customer}</td>
                 <td className="py-3 px-2 w-56 text-start">
                   {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.desc + " ,"}</span>
+                    <span key={index}>{doc.desc}</span>
                   ))}
                 </td>
 
                 <td className="py-3 px-2 w-28 text-start">
                   {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.weight + ","}</span>
+                    <span key={index}>{doc.weight || 0}</span>
                   ))}
                 </td>
                 <td className="py-3 px-2 w-16 text-start">
                   {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.rate + ","}</span>
+                    <span key={index}>{doc.rate || 0}</span>
                   ))}
                 </td>
+                <td className="py-3 px-2 w-16 text-start">{doc.balamt}</td>
                 <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
+                <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
                 <td className="py-3 px-2 w-16 text-start">
                   {doc.status === false ? (
                     <Check
@@ -154,27 +173,25 @@ function QuotationWithoutGst(params) {
 const ViewPrint = ({ close, id }) => {
   const dispatch = useDispatch();
   const componentRef = useRef();
-  const { Print } = useSelector((state) => state.Printwithoutgst);
+  const [print, setPrint] = useState();
+  const [refresh, setRefresh] = useState();
   const { Company } = useSelector((state) => state.Company);
+  const { invoices, loading } = useSelector(
+    (state) => state.InvoicesWithoutGst
+  );
+  const { Customer } = useSelector((state) => state.Customers);
 
   useEffect(() => {
-    dispatch(fetchOnePrint(id));
-    dispatch(fetchByUser(localStorage.getItem("user")));
-  }, []);
+    const invoice = invoices.filter((doc) => doc._id === id);
+    const customer = Customer.filter((doc) => doc.name === invoice[0].customer);
+    setPrint({ ...invoice[0], customer });
+  }, [id]);
 
   const onCancel = () => {
-    dispatch(updateQuotationWithoutgst({ ...Print._doc, status: true })).then(
-      () => {
-        dispatch(fetchOnePrint(id));
-      }
-    );
+    dispatch(updateInvoice({ ...print, status: true })).then(()=>close())
   };
   const onUnDoCancel = () => {
-    dispatch(updateQuotationWithoutgst({ ...Print._doc, status: false })).then(
-      () => {
-        dispatch(fetchOnePrint(id));
-      }
-    );
+    dispatch(updateInvoice({ ...print, status: false })).then(()=>close())
   };
   return (
     <>
@@ -182,7 +199,7 @@ const ViewPrint = ({ close, id }) => {
         className="fixed top-0 bottom-0 left-0 right-0 z-50"
         style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
       >
-        <div className="fixed top-0 z-50 m-3">
+          <div className="md:fixed flex items-center top-0 z-50 m-3">
           <ReactToPrint
             trigger={() => (
               <button className="rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3 uppercase">
@@ -191,23 +208,23 @@ const ViewPrint = ({ close, id }) => {
             )}
             content={() => componentRef.current}
           />
-          <button
-            className="ml-3 rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 fixed uppercase"
-            onClick={Print._doc?.status === true ? onUnDoCancel : onCancel}
+         <button
+            className="ml-3 rounded-md text-xs md:text-sm text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
+            onClick={print?.status === true ? onUnDoCancel : onCancel}
           >
-            {Print._doc?.status === true ? "undo cancel" : "cancel"}
+            {print?.status === true ? "undo cancel" : "cancel"}
           </button>
-        </div>
 
         <button
           type="button"
           onClick={close}
-          className="fixed top-5 right-10 bg-white p-3 rounded-full"
-        >
-          <X />
+           className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-2.5 uppercase"
+          >
+         Close
         </button>
+          </div>
         <div className="A4Page p-3 relative" ref={componentRef}>
-          {Print._doc?.status === true ? (
+          {print?.status === true ? (
             <img
               src={Cancel}
               alt="cancel logo"
@@ -219,7 +236,11 @@ const ViewPrint = ({ close, id }) => {
           <div className="border-black border-2">
             <div className="flex justify-between items-center p-2">
               <div className="w-28 h-24 ">
-              <img src={Company.logo} className="w-full h-full" alt="holmart" />
+                <img
+                  src={Company.logo}
+                  className="w-full h-full"
+                  alt="holmart"
+                />
               </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold">JAI MATA DI</h3>
@@ -235,13 +256,11 @@ const ViewPrint = ({ close, id }) => {
             <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
               <div className="flex flex-col">
                 <label className="text-lg">
-                  Invoice No : <span>{Print._doc?.quot}</span>
+                  Invoice No : <span>{print?.quot}</span>
                 </label>
                 <label className="text-lg">
                   Date :{" "}
-                  <span>
-                    {moment(Print._doc?.quotdate).format("DD-MM-YYYY")}
-                  </span>
+                  <span>{moment(print?.quotdate).format("DD-MM-YYYY")}</span>
                 </label>
                 {/* <label className="text-lg">
                 State Code : <span></span>
@@ -249,7 +268,7 @@ const ViewPrint = ({ close, id }) => {
               </div>
               <div className="flex flex-col w-72">
                 <label className="text-lg">
-                  Payment Mode :{Print._doc?.mode} <span></span>
+                  Payment Mode :{print?.mode} <span></span>
                 </label>
                 <label className="text-lg">
                   Delivery Mode : <span></span>
@@ -266,39 +285,56 @@ const ViewPrint = ({ close, id }) => {
                   <label className="flex">
                     <label className="w-[120px] font-bold">Billed to :</label>
                     <ul className="">
-                      <li className="text-md text-blue-700 font-bold mt-1 capitalize">{Print.company?.name}</li>
-                      <li className="text-sm text-blue-700 font-normal">{Print.company?.address}</li>
+                      <li className="text-md text-blue-700 font-bold mt-1 capitalize">
+                        {Company?.name}
+                      </li>
+                      <li className="text-sm text-blue-700 font-normal">
+                        {Company?.address}
+                      </li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
                   <label className="text-sm font-bold">
-                    Party PAN : <span className="font-normal">{Print.company?.pan}</span>
+                    Party PAN :{" "}
+                    <span className="font-normal">{Company?.pan}</span>
                   </label>
                   <label className="text-sm font-bold">
-                    Party Mobile No. : <span className="font-normal">{Print.company?.mobile}</span>
+                    Party Mobile No. :{" "}
+                    <span className="font-normal">{Company?.mobile}</span>
                   </label>
                   <label className="text-sm font-bold">
-                    GSTIN / UIN : <span className="font-normal">{Print.company?.gst}</span>
+                    GSTIN / UIN :{" "}
+                    <span className="font-normal">{Company?.gst}</span>
                   </label>
                 </div>
               </div>
               <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
                 <div className="px-3 py-2 h-32 ">
                   <label className="flex text-lg">
-                    <label className="w-[120px] text-sm font-bold">Shipped to :</label>
+                    <label className="w-[120px] text-sm font-bold">
+                      Shipped to :
+                    </label>
                     <ul className="text-sm capitalize">
-                      <li className="font-bold text-md">{Print.customer?.name}</li>
-                      <li>{Print.customer?.address}</li>
+                      <li className="font-bold text-md">
+                        {print?.customer[0]?.name}
+                      </li>
+                      <li>{print?.customer[0]?.address}</li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
                   <label className="text-sm font-bold">
-                    Party PAN : <span className="font-normal">{Print?.customer?.pan}</span>
+                    Party PAN :{" "}
+                    <span className="font-normal">
+                      {print?.customer[0]?.pan}
+                    </span>
                   </label>
                   <label className="text-sm font-bold">
-                    Party Mobile No. : <span className="font-normal">{Print?.customer?.mobile}</span>
+                    Party Mobile No. :{" "}
+                    <span className="font-normal">
+                      {print?.customer[0]?.mobile}
+                    </span>
                   </label>
                 </div>
               </div>
@@ -338,7 +374,7 @@ const ViewPrint = ({ close, id }) => {
                 </thead>
 
                 <tbody>
-                  {Print._doc?.invoice?.map((doc, index) => (
+                  {print?.invoice?.map((doc, index) => (
                     <tr key={index} className="text-xs">
                       <td className="border-black  text-center border border-l-0 w-5 py-2">
                         {index + 1}
@@ -383,7 +419,7 @@ const ViewPrint = ({ close, id }) => {
                       colSpan={4}
                       className=" border-black border border-r-0 text-center w-16  pl-3"
                     >
-                      {parseFloat(Print._doc?.tdisc).toFixed(2)}
+                      {parseFloat(print?.tdisc).toFixed(2)}
                     </th>
                   </tr>
                   <tr className="text-xs">
@@ -398,7 +434,7 @@ const ViewPrint = ({ close, id }) => {
                       className=" border-black border border-r-0 text-center w-16 pl-3"
                     >
                       {parseFloat(
-                        Number(Print._doc?.tamt) - Number(Print._doc?.tdisc)
+                        Number(print?.tamt) - Number(print?.tdisc)
                       ).toFixed(2)}
                     </th>
                   </tr>

@@ -3,18 +3,18 @@ import axios from "axios";
 
 const url = process.env.React_APP_API_URL;
 
+const getAuthHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: localStorage.getItem("token"),
+});
+
 export const fetchAllInvoices = createAsyncThunk(
-  "InvoiceWitoutGst/fetchAll",
+  "InvoiceWithoutGst/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
         `${url}/invoicewithoutgst/${localStorage.getItem("user")}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
+        { headers: getAuthHeaders() }
       );
       return response.data;
     } catch (error) {
@@ -23,19 +23,13 @@ export const fetchAllInvoices = createAsyncThunk(
   }
 );
 
-export const fetchOneInvoices = createAsyncThunk(
-  "InvoiceWitoutGst/fetchOne", // Change the action type to fetchOne
+export const fetchOneInvoice = createAsyncThunk(
+  "InvoiceWithoutGst/fetchOne",
   async (id, { rejectWithValue }) => {
-    console.log(id);
     try {
       const response = await axios.get(
         `${url}/invoicewithoutgst/${id}/${localStorage.getItem("user")}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
+        { headers: getAuthHeaders() }
       );
       return response.data;
     } catch (error) {
@@ -45,15 +39,14 @@ export const fetchOneInvoices = createAsyncThunk(
 );
 
 export const createInvoice = createAsyncThunk(
-  "InvoiceWitoutGst/create",
-  async (customerData, { rejectWithValue }) => {
+  "InvoiceWithoutGst/create",
+  async (invoiceData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${url}/invoicewithoutgst`, customerData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.post(
+        `${url}/invoicewithoutgst`,
+        invoiceData,
+        { headers: getAuthHeaders() }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -62,19 +55,14 @@ export const createInvoice = createAsyncThunk(
 );
 
 export const deleteInvoice = createAsyncThunk(
-  "InvoiceWitoutGst/delete",
-  async (customerId, { rejectWithValue }) => {
+  "InvoiceWithoutGst/delete",
+  async (invoiceId, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `${url}/invoicewithoutgst/${customerId}/${localStorage.getItem("user")}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
+        `${url}/invoicewithoutgst/${invoiceId}/${localStorage.getItem("user")}`,
+        { headers: getAuthHeaders() }
       );
-      return customerId;
+      return invoiceId;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -82,20 +70,17 @@ export const deleteInvoice = createAsyncThunk(
 );
 
 export const updateInvoice = createAsyncThunk(
-  "InvoiceWitoutGst/update",
-  async (newData, { rejectWithValue }) => {
+  "InvoiceWithoutGst/update",
+  async (updatedData, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `${url}/invoicewithoutgst/${newData._id}/${localStorage.getItem("user")}`,
-        newData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
+        `${url}/invoicewithoutgst/${updatedData._id}/${localStorage.getItem("user")}`,
+        updatedData,
+        { headers: getAuthHeaders() }
       );
-      return response.data; // assuming response contains updated data
+      
+      console.log(response.data);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -103,58 +88,69 @@ export const updateInvoice = createAsyncThunk(
 );
 
 const initialState = {
-  Invoice: [],
+  invoices: [],
   error: null,
   loading: false,
   message: null,
 };
 
-const invoiceWitoutGstSlice = createSlice({
-  name: "Invoice",
+const invoiceWithoutGstSlice = createSlice({
+  name: "InvoiceWithoutGst",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch All Invoices
       .addCase(fetchAllInvoices.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchAllInvoices.fulfilled, (state, action) => {
         state.loading = false;
-        state.Invoice = action.payload;
-        state.error = null;
+        state.invoices = action.payload;
       })
       .addCase(fetchAllInvoices.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchOneInvoices.pending, (state) => {
+
+      // Fetch One Invoice
+      .addCase(fetchOneInvoice.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchOneInvoices.fulfilled, (state, action) => {
+      .addCase(fetchOneInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-        state.Invoice = action.payload;
-        state.error = null;
+        const index = state.invoices.findIndex(
+          (invoice) => invoice._id === action.payload._id
+        );
+        if (index >= 0) {
+          state.invoices[index] = action.payload;
+        } else {
+          state.invoices.push(action.payload);
+        }
       })
-      .addCase(fetchOneInvoices.rejected, (state, action) => {
+      .addCase(fetchOneInvoice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Create Invoice
       .addCase(createInvoice.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createInvoice.fulfilled, (state, action) => {
         state.loading = false;
-        state.Invoice = action.payload; // assuming the payload is the newly created customer
-        state.error = null;
+        state.invoices.push(action.payload);
       })
       .addCase(createInvoice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Update Invoice
       .addCase(updateInvoice.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -162,14 +158,34 @@ const invoiceWitoutGstSlice = createSlice({
       .addCase(updateInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-
-        state.error = null;
+        const index = state.invoices.findIndex(
+          (invoice) => invoice._id === action.payload._id
+        );
+        if (index >= 0) {
+          state.invoices[index] = action.payload.data;
+        }
       })
       .addCase(updateInvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Delete Invoice
+      .addCase(deleteInvoice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteInvoice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.invoices = state.invoices.filter(
+          (invoice) => invoice._id !== action.payload
+        );
+      })
+      .addCase(deleteInvoice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export default invoiceWitoutGstSlice.reducer;
+export default invoiceWithoutGstSlice.reducer;

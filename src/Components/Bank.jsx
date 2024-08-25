@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BiEdit, BiTrash, BiX } from "react-icons/bi";
+import { BiEdit, BiTrash } from "react-icons/bi";
 import { Dialog } from "primereact/dialog";
-import toast, { Toast, toastConfig } from "react-simple-toasts";
+import toast, { toastConfig } from "react-simple-toasts";
 import Loading from "./Loading";
 import {
   createPyBank,
@@ -17,26 +17,38 @@ toastConfig({
   className:
     "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
 });
+
 export default function BankMode() {
   const dispatch = useDispatch();
-  const [pybank, setPyBank] = useState();
+  const [pybank, setPyBank] = useState("");
   const [bankOpenModel, setBankOpenModel] = useState(false);
-  const [bankId, setBankId] = useState();
+  const [bankId, setBankId] = useState(null);
   const { PyBank, loading } = useSelector((state) => state.Bank);
 
   useEffect(() => {
     dispatch(fetchAllPyBank());
-  }, []);
+  }, [dispatch]);
 
-  const saveBank = () => {
-    dispatch(
-      createPyBank({ bank: pybank, user: localStorage.getItem("user") })
-    ).then((res) => {
+  const saveBank = useCallback(() => {
+    dispatch(createPyBank({ bank: pybank, user: localStorage.getItem("user") }))
+      .then((res) => {
+        toast(res?.payload?.message);
+        setPyBank("");
+        dispatch(fetchAllPyBank());
+      });
+  }, [dispatch, pybank]);
+
+  const handleDelete = useCallback((id) => {
+    dispatch(deletePyBank(id)).then((res) => {
       toast(res?.payload?.message);
-      setPyBank("");
       dispatch(fetchAllPyBank());
     });
-  };
+  }, [dispatch]);
+
+  const handleEdit = useCallback((id) => {
+    setBankId(id);
+    setBankOpenModel(true);
+  }, []);
 
   return (
     <>
@@ -50,10 +62,10 @@ export default function BankMode() {
         <BankFormModel id={bankId} />
       </Dialog>
 
-      <div className="flex justify-center pt-5 ">
-        <div className=" grid place-content-center mx-2 border bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+      <div className="flex justify-center pt-5">
+        <div className="grid place-content-center mx-2 border bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
           <div className="my-5 text uppercase font-bold">
-            <label className="">Payment Bank</label>
+            <label>Payment Bank</label>
           </div>
           <div className="grid">
             <label>Enter Payment Bank</label>
@@ -66,7 +78,7 @@ export default function BankMode() {
             <button
               className="bg-green-500 py-3 rounded-lg my-2 disabled:bg-green-700"
               onClick={saveBank}
-              disabled={pybank ? false : true}
+              disabled={!pybank}
             >
               Save
             </button>
@@ -80,27 +92,19 @@ export default function BankMode() {
               </tr>
             </thead>
             <tbody>
-              {PyBank?.map((doc, index) => (
-                <tr className="py-2">
+              {PyBank?.map((doc) => (
+                <tr key={doc._id} className="py-2">
                   <td className="px-4">{doc.bank}</td>
                   <td className="flex items-center gap-3 py-2">
                     <button
                       className="bg-blue-500 rounded-full p-3 text-white"
-                      onClick={() => {
-                        setBankId(doc._id);
-                        setBankOpenModel(true);
-                      }}
+                      onClick={() => handleEdit(doc._id)}
                     >
                       <BiEdit size={16} />
                     </button>
                     <button
-                      className="bg-red-500 rounded-full p-3 text-white "
-                      onClick={() => {
-                        dispatch(deletePyBank(doc._id)).then((res) => {
-                          toast(res?.payload?.message);
-                          dispatch(fetchAllPyBank());
-                        });
-                      }}
+                      className="bg-red-500 rounded-full p-3 text-white"
+                      onClick={() => handleDelete(doc._id)}
                     >
                       <BiTrash size={16} />
                     </button>
@@ -116,37 +120,37 @@ export default function BankMode() {
 }
 
 const BankFormModel = ({ id }) => {
-  const { PyBank, loading } = useSelector((state) => state.Bank);
-  const [pyBank, setPyBank] = useState();
   const dispatch = useDispatch();
+  const { PyBank, loading } = useSelector((state) => state.Bank);
+  const [pyBank, setPyBank] = useState("");
 
   useEffect(() => {
     if (id) {
-      const single = PyBank.filter((doc) => doc._id === id);
-      setPyBank(single[0]);
+      const single = PyBank.find((doc) => doc._id === id);
+      setPyBank(single?.bank || "");
     }
-  }, []);
-  const update = () => {
+  }, [id, PyBank]);
+
+  const updateBank = useCallback(() => {
     dispatch(updatePyBank({ _id: id, bank: pyBank })).then((res) => {
       toast(res?.payload?.message);
       dispatch(fetchAllPyBank());
     });
-  };
+  }, [dispatch, id, pyBank]);
+
   return (
-    <>
-      <div className="bg-white flex flex-col justify-center items-center relative">
-        <input
-          className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
-          value={pyBank?.bank}
-          onChange={(e) => setPyBank(e.target.value)}
-        />
-        <button
-          className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
-          onClick={update}
-        >
-          Update
-        </button>
-      </div>
-    </>
+    <div className="bg-white flex flex-col justify-center items-center relative">
+      <input
+        className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
+        value={pyBank}
+        onChange={(e) => setPyBank(e.target.value)}
+      />
+      <button
+        className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
+        onClick={updateBank}
+      >
+        Update
+      </button>
+    </div>
   );
 };

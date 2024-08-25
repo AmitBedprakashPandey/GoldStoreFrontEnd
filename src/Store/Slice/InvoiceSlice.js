@@ -1,21 +1,22 @@
-import { createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const url = process.env.React_APP_API_URL;
+const apiUrl = process.env.React_APP_API_URL;
+const getToken = () => localStorage.getItem("token");
+const getUser = () => localStorage.getItem("user");
+
+const createHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: getToken(),
+});
 
 export const fetchAllInvoices = createAsyncThunk(
-  "Invoice/fetchAll",
+  "invoice/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        `${url}/invoice/${localStorage.getItem("user")}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiUrl}/invoice/${getUser()}`, {
+        headers: createHeaders(),
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -23,20 +24,17 @@ export const fetchAllInvoices = createAsyncThunk(
   }
 );
 
-export const fetchOneInvoices = createAsyncThunk(
-  "Invoice/fetchOne", // Change the action type to fetchOne
+export const fetchOneInvoice = createAsyncThunk(
+  "invoice/fetchOne",
   async (id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${url}/invoice/${id}/${localStorage.getItem("user")}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
+        `${apiUrl}/invoice/${id}/${getUser()}`,
+        { headers: createHeaders() }
       );
-      return response.data;
+      console.log("get",response.data.data);
+      
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -44,14 +42,11 @@ export const fetchOneInvoices = createAsyncThunk(
 );
 
 export const createInvoice = createAsyncThunk(
-  "Invoice/create",
-  async (customerData, { rejectWithValue }) => {
+  "invoice/create",
+  async (invoiceData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${url}/Invoice`, customerData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${localStorage.getItem("token")}`,
-        },
+      const response = await axios.post(`${apiUrl}/invoice`, invoiceData, {
+        headers: createHeaders(),
       });
       return response.data;
     } catch (error) {
@@ -61,19 +56,13 @@ export const createInvoice = createAsyncThunk(
 );
 
 export const deleteInvoice = createAsyncThunk(
-  "Invoice/delete",
-  async (customerId, { rejectWithValue }) => {
+  "invoice/delete",
+  async (invoiceId, { rejectWithValue }) => {
     try {
-      await axios.delete(
-        `${url}/Invoice/${customerId}/${localStorage.getItem("user")}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return customerId;
+      await axios.delete(`${apiUrl}/invoice/${invoiceId}/${getUser()}`, {
+        headers: createHeaders(),
+      });
+      return invoiceId;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -81,22 +70,17 @@ export const deleteInvoice = createAsyncThunk(
 );
 
 export const updateInvoice = createAsyncThunk(
-  "Invoice/update",
-  async (newData, { rejectWithValue }) => {
+  "invoice/update",
+  async (invoiceData, { rejectWithValue }) => {
     try {
-      console.log(newData);
-      
       const response = await axios.put(
-        `${url}/Invoice/${newData._id}/${localStorage.getItem("user")}`,
-        newData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
+        `${apiUrl}/invoice/${invoiceData._id}/${getUser()}`,
+        invoiceData,
+        { headers: createHeaders() }
       );
-      return response.data; // assuming response contains updated data
+      console.log(response.data);
+      
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -104,14 +88,14 @@ export const updateInvoice = createAsyncThunk(
 );
 
 const initialState = {
-  Invoice: [],
+  Invoices: [],
   error: null,
   loading: false,
   message: null,
 };
 
 const invoiceSlice = createSlice({
-  name: "Invoice",
+  name: "invoice",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -122,24 +106,33 @@ const invoiceSlice = createSlice({
       })
       .addCase(fetchAllInvoices.fulfilled, (state, action) => {
         state.loading = false;
-        state.Invoice = action.payload;
-        state.error = null;
+        state.Invoices = action.payload;
       })
       .addCase(fetchAllInvoices.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchOneInvoices.pending, (state) => {
+      .addCase(fetchOneInvoice.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchOneInvoices.fulfilled, (state, action) => {
+      .addCase(fetchOneInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-        state.Invoice = action.payload;
-        state.error = null;
+
+        // Find the invoice based on the `quote` field
+        const index = state.Invoices.findIndex(
+          (invoice) => invoice.quot === action.payload.quot
+        );
+
+        // Update the invoice if found, or add it if not found
+        if (index !== -1) {
+          state.Invoices[index] = action.payload;
+        } else {
+          state.Invoices.push(action.payload);
+        }
       })
-      .addCase(fetchOneInvoices.rejected, (state, action) => {
+      .addCase(fetchOneInvoice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -149,8 +142,7 @@ const invoiceSlice = createSlice({
       })
       .addCase(createInvoice.fulfilled, (state, action) => {
         state.loading = false;
-        state.Invoice = action.payload; // assuming the payload is the newly created customer
-        state.error = null;
+        state.Invoices.push(action.payload);
       })
       .addCase(createInvoice.rejected, (state, action) => {
         state.loading = false;
@@ -164,9 +156,29 @@ const invoiceSlice = createSlice({
         state.loading = false;
         state.message = action.payload.message;
 
-        state.error = null;
+        const index = state.Invoices.findIndex(
+          (invoice) => invoice._id === action.payload._id
+        );
+
+        if (index >= 0) {
+          state.Invoices[index] = action.payload.data;
+        }
       })
       .addCase(updateInvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteInvoice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteInvoice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.Invoices = state.Invoices.filter(
+          (invoice) => invoice._id !== action.payload
+        );
+      })
+      .addCase(deleteInvoice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
@@ -13,11 +13,13 @@ function Print() {
   const { Print } = useSelector((state) => state.Printwithoutgst);
   const { Company } = useSelector((state) => state.Company);
   const componentRef = useRef();
+  const { InvoicesNumber  } = useSelector(
+    (state) => state.InvoiceID
+  );
   useEffect(() => {    
-    dispatch(fetchByUser(localStorage.getItem("user")));
-    dispatch(fetchOnePrint(data.state.invoiceId));    
-    console.log(Company);
     
+    dispatch(fetchByUser(localStorage.getItem("user")));
+    dispatch(fetchOnePrint(data));    
   }, [dispatch]);
   return (
     <>
@@ -33,12 +35,12 @@ function Print() {
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
             <div className="w-28 h-28 flex justify-between items-center">
-              <img src={Company?.logo} />
+              <img src={data.state.company?.logo} />
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">JAI MATA DI</h3>
               <h1 className="font-bold text-3xl uppercase">
-                {Print.company?.name}
+                {data.state.company?.name}
               </h1>
               <h3 className="text-lg font-semibold">TAX INVOICE</h3>
             </div>
@@ -49,11 +51,11 @@ function Print() {
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
               <label className="text-lg">
-                Invoice No : <span>{Print._doc?.quot}</span>
+                Invoice No : <span>{data.state.formData?.quot}</span>
               </label>
               <label className="text-lg">
                 Date :{" "}
-                <span>{moment(Print._doc?.quotdate).format("DD-MM-YYYY")}</span>
+                <span>{moment(data.state.formData?.quotdate).format("DD-MM-YYYY")}</span>
               </label>
               {/* <label className="text-lg">
                 State Code : <span></span>
@@ -61,7 +63,7 @@ function Print() {
             </div>
             <div className="flex flex-col w-72">
               <label className="text-lg">
-                Payment Mode :{Print._doc?.mode} <span></span>
+                Payment Mode :{data.state.formData?.mode} <span></span>
               </label>
               <label className="text-lg">
                 Delivery Mode : <span></span>
@@ -75,42 +77,42 @@ function Print() {
           <div className="flex justify-between">
             <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
               <div className="px-3 h-32 ">
-                <label className="flex text-lg">
-                  <label className="w-[120px]">Billed to :</label>
-                  <ul className="text-sm mt-1 capitalize">
-                    <li>{Print.company?.name}</li>
-                    <li>{Print.company?.address}</li>
+                <label className="flex text-lg py-3">
+                  <label className="text-sm font-bold w-[120px]">Billed to :</label>
+                  <ul className="text-sm capitalize">
+                    <li>{data.state.company?.name}</li>
+                    <li>{data.state.company?.address}</li>
                   </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm">
-                  Party PAN : <span>{Print.company?.pan}</span>
+                  Party PAN : <span>{data.state.company?.pan}</span>
                 </label>
                 <label className="text-sm">
-                  Party Mobile No. : <span>{Print.company?.mobile}</span>
+                  Party Mobile No. : <span>{data.state.company?.mobile}</span>
                 </label>
                 <label className="text-sm">
-                  GSTIN / UIN : <span>{Print.company?.gst}</span>
+                  GSTIN / UIN : <span>{data.state.company?.gst}</span>
                 </label>
               </div>
             </div>
             <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
               <div className="px-3 h-32 ">
-                <label className="flex text-lg">
-                  <label className="w-[120px]">Shipped to :</label>
-                  <ul className="text-sm mt-1 capitalize">
-                    <li>{Print.customer?.name}</li>
-                    <li>{Print.customer?.address}</li>
+                <label className="flex text-lg py-2">
+                  <label className="w-[120px] text-sm font-bold">Shipped to :</label>
+                  <ul className="text-sm  capitalize">
+                    <li>{data.state.customer[0]?.name}</li>
+                    <li>{data.state.customer[0]?.address}</li>
                   </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm">
-                  Party PAN : <span>{Print?.customer?.pan}</span>
+                  Party PAN : <span>{data.state.customer[0]?.pan}</span>
                 </label>
                 <label className="text-sm">
-                  Party Mobile No. : <span>{Print?.customer?.mobile}</span>
+                  Party Mobile No. : <span>{data.state.customer[0]?.mobile}</span>
                 </label>
               </div>
             </div>
@@ -150,7 +152,7 @@ function Print() {
               </thead>
 
               <tbody>
-                {Print._doc?.invoice?.map((doc, index) => (
+                {data.state.invoice?.map((doc, index) => (
                   <tr key={index} className="text-xs">
                     <td className="border-black  text-center border border-l-0 w-5 py-2">
                       {index + 1}
@@ -195,7 +197,7 @@ function Print() {
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16  pl-3"
                   >
-                    {parseFloat(Print._doc?.tdisc).toFixed(2)}
+                    {parseFloat(data.state.formData?.tdisc).toFixed(2)}
                   </th>
                 </tr>
                 <tr className="text-xs">
@@ -210,7 +212,7 @@ function Print() {
                     className=" border-black border border-r-0 text-center w-16 pl-3"
                   >
                     {parseFloat(
-                      Number(Print._doc?.tamt) - Number(Print._doc?.tdisc)
+                      Number(data.state.formData?.tamt) - Number(data.state.formData?.tdisc)
                     ).toFixed(2)}
                   </th>
                 </tr>

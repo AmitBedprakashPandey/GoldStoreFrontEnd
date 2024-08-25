@@ -6,17 +6,20 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createInvoice,
   fetchAllInvoices,
-  fetchOneInvoices,
+  fetchOneInvoice,
   updateInvoice,
 } from "../Store/Slice/InvoiceWithoutGstSlice";
-import {PiFloppyDisk, PiPlusBold} from 'react-icons/pi'
+import { PiFloppyDisk, PiPlusBold } from "react-icons/pi";
 import { Dialog } from "primereact/dialog";
 import { fetchAllBranch } from "../Store/Slice/BranchSlice";
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
 import { fetchAllPyBank } from "../Store/Slice/PayBankSlice";
 import { fetchAllPyMode } from "../Store/Slice/PayModeSlice";
 import CustomerForm from "../layout/CustomerForm";
-import { UpdateInvoicesNumber,fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
+import {
+  UpdateInvoicesNumber,
+  fetchOneInvoicesNumber,
+} from "../Store/Slice/InvoiceIdSlice";
 import {
   fetchOneInvoicesId,
   updateInvoicesId,
@@ -53,9 +56,7 @@ function Invoice2({}) {
   const { Invoice, error, loading, message } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
-  const { InvoicesNumber  } = useSelector(
-    (state) => state.InvoiceID
-  );
+  const { InvoicesNumber } = useSelector((state) => state.InvoiceID);
   const { Company } = useSelector((state) => state.Company);
   const [InvoiceId, setInvoiceId] = useState();
 
@@ -82,7 +83,7 @@ function Invoice2({}) {
   }, [disptch]);
 
   const quotionIdHandler = (e) => {
-    disptch(fetchOneInvoices(InvoiceId)).then((req, res) => {
+    disptch(fetchOneInvoice(InvoiceId)).then((req, res) => {
       if (req?.payload?.message) {
         toast(req?.payload?.message);
         return setButtonLable("");
@@ -189,9 +190,18 @@ function Invoice2({}) {
     invoiceData?.cgst,
     invoiceData?.igst,
   ]);
+
   const printWithoutGST = () => {
-    navigate("/print", { state: { invoiceId: formData?._id } });
+    navigate("/print", {
+      state: {
+        company: Company,
+        customer: Customer.filter((doc) => doc?.name === formData?.customer),
+        formData: formData,
+        invoice: invoiceArray,
+      },
+    });
   };
+
   const save = () => {
     disptch(
       createInvoice({
@@ -203,39 +213,39 @@ function Invoice2({}) {
     ).then(() =>
       disptch(UpdateInvoicesNumber(Company._id)).then(() => {
         disptch(fetchOneInvoicesNumber(Company._id));
+        printWithoutGST();
+        printWithoutGST();
         setInvoiceData({
           ...invoiceData,
           desc: "",
           hsn: 0,
           purity: 0,
           weight: 0,
-        rate: 0,
-        qty: 0,
-        mcharg: 0,
-        total: 0,
-        disc: 0,
-        nettotal: 0,
-      });
-      setInvoiceArray([]);
-      setFormData({...formData,
-        branch: null,
-        customer:null ,
-        total: 0,
-        ttax: 0,
-        gtotal: 0,
-        mode: "",
-        bank: "",
-        pycheq: "",
-        paidamt: 0,
-        belamt: 0,
-      });
-      setButtonLable("save");
-      
-      printWithoutGST()
-      
-    })
-  );
-      };
+          rate: 0,
+          qty: 0,
+          mcharg: 0,
+          total: 0,
+          disc: 0,
+          nettotal: 0,
+        });
+        setInvoiceArray([]);
+        setFormData({
+          ...formData,
+          branch: null,
+          customer: null,
+          total: 0,
+          ttax: 0,
+          gtotal: 0,
+          mode: "",
+          bank: "",
+          pycheq: "",
+          paidamt: 0,
+          belamt: 0,
+        });
+        setButtonLable("save");
+      })
+    );
+  };
 
   const update = () => {
     disptch(updateInvoice({ ...formData, invoice: invoiceArray })).then(() => {
@@ -245,7 +255,6 @@ function Invoice2({}) {
   };
 
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -257,10 +266,12 @@ function Invoice2({}) {
     <div className="lg:mx-16 ">
       {loading && <Loading />}
       {error && error}
-      <Dialog  header="Create Customer" visible={modal3Open} onHide={()=>setModal3Open(false)}>
-<CustomerForm close={()=>setModal3Open(false)} Mode={'update'} />
-
-
+      <Dialog
+        header="Create Customer"
+        visible={modal3Open}
+        onHide={() => setModal3Open(false)}
+      >
+        <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
       <div className="mb-20 mt-10 p-3 border bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
         <div className="grid lg:grid-cols-3">
@@ -333,7 +344,11 @@ function Invoice2({}) {
               ))}
             </select>
           </div>
-          <Button icon={<PiPlusBold color="#fff"  />} className="bg-blue-700 h-12 mt-6" onClick={()=>setModal3Open(true)} />
+          <Button
+            icon={<PiPlusBold color="#fff" />}
+            className="bg-blue-700 h-12 mt-6"
+            onClick={() => setModal3Open(true)}
+          />
         </div>
         <hr className="my-2 border-black" />
         <div className="relative">
@@ -347,120 +362,112 @@ function Invoice2({}) {
               onChange={invoiceDataHandler}
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <div className="flex">
-              <div className="m-3 grid">
-                <label className="">HSN Code </label>
-                <input
-                  type="text"
-                  placeholder="0000"
-                  name="hsn"
-                  value={invoiceData?.hsn}
-                  onChange={invoiceDataHandler}
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
-              <div className="m-3 grid">
-                <label className="">Purity </label>
-                <input
-                  type="number"
-                  placeholder="0000"
-                  name="purity"
-                  value={invoiceData?.purity}
-                  onChange={invoiceDataHandler}
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
-              <div className="m-3 grid">
-                <label className="">Weight (g) </label>
-                <input
-                  type="number"
-                  placeholder="0000"
-                  name="weight"
-                  value={invoiceData?.weight}
-                  onChange={invoiceDataHandler}
-                  className="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
+          <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-9">
+            <div className="grid">
+              <label className="">HSN Code </label>
+              <input
+                type="text"
+                placeholder="0000"
+                name="hsn"
+                value={invoiceData?.hsn}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
+            </div>
+            <div className="grid">
+              <label className="">Purity </label>
+              <input
+                type="number"
+                placeholder="0000"
+                name="purity"
+                value={invoiceData?.purity}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
+            </div>
+            <div className="grid">
+              <label className="">Weight (g) </label>
+              <input
+                type="number"
+                placeholder="0000"
+                name="weight"
+                value={invoiceData?.weight}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
             </div>
 
-            <div className="flex">
-              <div className="m-3 grid">
-                <label className="">Rate </label>
-                <input
-                  type="number"
-                  placeholder="0000"
-                  name="rate"
-                  value={invoiceData?.rate}
-                  onChange={invoiceDataHandler}
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
-              <div className="m-3 grid">
-                <label className="">Qty. </label>
-                <input
-                  type="number"
-                  placeholder="0000"
-                  name="qty"
-                  value={invoiceData?.qty}
-                  onChange={invoiceDataHandler}
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
-              <div className="m-3 grid">
-                <label className="text-sm">
-                  Making Charg.<strong>%</strong>
-                </label>
-                <input
-                  type="tel"
-                  placeholder="0000"
-                  name="mcharg"
-                  value={invoiceData?.mcharg}
-                  onChange={invoiceDataHandler}
-                  className="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
+            <div className="grid">
+              <label className="">Rate </label>
+              <input
+                type="number"
+                placeholder="0000"
+                name="rate"
+                value={invoiceData?.rate}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
             </div>
-            <div className="flex">
-              <div className="m-3 grid">
-                <label className="">Total </label>
-                <input
-                  type="tel"
-                  disabled
-                  placeholder="0000"
-                  name="total"
-                  value={invoiceData?.total}
-                  onChange={invoiceDataHandler}
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
-              <div className="m-3 grid">
-                <label className="">
-                  Disc. <strong>%</strong>
-                </label>
-                <input
-                  type="tel"
-                  placeholder="0000"
-                  name="disc"
-                  value={invoiceData?.disc}
-                  onChange={invoiceDataHandler}
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
-              <div className=" m-3 grid">
-                <label className="">Net total </label>
-                <input
-                  type="tel"
-                  placeholder="0000"
-                  name="nettotal"
-                  value={invoiceData?.nettotal || 0}
-                  onChange={invoiceDataHandler}
-                  disabled
-                  className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
-              </div>
+            <div className="grid">
+              <label className="">Qty. </label>
+              <input
+                type="number"
+                placeholder="0000"
+                name="qty"
+                value={invoiceData?.qty}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
             </div>
-            <div className="flex">
+            <div className="grid">
+              <label className="text-sm">
+                Making Charg.<strong>%</strong>
+              </label>
+              <input
+                type="tel"
+                placeholder="0000"
+                name="mcharg"
+                value={invoiceData?.mcharg}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
+            </div>
+            <div className="grid">
+              <label className="">Total </label>
+              <input
+                type="tel"
+                disabled
+                placeholder="0000"
+                name="total"
+                value={invoiceData?.total}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
+            </div>
+            <div className="grid">
+              <label className="">
+                Disc. <strong>%</strong>
+              </label>
+              <input
+                type="tel"
+                placeholder="0000"
+                name="disc"
+                value={invoiceData?.disc}
+                onChange={invoiceDataHandler}
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
+            </div>
+            <div className="grid">
+              <label className="">Net total </label>
+              <input
+                type="tel"
+                placeholder="0000"
+                name="nettotal"
+                value={invoiceData?.nettotal || 0}
+                onChange={invoiceDataHandler}
+                disabled
+                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              />
             </div>
           </div>
           <button
@@ -472,7 +479,10 @@ function Invoice2({}) {
         </div>
 
         <div className="relative overflow-x-auto mx-0 py-3 flex md:justify-center ">
-          <table border={1} className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border">
+          <table
+            border={1}
+            className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border"
+          >
             <tr className="text-sm bg-gray-100 flex">
               <th className="w-48 py-3 px-2 flex ">Description</th>
               <th className="w-20 flex py-3 px-2 ">Wight</th>
@@ -491,24 +501,26 @@ function Invoice2({}) {
                   key={index}
                   className="text-sm flex items-center border-gray-200 border"
                 >
-                  <td className="w-36 px-2 py-3 flex  truncate">{doc?.desc}</td>
+                  <td className="w-48 px-2 py-3 flex ">{doc?.desc}</td>
                   <td className="w-20 flex px-2 py-3   truncate">
                     {parseFloat(doc?.weight).toFixed(2)}
                   </td>
-                  <td className="w-10 flex px-2 py-3   truncate">{doc?.qty}</td>
-                  <td className="w-28  flex px-10 py-3   truncate">
+                  <td className="w-10 flex px-2 py-3   truncate">
+                    {doc?.qty || 0}
+                  </td>
+                  <td className="w-32  flex px-10 py-3   truncate">
                     {parseFloat(doc?.mcharg).toFixed(2)}
                   </td>
                   <td className="w-16 flex px-2 py-3   truncate">
-                    {doc?.rate}
+                    {doc?.rate || 0}
                   </td>
                   <td className="w-16 flex px-2 py-3   truncate">
-                    {doc?.total}
+                    {doc?.total || 0}
                   </td>
 
-                  <td className="w-full flex py-3 px-10">{doc?.disc}</td>
-                  <td className="w-full flex py-3 px-2  ">
-                    {parseFloat(doc?.nettotal).toFixed(2)}
+                  <td className="w-28 flex py-3 px-10">{doc?.disc || 0}</td>
+                  <td className="w-28 flex py-3 px-2  ">
+                    {parseFloat(doc?.nettotal || 0).toFixed(2)}
                   </td>
 
                   <td className="flex gap-2 py-3 pl-5  ">
@@ -526,126 +538,124 @@ function Invoice2({}) {
         </div>
 
         <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-8">
-        
-            <div className=" grid">
-              <label className="">Total Amt.</label>
-              <input
-                type="tel"
-                placeholder="0000"
-                disabled
-                name="tamt"
-                value={formData?.tamt}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="">Total Disc.</label>
-              <input
-                type="tel"
-                disabled
-                placeholder="0000"
-                name="tdisc"
-                value={formData?.tdisc}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="">Grand Amt. </label>
-              <input
-                type="tel"
-                placeholder="0000"
-                disabled
-                name="gtotal"
-                value={parseFloat(formData?.gtotal).toFixed(2)}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="">Mode </label>
-              <select
-                value={formData?.mode}
-                onChange={formDataHandler}
-                className="border-gray-300 border shadow-gray-400 shadow-sm  py-3 px-3 w-full"
-                name="mode"
-              >
-                <option selected disabled>
-                  --Select Mode--
-                </option>
-                {PyMode?.map((doc, index) => (
-                  <option value={doc?.mode}>{doc?.mode}</option>
-                ))}
-              </select>
-            </div>
-            <div className=" grid">
-              <label className="">Bank </label>
-              <select
-                disabled={formData?.mode === "Bank" ? false : true}
-                name="bank"
-                value={
-                  formData?.bank && formData?.mode === "Bank"
-                    ? formData?.bank
-                    : ""
-                }
-                onChange={formDataHandler}
-                className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full disabled:cursor-not-allowed disabled:bg-slate-300"
-              >
-                <option selected aria-selected disabled value={""}>
-                  -- Select Bank --
-                </option>
-                {PyBank?.map((doc, index) => (
-                  <option value={doc.Bank}>{doc.bank}</option>
-                ))}
-              </select>
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Cheque no. </label>
-              <input
-                disabled={
-                  formData?.bank && formData?.mode === "Bank" ? false : true
-                }
-                type="tel"
-                placeholder="0000"
-                name="pycheq"
-                value={
-                  formData?.bank && formData?.mode === "Bank"
-                    ? formData?.pycheq
-                    : 0
-                }
-                onChange={
-                  formData?.bank && formData?.mode === "Bank"
-                    ? formDataHandler
-                    : ""
-                }
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-200"
-              />
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Paid Amt. </label>
-              <input
-                type="tel"
-                placeholder="0000"
-                name="paidamt"
-                value={formData?.paidamt || 0}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Bal. Amt. </label>
-              <input
-                type="tel"
-                placeholder="0000"
-                name="belamt"
-                disabled
-                value={formData?.belamt}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-  
+          <div className=" grid">
+            <label className="">Total Amt.</label>
+            <input
+              type="tel"
+              placeholder="0000"
+              disabled
+              name="tamt"
+              value={formData?.tamt}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="">Total Disc.</label>
+            <input
+              type="tel"
+              disabled
+              placeholder="0000"
+              name="tdisc"
+              value={formData?.tdisc}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="">Grand Amt. </label>
+            <input
+              type="tel"
+              placeholder="0000"
+              disabled
+              name="gtotal"
+              value={parseFloat(formData?.gtotal).toFixed(2)}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="">Mode </label>
+            <select
+              value={formData?.mode}
+              onChange={formDataHandler}
+              className="border-gray-300 border shadow-gray-400 shadow-sm  py-3 px-3 w-full"
+              name="mode"
+            >
+              <option selected disabled>
+                --Select Mode--
+              </option>
+              {PyMode?.map((doc, index) => (
+                <option value={doc?.mode}>{doc?.mode}</option>
+              ))}
+            </select>
+          </div>
+          <div className=" grid">
+            <label className="">Bank </label>
+            <select
+              disabled={formData?.mode === "Bank" ? false : true}
+              name="bank"
+              value={
+                formData?.bank && formData?.mode === "Bank"
+                  ? formData?.bank
+                  : ""
+              }
+              onChange={formDataHandler}
+              className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              <option selected aria-selected disabled value={""}>
+                -- Select Bank --
+              </option>
+              {PyBank?.map((doc, index) => (
+                <option value={doc.Bank}>{doc.bank}</option>
+              ))}
+            </select>
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Cheque no. </label>
+            <input
+              disabled={
+                formData?.bank && formData?.mode === "Bank" ? false : true
+              }
+              type="tel"
+              placeholder="0000"
+              name="pycheq"
+              value={
+                formData?.bank && formData?.mode === "Bank"
+                  ? formData?.pycheq
+                  : 0
+              }
+              onChange={
+                formData?.bank && formData?.mode === "Bank"
+                  ? formDataHandler
+                  : ""
+              }
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-200"
+            />
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Paid Amt. </label>
+            <input
+              type="tel"
+              placeholder="0000"
+              name="paidamt"
+              value={formData?.paidamt || 0}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Bal. Amt. </label>
+            <input
+              type="tel"
+              placeholder="0000"
+              name="belamt"
+              disabled
+              value={formData?.belamt}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
         </div>
       </div>
       <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t">
@@ -673,7 +683,8 @@ function Invoice2({}) {
           update
         </button>
         <button
-          className="py-3 px-10 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 uppercase"
+          disabled={buttonLable === "update" ? false : true}
+          className="py-3 px-10 text-white disabled:bg-yellow-700 disabled:cursor-not-allowed bg-yellow-500 rounded-md hover:bg-yellow-600 uppercase"
           onClick={printWithoutGST}
         >
           Print

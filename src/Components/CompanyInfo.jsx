@@ -105,7 +105,6 @@ function CompanyInfo() {
 
   const handleImageChange = async (event) => {
     const file = await handleImageUpload(event.target.files[0]);
-    console.log(file);
     setSelectedImage(file);
   };
 

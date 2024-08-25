@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createInvoice,
   fetchAllInvoices,
-  fetchOneInvoices,
+  fetchOneInvoice,
   updateInvoice,
 } from "../Store/Slice/InvoiceSlice";
 import { fetchAllBranch } from "../Store/Slice/BranchSlice";
@@ -51,7 +51,7 @@ function Invoice2({}) {
   const { Invoice, error, loading, message } = useSelector(
     (state) => state.Invoices
   );
-  const [InvoiceId, setInvoiceId] = useState(invoiceId?.invoiceid);
+  const [InvoiceId, setInvoiceId] = useState();
   const { InvoiceNumberGst } = useSelector((state) => state.InvoiceNumberGst);
   const { Company } = useSelector((state) => state.Company);
 
@@ -78,17 +78,18 @@ function Invoice2({}) {
   }, [disptch]);
 
   const quotionIdHandler = (e) => {
-    disptch(fetchOneInvoices(InvoiceId)).then((req, res) => {
+    disptch(fetchOneInvoice(InvoiceId)).then((req, res) => {
       if (req?.payload?.message) {
         toast(req?.payload?.message);
         return setButtonLable("");
       }
       setButtonLable("update");
-      setFormData(req.payload.data);
-      setInvoiceDate(moment(Invoice[0]?.quotdate).format("YYYY-MM-DD"));
-      setInvoiceArray(req.payload.data?.invoice);
+      setFormData(req.payload);
+      setInvoiceDate(moment(req.payload?.quotdate).format("YYYY-MM-DD"));
+      setInvoiceArray(req.payload?.invoice);
     });
   };
+
   useEffect(() => {
     setInvoiceId(Number(InvoiceNumberGst?.number));
   }, [InvoiceNumberGst]);
@@ -206,7 +207,14 @@ function Invoice2({}) {
   ]);
 
   const printWithGST = () => {
-    navigate("/printgst", { state: { invoiceId: formData?._id } });
+    navigate("/printgst", {
+      state: {
+        company: Company,
+        customer: Customer.filter((doc) => doc?.name === formData?.customer),
+        formData: formData,
+        invoice: invoiceArray,
+      },
+    });
   };
   const save = () => {
     disptch(
@@ -217,10 +225,10 @@ function Invoice2({}) {
         status: false,
       })
     ).then(() => {
-      disptch(UpdateInvoiceNumberGst(Company._id)).then(() =>
-        disptch(fetchOneInvoiceNumberGst(Company._id))
-      );
-      printWithGST();
+      disptch(UpdateInvoiceNumberGst(Company._id)).then(() => {
+        disptch(fetchOneInvoiceNumberGst(Company._id));
+        printWithGST();
+      });
     });
   };
 
@@ -247,7 +255,7 @@ function Invoice2({}) {
         visible={modal3Open}
         onHide={() => setModal3Open(false)}
       >
-        <CustomerForm close={() => setModal3Open(false)} Mode={"update"} />
+        <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
       <div className="mb-20 mt-10 p-3 bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
         <div className="grid lg:grid-cols-3">
@@ -697,7 +705,8 @@ function Invoice2({}) {
         </button>
 
         <button
-          className="py-3 px-10 text-white bg-red-500 rounded-md hover:bg-red-600 uppercase"
+          disabled={buttonLable === "update" ? false : true}
+          className="py-3 px-10 text-white disabled:bg-red-700 bg-red-500 rounded-md hover:bg-red-600 uppercase"
           onClick={printWithGST}
         >
           Print

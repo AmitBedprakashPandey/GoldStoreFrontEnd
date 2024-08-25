@@ -15,10 +15,11 @@ function Print(params) {
   const { Print } = useSelector((state) => state.print);
   const { Company } = useSelector((state) => state.Company);
 
-  useEffect(() => {        
-    dispatch(fetchOnePrint(data.state.invoiceId));
-        dispatch(fetchByUser(localStorage.getItem("user")));
-  }, [Print,dispatch]);
+  // useEffect(() => {        
+    
+  //   dispatch(fetchOnePrint(data.state.invoiceId));
+  //       dispatch(fetchByUser(localStorage.getItem("user")));
+  // }, [dispatch]);
   return (
     <>
       <ReactToPrint
@@ -37,7 +38,7 @@ function Print(params) {
             </div>
             <div className="text-center">
             <h3 className="text-lg font-semibold">JAI MATA DI</h3>
-              <h1 className="font-bold text-3xl uppercase">{Print?.company?.name}</h1>
+              <h1 className="font-bold text-3xl uppercase">{data.state.company?.name}</h1>
               <h3 className="text-lg font-semibold">TAX INVOICE</h3>
             </div>
             <div>
@@ -47,10 +48,10 @@ function Print(params) {
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
               <label className="text-lg">
-                Invoice No : <span>{Print._doc?.quot}</span>
+                Invoice No : <span>{data.state.formData.quot}</span>
               </label>
               <label className="text-lg">
-                Date :  <span>{moment(Print._doc?.quotdate).format("DD-MM-YYYY")}</span>
+                Date :  <span>{moment(data.state.quotdate).format("DD-MM-YYYY")}</span>
               </label>
               <label className="text-lg">
                 State Code : <span></span>
@@ -58,7 +59,7 @@ function Print(params) {
             </div>
             <div className="flex flex-col w-72">
               <label className="text-lg">
-                Payment Mode : {Print._doc?.mode}
+                Payment Mode : {data.state.formData?.mode}
               </label>
               <label className="text-lg">
                 Delivery Mode : <span></span>
@@ -93,20 +94,20 @@ function Print(params) {
 
                   </label>
                   <ul className="text-sm mt-1 capitalize">
-                    <li>{Print.company?.name}</li>
-                    <li >{Print.company?.address}</li>
+                    <li>{data.state.company?.name}</li>
+                    <li >{data.state.company?.address}</li>
                     </ul> 
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm">
-                  Party PAN : <span>{Print.company?.pan}</span>
+                  Party PAN : <span>{data.state.company?.pan}</span>
                 </label>
                 <label className="text-sm">
-                  Party Mobile No. : <span>{Print.company?.mobile}</span>
+                  Party Mobile No. : <span>{data.state.company?.mobile}</span>
                 </label>
                 <label className="text-sm">
-                  GSTIN / UIN : <span>{Print.company?.gst}</span>
+                  GSTIN / UIN : <span>{data.state.company?.gst}</span>
                 </label>
               </div>
             </div>
@@ -118,20 +119,20 @@ function Print(params) {
 
                   </label>
                   <ul className="text-sm mt-1">
-                    <li>{Print.customer?.name}</li>
-                    <li >{Print.customer?.address}</li>
+                    <li>{data.state.customer[0]?.name}</li>
+                    <li >{data.state.customer[0]?.address}</li>
                     </ul> 
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm">
-                  Party PAN : <span>{Print.customer?.pan}</span>
+                  Party PAN : <span>{data.state.customer[0]?.pan}</span>
                 </label>
                 <label className="text-sm">
-                  Party Mobile No. : <span>{Print.customer?.mobile}</span>
+                  Party Mobile No. : <span>{data.state.customer[0]?.mobile}</span>
                 </label>
                 <label className="text-sm">
-                  GSTIN / UIN : <span>{Print.customer?.gst}</span>
+                  GSTIN / UIN : <span>{data.state.customer[0]?.gst}</span>
                 </label>
               </div>
             </div>
@@ -178,7 +179,7 @@ function Print(params) {
               </thead>
 
               <tbody>
-                {Print._doc?.invoice?.map((doc, index) => (
+                {data.state.invoice?.map((doc, index) => (
                 <tr className="text-xs">
                   <td className="border-black  text-center border border-l-0 w-5 py-2">
                     1
@@ -211,7 +212,7 @@ function Print(params) {
                   <th
                     colSpan={4}
                     className=" text-xs border-black border border-r-0 w-16"
-                  >{Print?._doc?.tdisc}</th>
+                  >{data.state.formData.tdisc}</th>
                 </tr>
                 <tr className="text-xs">
                   <th
@@ -224,7 +225,7 @@ function Print(params) {
                   <th
                     colSpan={4}
                     className=" border-black border border-r-0 w-16"
-                  >{Print?._doc?.ttax}</th>
+                  >{data.state.formData.ttax}</th>
                 </tr>
                 <tr className="text-xs">
                   <th
@@ -237,7 +238,7 @@ function Print(params) {
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16 pl-3"
                   >
-                    {Print?._doc?.gtotal}
+                    {data.state.formData.gtotal}
                   </th>
                 </tr>
               </tfoot>

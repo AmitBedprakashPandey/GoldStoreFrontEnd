@@ -139,7 +139,6 @@ function CreateCustomer() {
                       open={modal2Open}
                       onOk={() => {
                         dispatch(deleteCustomer(doc?._id)).then((res) => {
-                          console.log(res);
                           toast(res?.payload?.message);
                           dispatch(fetchAllCustomers());
                         });
