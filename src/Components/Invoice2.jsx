@@ -142,7 +142,7 @@ function Invoice2({}) {
           accumulator + parseFloat(Number(current.nettotal).toFixed(2)),
         0
       ),
-      belamt: parseFloat(
+      balamt: parseFloat(
         Number(formData?.gtotal) - Number(formData?.paidamt) ||
           Number(formData?.gtotal)
       ).toFixed(2),
@@ -190,7 +190,7 @@ function Invoice2({}) {
     updateInvoiceInpt();
   }, [
     invoiceArray,
-    formData?.belamt,
+    formData?.balamt,
     formData?.gtotal,
     formData?.ttax,
     formData?.total,
@@ -235,6 +235,8 @@ function Invoice2({}) {
   const update = () => {
     disptch(updateInvoice({ ...formData, invoice: invoiceArray })).then(() => {
       toast("update");
+      console.table(formData);
+      
       disptch(fetchAllInvoices());
     });
   };
@@ -528,19 +530,19 @@ function Invoice2({}) {
             <div className="max-h-48">
               {invoiceArray?.map((doc, index) => (
                 <tr key={index} className="text-sm flex items-center py-1.5">
-                  <td className="w-36 px-2  flex  truncate">{doc?.desc}</td>
-                  <td className="flex px-2   w-20  truncate">
-                    {parseFloat(doc?.weight).toFixed(2)}
+                  <td className="w-48 px-2  flex  truncate">{doc?.desc}</td>
+                  <td className="px-2   w-20  truncate">
+                    {parseFloat(doc?.weight || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-10  truncate">{doc?.qty}</td>
-                  <td className="flex  w-28 px-10  truncate">
-                    {parseFloat(doc?.mcharg).toFixed(2)}
+                  <td className="flex px-2   w-10  truncate">{doc?.qty || 0}</td>
+                  <td className="flex  w-32 px-10  truncate">
+                    {parseFloat(doc?.mcharg || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-16  truncate">{doc?.rate}</td>
-                  <td className="flex px-2  w-16  truncate">{doc?.total}</td>
-                  <td className="flex px-2   w-16  truncate">{doc?.sgst}</td>
-                  <td className="flex px-2   w-16  truncate">{doc?.cgst}</td>
-                  <td className="flex px-2   w-16  truncate">{doc?.igst}</td>
+                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.rate || 0).toFixed(2)}</td>
+                  <td className="flex px-2  w-16  truncate">{parseFloat(doc?.total || 0).toFixed(2)}</td>
+                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.sgst || 0).toFixed(2)}</td>
+                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.cgst || 0).toFixed(2)}</td>
+                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.igst || 0).toFixed(2)}</td>
                   <td className="flex  px-2  w-24 ">
                     {parseFloat(doc?.nettotal).toFixed(2)}
                   </td>
@@ -558,7 +560,7 @@ function Invoice2({}) {
           </table>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-8">
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-9">
           <div className=" grid">
             <label className="">Total Amt.</label>
             <input
@@ -670,9 +672,9 @@ function Invoice2({}) {
             <input
               type="tel"
               placeholder="0000"
-              name="belamt"
+              name="balamt"
               disabled
-              value={formData?.belamt}
+              value={formData?.balamt}
               onChange={formDataHandler}
               className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />

@@ -50,26 +50,30 @@ function Print() {
           </div>
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
-              <label className="text-lg">
-                Invoice No : <span>{data.state.formData?.quot}</span>
+              <label className="text-md font-bold">
+                Invoice No : <span className="font-normal">{data.state.formData?.quot}</span>
               </label>
-              <label className="text-lg">
+              <label className="text-md font-bold">
                 Date :{" "}
-                <span>{moment(data.state.formData?.quotdate).format("DD-MM-YYYY")}</span>
+                <span className="font-normal">{moment(data.state.formData?.quotdate).format("DD-MM-YYYY")}</span>
               </label>
-              {/* <label className="text-lg">
+              {/* <label className="text-md font-bold">
                 State Code : <span></span>
               </label> */}
             </div>
             <div className="flex flex-col w-72">
-              <label className="text-lg">
-                Payment Mode :{data.state.formData?.mode} <span></span>
+              <label className="text-md font-bold">
+                Payment Mode :
+                <span className="font-normal">
+                {data.state.formData?.mode} 
+
+                </span>
               </label>
-              <label className="text-lg">
-                Delivery Mode : <span></span>
+              <label className="text-md font-bold">
+                Delivery Mode : <span className="font-normal"></span>
               </label>
-              <label className="text-lg">
-                Place of Supply : <span></span>
+              <label className="text-md font-bold">
+                Place of Supply : <span className="font-normal"></span>
               </label>
             </div>
           </div>
@@ -86,14 +90,14 @@ function Print() {
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
-                <label className="text-sm">
-                  Party PAN : <span>{data.state.company?.pan}</span>
+                <label className="text-sm font-bold">
+                  Party PAN : <span className="font-normal">{data.state.company?.pan}</span>
                 </label>
-                <label className="text-sm">
-                  Party Mobile No. : <span>{data.state.company?.mobile}</span>
+                <label className="text-sm font-bold">
+                  Party Mobile No. : <span className="font-normal">{data.state.company?.mobile}</span>
                 </label>
-                <label className="text-sm">
-                  GSTIN / UIN : <span>{data.state.company?.gst}</span>
+                <label className="text-sm font-bold">
+                  GSTIN / UIN : <span className="font-normal">{data.state.company?.gst}</span>
                 </label>
               </div>
             </div>
@@ -108,11 +112,11 @@ function Print() {
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
-                <label className="text-sm">
-                  Party PAN : <span>{data.state.customer[0]?.pan}</span>
+                <label className="text-sm font-bold">
+                  Party PAN : <span className="font-normal">{data.state.customer[0]?.pan}</span>
                 </label>
-                <label className="text-sm">
-                  Party Mobile No. : <span>{data.state.customer[0]?.mobile}</span>
+                <label className="text-sm font-bold">
+                  Party Mobile No. : <span className="font-normal">{data.state.customer[0]?.mobile}</span>
                 </label>
               </div>
             </div>
@@ -179,7 +183,7 @@ function Print() {
                       {doc?.rate}
                     </td>
                     <td className=" border-black text-center  border border-r-0 w-28">
-                      {doc?.total}
+                      {parseFloat(doc?.total).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -213,7 +217,7 @@ function Print() {
                   >
                     {parseFloat(
                       Number(data.state.formData?.tamt) - Number(data.state.formData?.tdisc)
-                    ).toFixed(2)}
+                    ).toFixed()}
                   </th>
                 </tr>
               </tfoot>

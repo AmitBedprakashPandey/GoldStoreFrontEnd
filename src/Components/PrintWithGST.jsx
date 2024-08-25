@@ -47,39 +47,41 @@ function Print(params) {
           </div>
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
-              <label className="text-lg">
-                Invoice No : <span>{data.state.formData.quot}</span>
+              <label className="text-md font-bold">
+                Invoice No : <span className="font-normal">{data.state.formData.quot}</span>
               </label>
-              <label className="text-lg">
-                Date :  <span>{moment(data.state.quotdate).format("DD-MM-YYYY")}</span>
+              <label className="text-md font-bold">
+                Date :  <span className="font-normal">{moment(data.state.quotdate).format("DD-MM-YYYY")}</span>
               </label>
-              <label className="text-lg">
-                State Code : <span></span>
+              <label className="text-md font-bold">
+                State Code : <span className="font-normal"></span>
               </label>
             </div>
             <div className="flex flex-col w-72">
-              <label className="text-lg">
-                Payment Mode : {data.state.formData?.mode}
+              <label className="text-md font-bold">
+                Payment Mode : <span className="font-normal">
+                  {data.state.formData?.mode}
+                  </span>
               </label>
-              <label className="text-lg">
-                Delivery Mode : <span></span>
+              <label className="text-md font-bold">
+                Delivery Mode : <span className="font-normal"></span>
               </label>
-              <label className="text-lg">
-                Place of Supply : <span></span>
+              <label className="text-md font-bold">
+                Place of Supply : <span className="font-normal"></span>
               </label>
             </div>
           </div>
           <div className="flex justify-between">
             <div className="w-full">
               <div className="px-3 h-7 border-black border border-t-0 border-r-0 border-l-0">
-                <label className="text-lg">
+                <label className="text-md font-bold">
                   <span></span>
                 </label>
               </div>
             </div>
             <div className="w-full">
-              <div className="px-3 border-black border border-t-0 border-r-0">
-                <label className="text-lg">
+              <div className="px-3 h-7 border-black border border-t-0 border-r-0">
+                <label className="text-md font-bold">
                   Customer Details <span></span>
                 </label>
               </div>
@@ -89,50 +91,50 @@ function Print(params) {
             <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
             <div className="px-3 h-32 ">
                 <label className="flex text-lg">
-                  <label className="w-[120px]">
+                  <label className="w-[120px] text-sm font-bold mt-3">
                   Billed to :
 
                   </label>
-                  <ul className="text-sm mt-1 capitalize">
+                  <ul className="text-sm mt-3 capitalize">
                     <li>{data.state.company?.name}</li>
                     <li >{data.state.company?.address}</li>
                     </ul> 
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
-                <label className="text-sm">
-                  Party PAN : <span>{data.state.company?.pan}</span>
+                <label className="text-sm font-bold">
+                  Party PAN : <span className="font-normal">{data.state.company?.pan}</span>
                 </label>
-                <label className="text-sm">
-                  Party Mobile No. : <span>{data.state.company?.mobile}</span>
+                <label className="text-sm font-bold">
+                  Party Mobile No. : <span className="font-normal">{data.state.company?.mobile}</span>
                 </label>
-                <label className="text-sm">
-                  GSTIN / UIN : <span>{data.state.company?.gst}</span>
+                <label className="text-sm font-bold">
+                  GSTIN / UIN : <span className="font-normal">{data.state.company?.gst}</span>
                 </label>
               </div>
             </div>
             <div className="w-full border-black border border-t-0 border-b-0 border-r-0 py-2">
               <div className="px-3 h-32 ">
                 <label className="flex text-lg">
-                  <label className="w-[120px]">
+                <label className="w-[120px] text-sm font-bold mt-3">
                   Shipped to :
 
                   </label>
-                  <ul className="text-sm mt-1">
+                  <ul className="text-sm mt-3">
                     <li>{data.state.customer[0]?.name}</li>
                     <li >{data.state.customer[0]?.address}</li>
                     </ul> 
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
-                <label className="text-sm">
-                  Party PAN : <span>{data.state.customer[0]?.pan}</span>
+                <label className="text-sm font-bold">
+                  Party PAN : <span className="font-normal">{data.state.customer[0]?.pan}</span>
                 </label>
-                <label className="text-sm">
-                  Party Mobile No. : <span>{data.state.customer[0]?.mobile}</span>
+                <label className="text-sm font-bold">
+                  Party Mobile No. : <span className="font-normal">{data.state.customer[0]?.mobile}</span>
                 </label>
-                <label className="text-sm">
-                  GSTIN / UIN : <span>{data.state.customer[0]?.gst}</span>
+                <label className="text-sm font-bold">
+                  GSTIN / UIN : <span className="font-normal">{data.state.customer[0]?.gst}</span>
                 </label>
               </div>
             </div>
@@ -152,7 +154,7 @@ function Print(params) {
                     PURITY
                   </th>
                   <th className=" border-black text-center  border w-16">
-                    WEIGHT IN (grams)
+                    WEIGHT (grams)
                   </th>
                   <th className=" border-black text-center  border w-16">
                     MAKING CHARGES
@@ -238,7 +240,7 @@ function Print(params) {
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16 pl-3"
                   >
-                    {data.state.formData.gtotal}
+                    {parseFloat(data.state.formData.gtotal).toFixed()}
                   </th>
                 </tr>
               </tfoot>

@@ -20,7 +20,7 @@ function QuotationWithoutGst(params) {
   const [id, setId] = useState();
   const [Model, setModel] = useState(false);
   const [to, setTo] = useState();
-  const { invoices, loading } = useSelector(
+  const { Invoices, loading } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
   const [invoiceArray, setInvoiceArray] = useState([]);
@@ -31,10 +31,10 @@ function QuotationWithoutGst(params) {
   }, [Model]);
 
   useEffect(() => {
-    setInvoiceArray(invoices);
-  }, [invoices]);
+    setInvoiceArray(Invoices);
+  }, [Invoices]);
 
-  const filteredArray = invoices?.filter((bill) => {
+  const filteredArray = Invoices?.filter((bill) => {
     const billDate = new Date(bill.quotdate);
     const fromDateObj = from ? new Date(from) : null;
     const toDateObj = to ? new Date(to) : null;
@@ -176,22 +176,22 @@ const ViewPrint = ({ close, id }) => {
   const [print, setPrint] = useState();
   const [refresh, setRefresh] = useState();
   const { Company } = useSelector((state) => state.Company);
-  const { invoices, loading } = useSelector(
+  const { Invoices, loading } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
   const { Customer } = useSelector((state) => state.Customers);
 
   useEffect(() => {
-    const invoice = invoices.filter((doc) => doc._id === id);
+    const invoice = Invoices.filter((doc) => doc._id === id);
     const customer = Customer.filter((doc) => doc.name === invoice[0].customer);
     setPrint({ ...invoice[0], customer });
   }, [id]);
 
   const onCancel = () => {
-    dispatch(updateInvoice({ ...print, status: true })).then(()=>close())
+    dispatch(updateInvoice({ ...print, status: true })).then(() => close());
   };
   const onUnDoCancel = () => {
-    dispatch(updateInvoice({ ...print, status: false })).then(()=>close())
+    dispatch(updateInvoice({ ...print, status: false })).then(() => close());
   };
   return (
     <>
@@ -199,7 +199,7 @@ const ViewPrint = ({ close, id }) => {
         className="fixed top-0 bottom-0 left-0 right-0 z-50"
         style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
       >
-          <div className="md:fixed flex items-center top-0 z-50 m-3">
+        <div className="md:fixed flex items-center top-0 z-50 m-3">
           <ReactToPrint
             trigger={() => (
               <button className="rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3 uppercase">
@@ -208,21 +208,21 @@ const ViewPrint = ({ close, id }) => {
             )}
             content={() => componentRef.current}
           />
-         <button
+          <button
             className="ml-3 rounded-md text-xs md:text-sm text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
             onClick={print?.status === true ? onUnDoCancel : onCancel}
           >
             {print?.status === true ? "undo cancel" : "cancel"}
           </button>
 
-        <button
-          type="button"
-          onClick={close}
-           className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-2.5 uppercase"
+          <button
+            type="button"
+            onClick={close}
+            className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-2.5 uppercase"
           >
-         Close
-        </button>
-          </div>
+            Close
+          </button>
+        </div>
         <div className="A4Page p-3 relative" ref={componentRef}>
           {print?.status === true ? (
             <img

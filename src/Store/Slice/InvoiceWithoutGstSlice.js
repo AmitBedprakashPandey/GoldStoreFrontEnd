@@ -31,7 +31,8 @@ export const fetchOneInvoice = createAsyncThunk(
         `${url}/invoicewithoutgst/${id}/${localStorage.getItem("user")}`,
         { headers: getAuthHeaders() }
       );
-      return response.data;
+
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -74,11 +75,13 @@ export const updateInvoice = createAsyncThunk(
   async (updatedData, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `${url}/invoicewithoutgst/${updatedData._id}/${localStorage.getItem("user")}`,
+        `${url}/invoicewithoutgst/${updatedData._id}/${localStorage.getItem(
+          "user"
+        )}`,
         updatedData,
         { headers: getAuthHeaders() }
       );
-      
+
       console.log(response.data);
       return response.data;
     } catch (error) {
@@ -88,7 +91,7 @@ export const updateInvoice = createAsyncThunk(
 );
 
 const initialState = {
-  invoices: [],
+  Invoices: [],
   error: null,
   loading: false,
   message: null,
@@ -107,7 +110,7 @@ const invoiceWithoutGstSlice = createSlice({
       })
       .addCase(fetchAllInvoices.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoices = action.payload;
+        state.Invoices = action.payload;
       })
       .addCase(fetchAllInvoices.rejected, (state, action) => {
         state.loading = false;
@@ -122,13 +125,14 @@ const invoiceWithoutGstSlice = createSlice({
       .addCase(fetchOneInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-        const index = state.invoices.findIndex(
-          (invoice) => invoice._id === action.payload._id
+        const index = state.Invoices.findIndex(
+          (invoice) => invoice.quot === action.payload.quot
         );
-        if (index >= 0) {
-          state.invoices[index] = action.payload;
+
+        if (index !== -1) {
+          state.Invoices[index] = action.payload;
         } else {
-          state.invoices.push(action.payload);
+          state.Invoices.push(action.payload);
         }
       })
       .addCase(fetchOneInvoice.rejected, (state, action) => {
@@ -143,7 +147,7 @@ const invoiceWithoutGstSlice = createSlice({
       })
       .addCase(createInvoice.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoices.push(action.payload);
+        state.Invoices.push(action.payload);
       })
       .addCase(createInvoice.rejected, (state, action) => {
         state.loading = false;
@@ -158,11 +162,11 @@ const invoiceWithoutGstSlice = createSlice({
       .addCase(updateInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-        const index = state.invoices.findIndex(
+        const index = state.Invoices.findIndex(
           (invoice) => invoice._id === action.payload._id
         );
         if (index >= 0) {
-          state.invoices[index] = action.payload.data;
+          state.Invoices[index] = action.payload.data;
         }
       })
       .addCase(updateInvoice.rejected, (state, action) => {
@@ -177,7 +181,7 @@ const invoiceWithoutGstSlice = createSlice({
       })
       .addCase(deleteInvoice.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoices = state.invoices.filter(
+        state.Invoices = state.Invoices.filter(
           (invoice) => invoice._id !== action.payload
         );
       })

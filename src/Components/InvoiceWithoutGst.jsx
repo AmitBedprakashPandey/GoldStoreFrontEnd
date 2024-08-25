@@ -47,13 +47,12 @@ function Invoice2({}) {
   const disptch = useDispatch();
   const { Branch } = useSelector((state) => state.Branchs);
   const { Customer } = useSelector((state) => state.Customers);
-  const { invoiceId } = useSelector((state) => state.InvoiceWithoutGstID);
   const { PyMode } = useSelector((state) => state.Mode);
   const { PyBank } = useSelector((state) => state.Bank);
   const [modal2Open, setModal2Open] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
   const [modal3Open, setModal3Open] = useState(false);
-  const { Invoice, error, loading, message } = useSelector(
+  const { Invoices, error, loading, message } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
   const { InvoicesNumber } = useSelector((state) => state.InvoiceID);
@@ -89,9 +88,9 @@ function Invoice2({}) {
         return setButtonLable("");
       }
       setButtonLable("update");
-      setFormData(req.payload.data);
-      setInvoiceDate(moment(Invoice[0]?.quotdate).format("YYYY-MM-DD"));
-      setInvoiceArray(req.payload.data?.invoice);
+      setFormData(req.payload);
+      setInvoiceDate(moment(Invoices[0]?.quotdate).format("YYYY-MM-DD"));
+      setInvoiceArray(req.payload?.invoice);
     });
   };
 
@@ -106,20 +105,14 @@ function Invoice2({}) {
       Number(invoiceData?.qty);
     setInvoiceData({
       ...invoiceData,
-      total: t + (t * Number(invoiceData?.mcharg)) / 100 || 0,
+      total: t + (t * Number(invoiceData?.mcharg)) / 100,
       // total: Number(invoiceData?.weight) * Number(invoiceData?.rate) * Number(invoiceData?.qty) + (Number('0.'+invoiceData?.mcharg)) || "",
       nettotal:
-        parseFloat(
-          Number(invoiceData?.total) -
-            (Number(invoiceData?.disc) * Number(invoiceData?.total)) / 100
-        ).toFixed(2) || 0,
+        parseFloat(  Number(invoiceData?.total) -(Number(invoiceData?.disc) )|| 0).toFixed(2),
     });
     setFormData({
       ...formData,
-      tamt: invoiceArray?.reduce(
-        (accumulator, current) => accumulator + current.total,
-        0
-      ),
+      tamt: parseFloat(invoiceArray?.reduce((accumulator, current) => accumulator + current.total,0)).toFixed(2) ,
       tdisc: invoiceArray?.reduce(
         (accumulator, current) =>
           accumulator + (Number(current.total) * Number(current.disc)) / 100,
@@ -130,7 +123,7 @@ function Invoice2({}) {
           accumulator + parseFloat(Number(current.nettotal).toFixed(2)),
         0
       ),
-      belamt: parseFloat(
+      balamt: parseFloat(
         Number(formData?.gtotal) - Number(formData?.paidamt) ||
           Number(formData?.gtotal)
       ).toFixed(2),
@@ -175,7 +168,7 @@ function Invoice2({}) {
     updateInvoiceInpt();
   }, [
     invoiceArray,
-    formData?.belamt,
+    formData?.balamt,
     formData?.gtotal,
     formData?.ttax,
     formData?.total,
@@ -185,10 +178,7 @@ function Invoice2({}) {
     invoiceData?.rate,
     invoiceData?.qty,
     invoiceData?.mcharg,
-    invoiceData?.disc,
-    invoiceData?.sgst,
-    invoiceData?.cgst,
-    invoiceData?.igst,
+    invoiceData?.disc
   ]);
 
   const printWithoutGST = () => {
@@ -240,7 +230,7 @@ function Invoice2({}) {
           bank: "",
           pycheq: "",
           paidamt: 0,
-          belamt: 0,
+          balamt: 0,
         });
         setButtonLable("save");
       })
@@ -403,7 +393,7 @@ function Invoice2({}) {
                 type="number"
                 placeholder="0000"
                 name="rate"
-                value={invoiceData?.rate}
+                value={parseFloat(invoiceData?.rate).toFixed(2)}
                 onChange={invoiceDataHandler}
                 className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
@@ -426,8 +416,9 @@ function Invoice2({}) {
               <input
                 type="tel"
                 placeholder="0000"
+                
                 name="mcharg"
-                value={invoiceData?.mcharg}
+                value={parseFloat(Number(invoiceData?.mcharg || 0)).toFixed(2)}
                 onChange={invoiceDataHandler}
                 className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
@@ -439,7 +430,7 @@ function Invoice2({}) {
                 disabled
                 placeholder="0000"
                 name="total"
-                value={invoiceData?.total}
+                value={parseFloat(invoiceData?.total).toFixed(2)}
                 onChange={invoiceDataHandler}
                 className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
@@ -463,7 +454,7 @@ function Invoice2({}) {
                 type="tel"
                 placeholder="0000"
                 name="nettotal"
-                value={invoiceData?.nettotal || 0}
+                value={invoiceData?.nettotal}
                 onChange={invoiceDataHandler}
                 disabled
                 className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
@@ -503,13 +494,13 @@ function Invoice2({}) {
                 >
                   <td className="w-48 px-2 py-3 flex ">{doc?.desc}</td>
                   <td className="w-20 flex px-2 py-3   truncate">
-                    {parseFloat(doc?.weight).toFixed(2)}
+                    {parseFloat(doc?.weight ||0).toFixed(2)}
                   </td>
                   <td className="w-10 flex px-2 py-3   truncate">
                     {doc?.qty || 0}
                   </td>
                   <td className="w-32  flex px-10 py-3   truncate">
-                    {parseFloat(doc?.mcharg).toFixed(2)}
+                    {parseFloat(doc?.mcharg || 0).toFixed(2)}
                   </td>
                   <td className="w-16 flex px-2 py-3   truncate">
                     {doc?.rate || 0}
@@ -520,7 +511,7 @@ function Invoice2({}) {
 
                   <td className="w-28 flex py-3 px-10">{doc?.disc || 0}</td>
                   <td className="w-28 flex py-3 px-2  ">
-                    {parseFloat(doc?.nettotal || 0).toFixed(2)}
+                    {parseFloat(doc?.nettotal).toFixed(2)}
                   </td>
 
                   <td className="flex gap-2 py-3 pl-5  ">
@@ -649,9 +640,9 @@ function Invoice2({}) {
             <input
               type="tel"
               placeholder="0000"
-              name="belamt"
+              name="balamt"
               disabled
-              value={formData?.belamt}
+              value={formData?.balamt}
               onChange={formDataHandler}
               className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />

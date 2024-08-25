@@ -32,7 +32,6 @@ export const fetchOneInvoice = createAsyncThunk(
         `${apiUrl}/invoice/${id}/${getUser()}`,
         { headers: createHeaders() }
       );
-      console.log("get",response.data.data);
       
       return response.data.data;
     } catch (error) {

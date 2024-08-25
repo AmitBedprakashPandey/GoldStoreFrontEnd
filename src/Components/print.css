@@ -16,7 +16,7 @@
     page-break-inside: avoid;
     width: 100%;
     max-width: 210mm;
-    height: 279mm;
+    height: auto;
     margin:0 auto;  
     background-color: #fff;
     overflow-wrap: break-word;
