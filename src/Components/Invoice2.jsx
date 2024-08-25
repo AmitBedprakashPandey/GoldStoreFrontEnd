@@ -612,7 +612,7 @@ function Invoice2({}) {
             <select
               value={formData?.mode}
               onChange={formDataHandler}
-              className="w-full border-gray-300 border shadow-gray-400 shadow-sm  py-3 px-3 w-full"
+              className="border-gray-300 border shadow-gray-400 shadow-sm  py-3 px-3 w-full"
               name="mode"
             >
               <option selected disabled>

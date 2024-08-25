@@ -28,11 +28,12 @@ function NavBar() {
       navigate("/login");
     }
   }, [dispatch, navigate]);
-
+  
   useEffect(() => {
     if (Company?._id) {
       dispatch(fetchOneInvoicesNumber(Company._id));
       dispatch(fetchOneInvoiceNumberGst(Company._id));
+      document.title =  Company?.name
     }
   }, [Company, dispatch]);
 
