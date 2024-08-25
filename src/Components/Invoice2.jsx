@@ -10,6 +10,7 @@ import {
   updateInvoice,
 } from "../Store/Slice/InvoiceSlice";
 import { fetchAllBranch } from "../Store/Slice/BranchSlice";
+import CustomerForm from "../layout/CustomerForm";
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
 import { fetchAllPyBank } from "../Store/Slice/PayBankSlice";
 import { fetchAllPyMode } from "../Store/Slice/PayModeSlice";
@@ -21,6 +22,9 @@ import toast, { toastConfig } from "react-simple-toasts";
 import moment from "moment";
 import Loading from "./Loading";
 import { Modal } from "antd";
+import { Dialog } from "primereact/dialog";
+import { PiPlusBold } from "react-icons/pi";
+import { Button } from "primereact/button";
 function Invoice2({}) {
   const [formData, setFormData] = useState();
   toastConfig({
@@ -37,6 +41,7 @@ function Invoice2({}) {
   const [invoiceDate, setInvoiceDate] = useState();
   const [modal2Open, setModal2Open] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
+  const [modal3Open, setModal3Open] = useState(false);
   const disptch = useDispatch();
   const { Branch } = useSelector((state) => state.Branchs);
   const { Customer } = useSelector((state) => state.Customers);
@@ -47,9 +52,7 @@ function Invoice2({}) {
     (state) => state.Invoices
   );
   const [InvoiceId, setInvoiceId] = useState(invoiceId?.invoiceid);
-  const { InvoiceNumberGst  } = useSelector(
-    (state) => state.InvoiceNumberGst
-  );
+  const { InvoiceNumberGst } = useSelector((state) => state.InvoiceNumberGst);
   const { Company } = useSelector((state) => state.Company);
 
   const formDataHandler = (e) => {
@@ -202,6 +205,9 @@ function Invoice2({}) {
     invoiceData?.igst,
   ]);
 
+  const printWithGST = () => {
+    navigate("/printgst", { state: { invoiceId: formData?._id } });
+  };
   const save = () => {
     disptch(
       createInvoice({
@@ -210,11 +216,12 @@ function Invoice2({}) {
         user: localStorage.getItem("user"),
         status: false,
       })
-    ).then(() =>
+    ).then(() => {
       disptch(UpdateInvoiceNumberGst(Company._id)).then(() =>
         disptch(fetchOneInvoiceNumberGst(Company._id))
-      )
-    );
+      );
+      printWithGST();
+    });
   };
 
   const update = () => {
@@ -226,9 +233,6 @@ function Invoice2({}) {
 
   const navigate = useNavigate();
 
-  const printWithGST = () => {
-    navigate("/printgst", { state: { invoiceId: formData?._id } });
-  };
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -238,6 +242,13 @@ function Invoice2({}) {
     <div className="lg:mx-16 ">
       {loading && <Loading />}
       {error && error}
+      <Dialog
+        header="Create Customer"
+        visible={modal3Open}
+        onHide={() => setModal3Open(false)}
+      >
+        <CustomerForm close={() => setModal3Open(false)} Mode={"update"} />
+      </Dialog>
       <div className="mb-20 mt-10 p-3 bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
@@ -290,8 +301,8 @@ function Invoice2({}) {
           </div>
         </div>
         <hr className="my-2 border-black" />
-        <div className="grid lg:grid-cols-3">
-          <div className="m-3">
+        <div className="flex items-center">
+          <div className="m-3 max-w-96">
             <label className="">Customer Name : </label>
             <select
               className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full"
@@ -309,6 +320,11 @@ function Invoice2({}) {
               ))}
             </select>
           </div>
+          <Button
+            icon={<PiPlusBold color="#fff" />}
+            className="bg-blue-700 h-12 mt-6"
+            onClick={() => setModal3Open(true)}
+          />
         </div>
         <hr className="my-2 border-black" />
         <div className="relative">
@@ -485,7 +501,10 @@ function Invoice2({}) {
         </div>
 
         <div className="relative overflow-x-auto mx-0 py-3 flex md:justify-center ">
-          <table border={1} className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border">
+          <table
+            border={1}
+            className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border"
+          >
             <tr className="text-sm bg-gray-100 flex">
               <th className="w-48 py-3 px-2 flex ">Description</th>
               <th className="w-20 flex py-3 px-2 ">Wight</th>
@@ -531,129 +550,126 @@ function Invoice2({}) {
           </table>
         </div>
 
-
         <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-8">
-            <div className=" grid">
-              <label className="">Total Amt.</label>
-              <input
-                type="tel"
-                placeholder="0000"
-                disabled
-                name="tamt"
-                value={formData?.tamt}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="">Total Disc.</label>
-              <input
-                type="tel"
-                disabled
-                placeholder="0000"
-                name="tdisc"
-                value={formData?.tdisc}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Total tax</label>
-              <input
-                type="tel"
-                placeholder="0000"
-                name="tottax"
-                disabled
-                value={parseFloat(formData?.ttax).toFixed(2)}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="">Grand Amt. </label>
-              <input
-                type="tel"
-                placeholder="0000"
-                disabled
-                name="gtotal"
-                value={parseFloat(formData?.gtotal).toFixed(2)}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="">Mode </label>
-              <select
-                value={formData?.mode}
-                onChange={formDataHandler}
-                className="w-full border-gray-300 border shadow-gray-400 shadow-sm  py-3 px-3 w-full"
-                name="mode"
-              >
-                <option selected disabled>
-                  --Select Mode--
-                </option>
-                {PyMode?.map((doc, index) => (
-                  <option value={doc?.mode}>{doc?.mode}</option>
-                ))}
-              </select>
-            </div>
-            <div className=" grid">
-              <label className="">Bank </label>
-              <select
-                disabled={formData?.mode === "Bank" ? false : true}
-                name="bank"
-                value={formData?.bank}
-                onChange={formDataHandler}
-                className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full disabled:cursor-not-allowed disabled:bg-slate-400"
-              >
-                <option selected disabled>
-                  -- Select Bank --
-                </option>
-                {PyBank?.map((doc, index) => (
-                  <option value={doc.Bank}>{doc.bank}</option>
-                ))}
-              </select>
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Cheque no. </label>
-              <input
-                disabled={
-                  formData?.bank && formData?.mode === "Bank" ? false : true
-                }
-                type="tel"
-                placeholder="0000"
-                name="pycheq"
-                value={formData?.pycheq}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-400"
-              />
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Paid Amt. </label>
-              <input
-                type="tel"
-                placeholder="0000"
-                name="paidamt"
-                value={formData?.paidamt}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
-            <div className=" grid">
-              <label className="text-sm">Bel. Amt. </label>
-              <input
-                type="tel"
-                placeholder="0000"
-                name="belamt"
-                disabled
-                value={formData?.belamt}
-                onChange={formDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-              />
-            </div>
+          <div className=" grid">
+            <label className="">Total Amt.</label>
+            <input
+              type="tel"
+              placeholder="0000"
+              disabled
+              name="tamt"
+              value={formData?.tamt}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
           </div>
-         
-     
+          <div className=" grid">
+            <label className="">Total Disc.</label>
+            <input
+              type="tel"
+              disabled
+              placeholder="0000"
+              name="tdisc"
+              value={formData?.tdisc}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Total tax</label>
+            <input
+              type="tel"
+              placeholder="0000"
+              name="tottax"
+              disabled
+              value={parseFloat(formData?.ttax).toFixed(2)}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="">Grand Amt. </label>
+            <input
+              type="tel"
+              placeholder="0000"
+              disabled
+              name="gtotal"
+              value={parseFloat(formData?.gtotal).toFixed(2)}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="">Mode </label>
+            <select
+              value={formData?.mode}
+              onChange={formDataHandler}
+              className="w-full border-gray-300 border shadow-gray-400 shadow-sm  py-3 px-3 w-full"
+              name="mode"
+            >
+              <option selected disabled>
+                --Select Mode--
+              </option>
+              {PyMode?.map((doc, index) => (
+                <option value={doc?.mode}>{doc?.mode}</option>
+              ))}
+            </select>
+          </div>
+          <div className=" grid">
+            <label className="">Bank </label>
+            <select
+              disabled={formData?.mode === "Bank" ? false : true}
+              name="bank"
+              value={formData?.bank}
+              onChange={formDataHandler}
+              className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full disabled:cursor-not-allowed disabled:bg-slate-400"
+            >
+              <option selected disabled>
+                -- Select Bank --
+              </option>
+              {PyBank?.map((doc, index) => (
+                <option value={doc.Bank}>{doc.bank}</option>
+              ))}
+            </select>
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Cheque no. </label>
+            <input
+              disabled={
+                formData?.bank && formData?.mode === "Bank" ? false : true
+              }
+              type="tel"
+              placeholder="0000"
+              name="pycheq"
+              value={formData?.pycheq}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm disabled:cursor-not-allowed disabled:bg-slate-400"
+            />
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Paid Amt. </label>
+            <input
+              type="tel"
+              placeholder="0000"
+              name="paidamt"
+              value={formData?.paidamt}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+          <div className=" grid">
+            <label className="text-sm">Bal. Amt. </label>
+            <input
+              type="tel"
+              placeholder="0000"
+              name="belamt"
+              disabled
+              value={formData?.belamt}
+              onChange={formDataHandler}
+              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+            />
+          </div>
+        </div>
       </div>
       <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t">
         <button

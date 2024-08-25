@@ -131,14 +131,14 @@ function NavBar() {
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
-            Entry invoice Without GST
+            Entry invoice (non GST)
           </Link>
           <Link
             to={"/invoicegst"}
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
-            Entry invoice With GST
+            Entry invoice (GST)
           </Link>
         </ul>
       ),
@@ -154,14 +154,14 @@ function NavBar() {
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
-            get Quotation with gst
+            get Quotation (GST)
           </Link>
           <Link
             to={"/quotationwithoutgst"}
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
-            get Quotation without gst
+            get Quotation (non GST)
           </Link>
         </ul>
       ),
@@ -200,7 +200,7 @@ function NavBar() {
                 <button className="dropdownbtn text-lg font-semibold">
                   Master
                 </button>
-                <div className="dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute -left-16 mx-auto z-50">
+                <div className="dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 mx-auto z-50">
                   <ul className="text-base grid">
                     <Link
                       to={"/company"}
@@ -241,19 +241,19 @@ function NavBar() {
                 <button className="dropdownbtn text-lg font-semibold">
                   Invoice
                 </button>
-                <div className=" dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
+                <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
                   <ul className="text-base grid">
                     <Link
                       to={"invoice"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
-                      Get Invoice Without GST
+                      Get Invoice (non GST)
                     </Link>
                     <Link
                       to={"/invoicegst"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
-                      Get Invoice With GST
+                      Get Invoice (GST)
                     </Link>
                   </ul>
                 </div>
@@ -264,19 +264,19 @@ function NavBar() {
                 <button className="dropdownbtn text-lg font-semibold">
                   Report
                 </button>
-                <div className=" dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
+                <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
                   <ul className="text-base grid">
                     <Link
                       to={"/quotation"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
-                      Quotation
+                      Quotation (GST)
                     </Link>
                     <Link
                       to={"/quotationwithoutgst"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
-                      Quotation without gst
+                      Quotation (non GST)
                     </Link>
                   </ul>
                 </div>

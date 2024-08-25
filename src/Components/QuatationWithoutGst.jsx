@@ -79,18 +79,18 @@ function QuotationWithoutGst(params) {
           </button>
         </div>
       </div>
-      <div className="relative overflow-x-scroll mx-auto  max-w-[600px] bg-white shadow-gray-400 shadow-md border-gray-300 border rounded-md">
+      <div className="relative overflow-x-auto mx-auto  max-w-[600px] bg-white shadow-gray-400 shadow-md border-gray-300 border rounded-md">
         <table className="overflow-x-scroll">
           <thead>
             <tr className="text-sm bg-gray-200">
               <th className="py-3 px-2 w-20 text-start">#</th>
-              <th className="py-3 px-2 w-56 text-start">Decription</th>
-              <th className="py-3 px-2 w-16 text-start">weight.</th>
+              <th className="py-3 px-2 w-56 text-start capitalize">Decription</th>
+              <th className="py-3 px-2 w-16 text-start capitalize">weight</th>
 
-              <th className="py-3 px-2 w-16 text-start">RATE</th>
-              <th className="py-3 px-2 w-16 text-start">Grand Amt</th>
-              <th className="py-3 px-2 w-16 text-start">Status</th>
-              <th className="py-3 px-2 w-16 text-start">Action</th>
+              <th className="py-3 px-2 w-16 text-start capitalize">Rate</th>
+              <th className="py-3 px-2 w-16 text-start flex capitalize">G. Amt</th>
+              <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
+              <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
             </tr>
           </thead>
           <tbody className="overflow-hidden overflow-y-scroll ">

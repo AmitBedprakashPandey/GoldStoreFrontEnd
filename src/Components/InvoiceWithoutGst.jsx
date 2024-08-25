@@ -9,10 +9,13 @@ import {
   fetchOneInvoices,
   updateInvoice,
 } from "../Store/Slice/InvoiceWithoutGstSlice";
+import {PiFloppyDisk, PiPlusBold} from 'react-icons/pi'
+import { Dialog } from "primereact/dialog";
 import { fetchAllBranch } from "../Store/Slice/BranchSlice";
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
 import { fetchAllPyBank } from "../Store/Slice/PayBankSlice";
 import { fetchAllPyMode } from "../Store/Slice/PayModeSlice";
+import CustomerForm from "../layout/CustomerForm";
 import { UpdateInvoicesNumber,fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
 import {
   fetchOneInvoicesId,
@@ -22,6 +25,7 @@ import toast, { toastConfig } from "react-simple-toasts";
 import { Modal } from "antd";
 import moment from "moment";
 import Loading from "./Loading";
+import { Button } from "primereact/button";
 function Invoice2({}) {
   const [formData, setFormData] = useState();
 
@@ -38,7 +42,6 @@ function Invoice2({}) {
   const [invoiceDate, setInvoiceDate] = useState();
 
   const disptch = useDispatch();
-  
   const { Branch } = useSelector((state) => state.Branchs);
   const { Customer } = useSelector((state) => state.Customers);
   const { invoiceId } = useSelector((state) => state.InvoiceWithoutGstID);
@@ -46,6 +49,7 @@ function Invoice2({}) {
   const { PyBank } = useSelector((state) => state.Bank);
   const [modal2Open, setModal2Open] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
+  const [modal3Open, setModal3Open] = useState(false);
   const { Invoice, error, loading, message } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
@@ -185,7 +189,9 @@ function Invoice2({}) {
     invoiceData?.cgst,
     invoiceData?.igst,
   ]);
-
+  const printWithoutGST = () => {
+    navigate("/print", { state: { invoiceId: formData?._id } });
+  };
   const save = () => {
     disptch(
       createInvoice({
@@ -225,7 +231,7 @@ function Invoice2({}) {
       });
       setButtonLable("save");
       
-      
+      printWithoutGST()
       
     })
   );
@@ -240,9 +246,7 @@ function Invoice2({}) {
 
   const navigate = useNavigate();
 
-  const printWithoutGST = () => {
-    navigate("/print", { state: { invoiceId: formData?._id } });
-  };
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -253,6 +257,11 @@ function Invoice2({}) {
     <div className="lg:mx-16 ">
       {loading && <Loading />}
       {error && error}
+      <Dialog  header="Create Customer" visible={modal3Open} onHide={()=>setModal3Open(false)}>
+<CustomerForm close={()=>setModal3Open(false)} Mode={'update'} />
+
+
+      </Dialog>
       <div className="mb-20 mt-10 p-3 border bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
@@ -305,8 +314,8 @@ function Invoice2({}) {
           </div>
         </div>
         <hr className="my-2 border-black" />
-        <div className="grid lg:grid-cols-3">
-          <div className="m-3">
+        <div className="flex items-center">
+          <div className="m-3 max-w-96">
             <label className="">Customer Name : </label>
             <select
               className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full"
@@ -324,6 +333,7 @@ function Invoice2({}) {
               ))}
             </select>
           </div>
+          <Button icon={<PiPlusBold color="#fff"  />} className="bg-blue-700 h-12 mt-6" onClick={()=>setModal3Open(true)} />
         </div>
         <hr className="my-2 border-black" />
         <div className="relative">
@@ -624,7 +634,7 @@ function Invoice2({}) {
               />
             </div>
             <div className=" grid">
-              <label className="text-sm">Bel. Amt. </label>
+              <label className="text-sm">Bal. Amt. </label>
               <input
                 type="tel"
                 placeholder="0000"
