@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Dropdown } from "primereact/dropdown";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createInvoice,
@@ -107,12 +108,18 @@ function Invoice2({}) {
       ...invoiceData,
       total: t + (t * Number(invoiceData?.mcharg)) / 100,
       // total: Number(invoiceData?.weight) * Number(invoiceData?.rate) * Number(invoiceData?.qty) + (Number('0.'+invoiceData?.mcharg)) || "",
-      nettotal:
-        parseFloat(  Number(invoiceData?.total) -(Number(invoiceData?.disc) )|| 0).toFixed(2),
+      nettotal: parseFloat(
+        Number(invoiceData?.total) - Number(invoiceData?.disc) || 0
+      ).toFixed(2),
     });
     setFormData({
       ...formData,
-      tamt: parseFloat(invoiceArray?.reduce((accumulator, current) => accumulator + current.total,0)).toFixed(2) ,
+      tamt: parseFloat(
+        invoiceArray?.reduce(
+          (accumulator, current) => accumulator + current.total,
+          0
+        )
+      ).toFixed(2),
       tdisc: invoiceArray?.reduce(
         (accumulator, current) =>
           accumulator + (Number(current.total) * Number(current.disc)) / 100,
@@ -178,7 +185,7 @@ function Invoice2({}) {
     invoiceData?.rate,
     invoiceData?.qty,
     invoiceData?.mcharg,
-    invoiceData?.disc
+    invoiceData?.disc,
   ]);
 
   const printWithoutGST = () => {
@@ -257,8 +264,11 @@ function Invoice2({}) {
       {loading && <Loading />}
       {error && error}
       <Dialog
+        maximized
+        closable={false}
         header="Create Customer"
         visible={modal3Open}
+        className="w-screen h-screen"
         onHide={() => setModal3Open(false)}
       >
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
@@ -318,21 +328,18 @@ function Invoice2({}) {
         <div className="flex items-center">
           <div className="m-3 max-w-96">
             <label className="">Customer Name : </label>
-            <select
-              className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full"
+            <Dropdown
+              options={Customer}
+              optionLabel="name"
+              optionValue="name"
+              placeholder="Select Customer"
+              filterPlaceholder="Enter name"
+              filter
+              className="border-gray-300 border shadow-gray-400 shadow-sm w-96"
               name="customer"
               value={formData?.customer}
               onChange={formDataHandler}
-            >
-              <option selected disabled>
-                --Select Customer--
-              </option>
-              {Customer.map((doc, index) => (
-                <option key={index} value={doc.branch}>
-                  {doc.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <Button
             icon={<PiPlusBold color="#fff" />}
@@ -416,7 +423,6 @@ function Invoice2({}) {
               <input
                 type="tel"
                 placeholder="0000"
-                
                 name="mcharg"
                 value={parseFloat(Number(invoiceData?.mcharg || 0)).toFixed(2)}
                 onChange={invoiceDataHandler}
@@ -494,7 +500,7 @@ function Invoice2({}) {
                 >
                   <td className="w-48 px-2 py-3 flex ">{doc?.desc}</td>
                   <td className="w-20 flex px-2 py-3   truncate">
-                    {parseFloat(doc?.weight ||0).toFixed(2)}
+                    {parseFloat(doc?.weight || 0).toFixed(2)}
                   </td>
                   <td className="w-10 flex px-2 py-3   truncate">
                     {doc?.qty || 0}

@@ -7,7 +7,7 @@ import {
   PiCaretDownBold,
 } from "react-icons/pi";
 import { Avatar, Drawer } from "antd";
-import { confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Collapse } from "antd";
@@ -170,6 +170,7 @@ function NavBar() {
   ];
   return (
     <>
+    <ConfirmDialog/>
       <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md fixed top-0 left-0 right-0 z-40">
         <div className="flex gap-3 items-center">
           <PiListBold size={32} onClick={showDrawer} className=" lg:hidden" />
@@ -296,7 +297,7 @@ function NavBar() {
                 <button
                   type="button"
                   className="w-full flex items-center gap-3 text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                  onClick={logoutBtn}
+                  onClick={confirm1}
                 >
                   <PiPowerBold /> Logout
                 </button>

@@ -51,6 +51,12 @@ export default function Form({ close, Mode, id }) {
       const result = await dispatch(actionDispatch).unwrap();
       toast(result.message);
       dispatch(fetchAllCustomers());
+
+      if (action === "save") {
+        setCustomerData({});
+        setDateBirth("");
+        setAB("");
+      }
     } catch (error) {
       toast("An error occurred");
     }

@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -236,7 +237,7 @@ function Invoice2({}) {
     disptch(updateInvoice({ ...formData, invoice: invoiceArray })).then(() => {
       toast("update");
       console.table(formData);
-      
+
       disptch(fetchAllInvoices());
     });
   };
@@ -314,21 +315,19 @@ function Invoice2({}) {
         <div className="flex items-center">
           <div className="m-3 max-w-96">
             <label className="">Customer Name : </label>
-            <select
-              className="border-gray-300 border shadow-gray-400 shadow-sm py-3 px-3 w-full"
+            <Dropdown
+              className="border-gray-300 border shadow-gray-400 shadow-sm w-96"
               name="customer"
+              filterPlaceholder="Enter name"
+              placeholder="Select Customer"
+              filterInputAutoFocus
               value={formData?.customer}
               onChange={formDataHandler}
-            >
-              <option selected disabled>
-                --Select Customer--
-              </option>
-              {Customer.map((doc, index) => (
-                <option key={index} value={doc.branch}>
-                  {doc.name}
-                </option>
-              ))}
-            </select>
+              options={Customer}
+              optionLabel="name"
+              optionValue="name"
+              filter
+            />
           </div>
           <Button
             icon={<PiPlusBold color="#fff" />}
@@ -534,15 +533,27 @@ function Invoice2({}) {
                   <td className="px-2   w-20  truncate">
                     {parseFloat(doc?.weight || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-10  truncate">{doc?.qty || 0}</td>
+                  <td className="flex px-2   w-10  truncate">
+                    {doc?.qty || 0}
+                  </td>
                   <td className="flex  w-32 px-10  truncate">
                     {parseFloat(doc?.mcharg || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.rate || 0).toFixed(2)}</td>
-                  <td className="flex px-2  w-16  truncate">{parseFloat(doc?.total || 0).toFixed(2)}</td>
-                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.sgst || 0).toFixed(2)}</td>
-                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.cgst || 0).toFixed(2)}</td>
-                  <td className="flex px-2   w-16  truncate">{parseFloat(doc?.igst || 0).toFixed(2)}</td>
+                  <td className="flex px-2   w-16  truncate">
+                    {parseFloat(doc?.rate || 0).toFixed(2)}
+                  </td>
+                  <td className="flex px-2  w-16  truncate">
+                    {parseFloat(doc?.total || 0).toFixed(2)}
+                  </td>
+                  <td className="flex px-2   w-16  truncate">
+                    {parseFloat(doc?.sgst || 0).toFixed(2)}
+                  </td>
+                  <td className="flex px-2   w-16  truncate">
+                    {parseFloat(doc?.cgst || 0).toFixed(2)}
+                  </td>
+                  <td className="flex px-2   w-16  truncate">
+                    {parseFloat(doc?.igst || 0).toFixed(2)}
+                  </td>
                   <td className="flex  px-2  w-24 ">
                     {parseFloat(doc?.nettotal).toFixed(2)}
                   </td>
