@@ -1,24 +1,25 @@
-import { Eye, FilePenLine, Trash, X } from "lucide-react";
+import { FilePenLine, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   fetchAllCustomers,
-  createCustomer,
-  updateCustomer,
   deleteCustomer,
 } from "../Store/Slice/CustomerSlice";
-import CustomerForm from '../layout/CustomerForm'
-import { BiInfoCircle } from "react-icons/bi";
-import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import CustomerForm from "../layout/CustomerForm";
+import {
+  PiPlugBold,
+  PiNotePencilBold,
+  PiTrash,
+  PiPlusBold,
+} from "react-icons/pi";
 import { Dialog } from "primereact/dialog";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
-import toast, { Toast, toastConfig } from "react-simple-toasts";
+import toast from "react-simple-toasts";
 import moment from "moment";
-import { fetchAllState } from "../Store/Slice/StateSlice";
 import RipppleButton from "./RippleButton";
 import { Modal } from "antd";
 import RippleButton from "./RippleButton";
-import { state } from "./TextUtilits";
+import { Button } from "primereact/button";
 
 function CreateCustomer() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -48,91 +49,96 @@ function CreateCustomer() {
         onHide={() => setOpenMenu(false)}
         className="w-full h-full z-auto"
       >
-        <CustomerForm  close={() => setOpenMenu(false)} Mode={openMode} id={id} />
+        <CustomerForm
+          close={() => setOpenMenu(false)}
+          Mode={openMode}
+          id={id}
+        />
       </Dialog>
 
       {loading && <Loading />}
 
-      <div className="lg:flex justify-center">
+      <div className="flex justify-center">
         <div className="">
-          <RipppleButton
-            className="text-base font-semibold bg-blue-500 py-5 px-3 rounded-md
-            m-3 ml-2 md:mx-5 uppercase text-white w-44 shadow-gray-400 text-center
-            shadow-md"
-            open={CreateBtn}
-            name={"Add customer"}
-          ></RipppleButton>
+          <Button
+            label="Create Customer"
+            icon={<PiPlusBold />}
+            className="bg-blue-500 mx-5 my-3  hover:bg-blue-800 duration-300 font-normal text-white px-5 py-3 gap-3"
+            onClick={CreateBtn}
+          ></Button>
 
-          <div className="relative overflow-auto lg:overflow-x-hidden mx-2 md:mx-5 max-h-96 bg-white shadow-gray-400 shadow-md">
+          <div className="relative w-auto overflow-auto lg:overflow-x-hidden mx-2 md:mx-5 bg-white shadow-gray-400 shadow-md">
             <table className="table-fixed">
-              <tr className="text-sm bg-gray-200 flex items-center border-gray-600 border">
-                <th className="py-3 px-2 text-start w-10">#</th>
-                <th className="py-3 px-2 text-start w-48">Party Name</th>
-                <th className="hidden md:block py-3 px-2 text-start w-48 truncate">
+              <tr className="text-sm bg-gray-200 flex items-center ">
+                <th className="py-3 px-2 flex justify-center items-center w-10">#</th>
+                <th className="py-3 px-2 flex justify-center items-center w-48">Party Name</th>
+                <th className="hidden md:block py-3 px-2 flex justify-center items-center w-48 truncate">
                   Address
                 </th>
-                <th className="hidden md:block py-3 px-2 text-start w-36 ">
+                <th className="hidden md:block py-3 px-2 flex justify-center items-center w-36 ">
                   Phone no.
                 </th>
-                <th className="hidden md:block py-3 px-2 text-start w-36 ">
+                <th className="hidden md:block py-3 px-2 flex justify-center items-center w-36 ">
                   mobile no.
                 </th>
-                <th className="hidden md:block py-3 px-2 text-start w-36 ">
+                <th className="hidden md:block py-3 px-2 flex justify-center items-center w-36 ">
                   Email
                 </th>
-                <th className="hidden md:block py-3 px-2 text-start w-36">
+                <th className="hidden md:block py-3 px-2 flex justify-center items-center w-36">
                   Gst no.
                 </th>
-                <th className="hidden md:block py-3 px-2 text-start w-32">
+                <th className="hidden md:block py-3 px-2 flex justify-center items-center w-32">
                   City
                 </th>
-                <th className="py-3 px-2 text-start w-32">Date</th>
-                <th className="py-3 px-2 text-start w-44">Action</th>
+                <th className="py-3 px-2 flex justify-center items-center w-32">Date</th>
+                <th className="py-3 px-2 flex justify-center items-center w-44">Action</th>
               </tr>
+              <tbody>
+
               {Customer?.map((doc, index) => (
                 <tr
                   key={index}
-                  className="text-sm flex items-center border-gray-400 border"
-                >
-                  <td className="py-3 px-2 text-start w-10">{index + 1}</td>
-                  <td className="py-3 px-2 text-start w-48">{doc?.name}</td>
-                  <td className="hidden md:block py-3 px-2 text-start w-48 truncate">
+                  className="text-sm flex items-center h-14"
+                  >
+                  <td className="py-3 px-2 flex justify-center items-center w-10 h-full">{index + 1}</td>
+                  <td className="py-3 px-2 flex justify-center items-center w-48 h-full">{doc?.name}</td>
+                  <td className="hidden md:block py-3 px-2 h-full flex justify-center items-center w-48 truncate">
                     {doc?.address}
                   </td>
-                  <td className="hidden md:block py-3 px-2 text-start w-36 ">
+                  <td className="hidden md:block py-3 px-2 h-full flex justify-center items-center w-36 ">
                     {doc?.phone}
                   </td>
-                  <td className="hidden md:block py-3 px-2 text-start w-36 ">
+                  <td className="hidden md:block py-3 px-2 h-full flex justify-center items-center w-36 ">
                     {doc?.mobile}
                   </td>
-                  <td className="hidden md:block py-3 px-2 text-start w-36 truncate">
+                  <td className="hidden md:block py-3 px-2 h-full flex justify-center items-center w-36 truncate">
                     {doc?.email}
                   </td>
-                  <td className="hidden md:block py-3 px-2 text-start w-36 truncate">
+                  <td className="hidden md:block py-3 px-2 h-full flex justify-center items-center w-36 truncate">
                     {doc?.gst}
                   </td>
-                  <td className="hidden md:block py-3 px-2 text-start w-32">
+                  <td className="hidden md:block py-3 px-2 h-full flex justify-center items-center w-32">
                     {doc?.city}
                   </td>
-                  <td className="py-3 px-2 text-start w-32">
+                  <td className="py-3 px-2 flex justify-center items-center h-full w-32">
                     {moment(doc?.date).format("DD-MM-YYYY")}
                   </td>
-                  <td className="flex gap-2 py-3 justify-start w-44">
-                    <button
+                  <td className="flex gap-2 py-2 px-3 justify-start h-full w-44">
+                    <Button
                       className="bg-blue-500 duration-300 text-white hover:bg-blue-600 w-10 h-10 rounded-full px-3"
                       onClick={() => {
                         setOpenMode("update");
                         setOpenMenu(true);
                         setId(doc?._id);
                       }}
-                    >
-                      <FilePenLine size={18} />
-                    </button>
-                    <RippleButton
+                      >
+                      <PiNotePencilBold size={18} />
+                    </Button>
+                    <Button
                       className="bg-red-500 duration-300 text-white hover:bg-red-600 w-10 h-10 rounded-full px-3"
                       open={() => setModal2Open(true)}
-                      name={<Trash size={18} />}
-                    />
+                      icon={<PiTrash size={18} />}
+                      />
 
                     <Modal
                       centered
@@ -146,7 +152,7 @@ function CreateCustomer() {
                       }}
                       closable={false}
                       onCancel={() => setModal2Open(false)}
-                    >
+                      >
                       <label className="text-3xl ">
                         Are you sure want to delete ?
                       </label>
@@ -154,6 +160,7 @@ function CreateCustomer() {
                   </td>
                 </tr>
               ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -448,7 +455,6 @@ function CreateCustomer() {
 //   );
 // };
 
-export default CreateCustomer;  
+export default CreateCustomer;
 
 // export const  = {Form}:
-

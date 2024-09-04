@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      navigate("/");
+      navigate("/crm");
     }
   }, [navigate]);
 
@@ -26,7 +26,7 @@ export default function LoginPage() {
     if (loginUser.fulfilled.match(resultAction)) {
       const token = localStorage.getItem("token");
       if (token) {
-        navigate(Company ? "/" : "/company");
+        navigate(Company ? "/crm" : "/company");
       }
     }
   }, [dispatch, formData, navigate, Company]);

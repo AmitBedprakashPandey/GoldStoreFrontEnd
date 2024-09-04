@@ -56,6 +56,7 @@ export default function Form({ close, Mode, id }) {
         setCustomerData({});
         setDateBirth("");
         setAB("");
+        close();
       }
     } catch (error) {
       toast("An error occurred");
@@ -77,7 +78,7 @@ export default function Form({ close, Mode, id }) {
   return (
     <>
       {loading && <Loading />}
-      <ConfirmDialog />
+      {/* <ConfirmDialog /> */}
       <div className="p-3 z-40 bg-white relative overflow-hidden">
         <form className="mb-14 grid md:grid-cols-2 gap-3">
           {[
@@ -134,14 +135,14 @@ export default function Form({ close, Mode, id }) {
             <RippleButton
               type="button"
               disabled={!customerData.name || !customerData.address || !customerData.state || !customerData.city || !customerData.mobile || !customerData.pincode}
-              className="py-2 px-4 bg-green-500 font-semibold rounded-md uppercase text-sm disabled:cursor-not-allowed disabled:bg-green-700 text-white"
+              className="py-2 px-4 hover:bg-green-800 duration-300 bg-green-500 font-semibold rounded-md uppercase text-sm disabled:cursor-not-allowed disabled:bg-green-700 text-white"
               open={() => confirmAction("save")}
               name="save"
             />
           ) : (
             <RippleButton
               type="button"
-              className="py-2 px-4 bg-blue-500 font-semibold rounded-md uppercase text-sm text-white"
+              className="py-2 px-4 hover:bg-blue-800 duration-300 bg-blue-500 font-semibold rounded-md uppercase text-sm text-white"
               open={() => confirmAction("update")}
               name="update"
             />
@@ -149,7 +150,7 @@ export default function Form({ close, Mode, id }) {
           <button
             type="button"
             onClick={close}
-            className="py-2 px-4 bg-red-500 font-semibold uppercase rounded-md text-sm text-white"
+            className="py-2 px-4 hover:bg-red-800 duration-300 bg-red-500 font-semibold uppercase rounded-md text-sm text-white"
           >
             Close
           </button>

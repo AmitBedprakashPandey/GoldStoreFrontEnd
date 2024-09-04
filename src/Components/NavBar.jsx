@@ -9,14 +9,14 @@ import {
 import { Avatar, Drawer } from "antd";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate,Outlet } from "react-router-dom";
 import { Collapse } from "antd";
 import { fetchByUser } from "../Store/Slice/CompanySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Store/Slice/AuthSlice";
 import { fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
 import { fetchOneInvoiceNumberGst } from "../Store/Slice/InvoiceNumbergstSlice";
-function NavBar() {
+function NavBar({children }) {
   const [open, setOpen] = useState(false);
   const { Company } = useSelector((state) => state.Company);
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ function NavBar() {
     
     dispatch(fetchByUser(localStorage.getItem("user")));
     if (!localStorage.getItem("token")) {
-      navigate("/login");
+      navigate("/crm/login");
     }
   }, [dispatch, navigate]);
 
@@ -39,7 +39,7 @@ function NavBar() {
 
   const logoutBtn = () => {
     dispatch(logout());
-    navigate("/login");
+    navigate("/crm/login");
   };
 
   const confirm1 = () => {
@@ -119,6 +119,13 @@ function NavBar() {
           >
             Mode
           </Link>
+          <Link
+            to={"master/liveprice"}
+            onClick={onClose}
+            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            Liver Price
+          </Link>
         </ul>
       ),
     },
@@ -183,7 +190,7 @@ function NavBar() {
           </label>
         </div>
         <div className="lg:hidden flex gap-5">
-          <Link to={"/"}>
+          <Link to={"/crm"}>
             <PiHouseDuotone />
           </Link>
           <button onClick={confirm1}>
@@ -193,7 +200,7 @@ function NavBar() {
         <div className="hidden lg:block">
           <ul className=" flex gap-10 items-center">
             <li>
-              <Link to={"/"} className="dropdownbtn text-lg font-semibold">
+              <Link to={"/crm"} className="dropdownbtn text-lg font-semibold">
                 Home
               </Link>
             </li>
@@ -205,34 +212,40 @@ function NavBar() {
                 <div className="dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 mx-auto z-50">
                   <ul className="text-base grid">
                     <Link
-                      to={"/company"}
+                      to={"company"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       CompanyInfo
                     </Link>
                     <Link
-                      to={"/createcustomer"}
+                      to={"createcustomer"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       customer master
                     </Link>
                     <Link
-                      to={"/branch"}
+                      to={"branch"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Branch master
                     </Link>
                     <Link
-                      to={"/bank"}
+                      to={"bank"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Bank
                     </Link>
                     <Link
-                      to={"/mode"}
+                      to={"mode"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Mode
+                    </Link>
+                    <Link
+                      to={"master/liveprice"}
+                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+                    >
+                      Live Price
                     </Link>
                   </ul>
                 </div>
@@ -252,7 +265,7 @@ function NavBar() {
                       Get Invoice (non GST)
                     </Link>
                     <Link
-                      to={"/invoicegst"}
+                      to={"invoicegst"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Get Invoice (GST)
@@ -269,13 +282,13 @@ function NavBar() {
                 <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
                   <ul className="text-base grid">
                     <Link
-                      to={"/quotation"}
+                      to={"quotation"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Quotation (GST)
                     </Link>
                     <Link
-                      to={"/quotationwithoutgst"}
+                      to={"quotationwithoutgst"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Quotation (non GST)
@@ -324,6 +337,11 @@ function NavBar() {
           <PiCopyright size={15} /> 2024
         </div>
       </Drawer>
+
+
+
+      {/* <main className="mt-14">{children}</main> */}
+     
     </>
   );
 }

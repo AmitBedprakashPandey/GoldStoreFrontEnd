@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
 import moment from "moment";
-import { Check, Eye, View, ViewIcon, X } from "lucide-react";
+import { PiCheck, PiEye, PiX, PiMagnifyingGlassDuotone } from "react-icons/pi";
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
@@ -50,121 +50,131 @@ function QuotationWithoutGst(params) {
   };
 
   return (
-    <div className="">
+    <div className="pt-5">
       {loading && <Loading />}
       {Model && <ViewPrint id={id} close={() => setModel(false)} />}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 m-3 max-w-[600px] mx-3 lg:mx-auto bg-white p-3 shadow-gray-400 shadow-md border-gray-300 border rounded-md">
-        <div className="grid md:grid-cols-1">
-          <label className="font-semibold">From : </label>
-          <input
-            type="date"
-            value={moment(from).format("YYYY-MM-DD")}
-            onChange={(e) => setFrom(e.target.value)}
-            className="w-full py-3 border px-3"
-          />
-        </div>
-        <div className="grid md:grid-cols-1">
-          <label className="font-semibold">To : </label>
-          <input
-            type="date"
-            className="w-full py-3 border px-3"
-            value={moment(to).format("YYYY-MM-DD")}
-            onChange={(e) => setTo(e.target.value)}
-          />
-        </div>
-        <div className="">
-          <button
-            className="bg-blue-500 py-5 px-10 rounded-xl w-full lg:mt-8"
-            onClick={findData}
-          >
-            Find
-          </button>
+      <div className=" mx-auto w-12/12 md:w-9/12 lg:w-4/12    ">
+        <div className="grid grid-cols-1 md:grid-cols-3 bg-white m-3 p-3 gap-3 md:gap-5 shadow-gray-400 shadow-md border-gray-300 border rounded-md">
+          <div className="grid md:grid-cols-1">
+            <label className="font-semibold">From : </label>
+            <input
+              type="date"
+              value={moment(from).format("YYYY-MM-DD")}
+              onChange={(e) => setFrom(e.target.value)}
+              className="w-full py-3 border px-3"
+            />
+          </div>
+          <div className="grid md:grid-cols-1">
+            <label className="font-semibold">To : </label>
+            <input
+              type="date"
+              className="w-full py-3 border px-3"
+              value={moment(to).format("YYYY-MM-DD")}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+          <div className="">
+            <button
+              className="flex gap-3 text-lg text-white font-bold items-center justify-center bg-blue-500 py-5 px-10 rounded-xl w-full lg:mt-8"
+              onClick={findData}
+            >
+              <PiMagnifyingGlassDuotone />
+              Find
+            </button>
+          </div>
         </div>
       </div>
-      <div className="relative overflow-x-auto mx-auto flex justify-center w-auto ">
-        <table className="overflow-x-scroll  shadow-gray-400 shadow-md border-gray-300 border rounded-md bg-white">
-          <thead>
-            <tr className="text-sm bg-gray-200">
-              <th className="py-3 px-2 w-20 text-start">#</th>
-              <th className="py-3 px-2 w-20 text-start capitalize">Bill No.</th>
-              <th className="py-3 px-2 w-56 text-start capitalize">Customer</th>
-              <th className="py-3 px-2 w-56 text-start capitalize">
-                Decription
-              </th>
-              <th className="py-3 px-2 w-16 text-start capitalize">weight</th>
 
-              <th className="py-3 px-2 w-16 text-start capitalize">Rate</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">
-                Bal. Amit
-              </th>
-              <th className="py-3 px-2 w-16 text-start capitalize">
-                Grnd. Amt
-              </th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Mode</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
-            </tr>
-          </thead>
-          <tbody className="overflow-hidden overflow-y-scroll ">
-            {invoiceArray?.map((doc, index) => (
-              <tr
-                key={index}
-                className="text-sm bg-gray-50 border-b border-slate-500"
-              >
-                <td className="py-3 px-2 w-20 text-start">{index + 1}</td>
-                <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
-                <td className="py-3 px-2 w-56 text-start">{doc.customer}</td>
-                <td className="py-3 px-2 w-56 text-start">
-                  {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.desc}</span>
-                  ))}
-                </td>
+      <div className=" mx-auto w-12/12 h-9/12 md:w-9/12 lg:12/12">
+        <div className="relative overflow-x-auto bg-white m-3 p-3 shadow-md shadow-slate-500 rounded-md border">
+          <table className="w-full ">
+            <thead className="sticky -top-3">
+              <tr className="text-sm bg-gray-200">
+                <th className="py-3 px-2 w-20 text-start">#</th>
+                <th className="py-3 px-2 w-20 text-start capitalize">
+                  Bill No.
+                </th>
+                <th className="py-3 px-2 w-56 text-start capitalize">
+                  Customer
+                </th>
+                <th className="py-3 px-2 w-56 text-start capitalize">
+                  Decription
+                </th>
+                <th className="py-3 px-2 w-16 text-start capitalize">weight</th>
 
-                <td className="py-3 px-2 w-28 text-start">
-                  {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.weight || 0}</span>
-                  ))}
-                </td>
-                <td className="py-3 px-2 w-16 text-start">
-                  {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.rate || 0}</span>
-                  ))}
-                </td>
-                <td className="py-3 px-2 w-16 text-start">{doc.balamt}</td>
-                <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
-                <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
-                <td className="py-3 px-2 w-16 text-start">
-                  {doc.status === false ? (
-                    <Check
-                      size={36}
-                      strokeWidth={5}
-                      absoluteStrokeWidth
-                      color="green"
-                    />
-                  ) : (
-                    <X
-                      size={36}
-                      strokeWidth={5}
-                      absoluteStrokeWidth
-                      color="red"
-                    />
-                  )}
-                </td>
-                <td className="py-3 px-2 w-16 text-start">
-                  <button
-                    className="bg-blue-500 p-3 rounded-full text-white"
-                    onClick={() => {
-                      setId(doc._id);
-                      setModel(true);
-                    }}
-                  >
-                    <Eye />
-                  </button>
-                </td>
+                <th className="py-3 px-2 w-16 text-start capitalize">Rate</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">
+                  Bal. Amit
+                </th>
+                <th className="py-3 px-2 w-16 text-start capitalize">
+                  Grnd. Amt
+                </th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Mode</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="overflow-hidden overflow-y-scroll ">
+              {invoiceArray?.map((doc, index) => (
+                <tr
+                  key={index}
+                  className="text-sm bg-gray-50 border-b border-slate-500"
+                >
+                  <td className="py-3 px-2 w-20 text-start">{index + 1}</td>
+                  <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
+                  <td className="py-3 px-2 w-56 text-start">{doc.customer}</td>
+                  <td className="py-3 px-2 w-56 text-start">
+                    {doc?.invoice.map((doc, index) => (
+                      <span key={index}>{doc.desc}</span>
+                    ))}
+                  </td>
+
+                  <td className="py-3 px-2 w-28 text-start">
+                    {doc?.invoice.map((doc, index) => (
+                      <span key={index}>{doc.weight || 0}</span>
+                    ))}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    {doc?.invoice.map((doc, index) => (
+                      <span key={index}>{doc.rate || 0}</span>
+                    ))}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">{doc.balamt}</td>
+                  <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
+                  <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    {doc.status === false ? (
+                      <PiCheck
+                        size={36}
+                        strokeWidth={5}
+                        absoluteStrokeWidth
+                        color="green"
+                      />
+                    ) : (
+                      <PiX
+                        size={36}
+                        strokeWidth={5}
+                        absoluteStrokeWidth
+                        color="red"
+                      />
+                    )}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    <button
+                      className="bg-blue-500 p-3 rounded-full text-white"
+                      onClick={() => {
+                        setId(doc._id);
+                        setModel(true);
+                      }}
+                    >
+                      <PiEye />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

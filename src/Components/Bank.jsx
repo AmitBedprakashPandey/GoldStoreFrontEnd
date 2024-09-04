@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BiEdit, BiTrash } from "react-icons/bi";
+import { PiNotePencil, PiTrash, PiFloppyDisk, PiUpload } from "react-icons/pi";
 import { Dialog } from "primereact/dialog";
 import toast, { toastConfig } from "react-simple-toasts";
 import Loading from "./Loading";
@@ -10,6 +10,8 @@ import {
   deletePyBank,
   updatePyBank,
 } from "../Store/Slice/PayBankSlice";
+import { Button } from "primereact/button";
+import { confirmDialog } from "primereact/confirmdialog";
 
 toastConfig({
   duration: 2000,
@@ -63,7 +65,7 @@ export default function BankMode() {
       </Dialog>
 
       <div className="flex justify-center pt-5">
-        <div className="grid place-content-center mx-2 border bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+        <div className="grid place-content-center mx-2 bg-white w-auto p-5 ">
           <div className="my-5 text uppercase font-bold">
             <label>Payment Bank</label>
           </div>
@@ -76,10 +78,11 @@ export default function BankMode() {
               onChange={(e) => setPyBank(e.target.value)}
             />
             <button
-              className="bg-green-500 py-3 rounded-lg my-2 disabled:bg-green-700"
+              className="flex justify-center items-center gap-3 text-white font-bold bg-green-500 hover:bg-green-800 duration-300 py-3 rounded-lg my-2 disabled:bg-green-700"
               onClick={saveBank}
               disabled={!pybank}
             >
+              <PiFloppyDisk/>
               Save
             </button>
           </div>
@@ -88,26 +91,36 @@ export default function BankMode() {
             <thead>
               <tr className="bg-gray-200 w-full">
                 <th className="w-60 py-3 px-4 text-start">Bank</th>
-                <th className="w-48 text-start">Action</th>
+                <th className="w-48 px-4 text-start">Action</th>
               </tr>
             </thead>
             <tbody>
               {PyBank?.map((doc) => (
-                <tr key={doc._id} className="py-2">
+                <tr key={doc._id} className="py-2 h-14">
                   <td className="px-4">{doc.bank}</td>
-                  <td className="flex items-center gap-3 py-2">
-                    <button
-                      className="bg-blue-500 rounded-full p-3 text-white"
+                  <td className="h-full px-4">
+                    <Button
+                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-3 text-white"
                       onClick={() => handleEdit(doc._id)}
                     >
-                      <BiEdit size={16} />
-                    </button>
-                    <button
-                      className="bg-red-500 rounded-full p-3 text-white"
-                      onClick={() => handleDelete(doc._id)}
+                      <PiNotePencil size={16} />
+                    </Button>
+                    <Button
+                      className="bg-red-500 ml-4 hover:bg-red-800 duration-300 rounded-full p-3 text-white"
+                   
+                      onClick={() =>
+                        confirmDialog({
+                          message: "Are you sure you want to delete ?",
+                          header: "Confirmation",
+                          icon: <piInfoBold size={20} />,
+                          defaultFocus: "accept",
+                          acceptClassName: "bg-red-500 p-3 text-white",
+                          rejectClassName: "p-3 mr-3",
+                          accept: () => handleDelete(doc._id),
+                        })}
                     >
-                      <BiTrash size={16} />
-                    </button>
+                      <PiTrash size={16} />
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -121,7 +134,7 @@ export default function BankMode() {
 
 const BankFormModel = ({ id }) => {
   const dispatch = useDispatch();
-  const { PyBank, loading } = useSelector((state) => state.Bank);
+  const { PyBank } = useSelector((state) => state.Bank);
   const [pyBank, setPyBank] = useState("");
 
   useEffect(() => {
@@ -145,12 +158,13 @@ const BankFormModel = ({ id }) => {
         value={pyBank}
         onChange={(e) => setPyBank(e.target.value)}
       />
-      <button
-        className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
+      <Button
+        className="flex justify-center items-center gap-3 py-3 hover:bg-blue-800 duration-300 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
         onClick={updateBank}
       >
+        <PiUpload/>
         Update
-      </button>
+      </Button>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import { Dialog } from "primereact/dialog";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Modal } from "antd";
 import { Button } from "primereact/button";
+import { PiUpload } from "react-icons/pi";
 
 toastConfig({
   duration: 2000,
@@ -69,17 +70,18 @@ export default function Branch(params) {
         header="Update"
         maximizable={false}
         visible={openModel}
+
         
         onHide={() => setOpenModel(!openModel)}
-        className="w-full mx-10"
+        className="w-96 mx-10"
       >
         <FormModel close={() => setOpenModel(!openModel)} id={id} />
       </Dialog>
 
       {loading && <Loading />}
 
-      <div className="flex justify-center bg-white pt-5">
-        <div className="grid place-content-center mx-2 border w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+      <div className="flex justify-center  pt-5">
+        <div className="grid place-content-center mx-2 w-auto p-5 bg-white ">
           <div className="grid">
             <label>Enter Branch</label>
             <input
@@ -90,7 +92,7 @@ export default function Branch(params) {
             />
             <Button
               label="save"
-              className="bg-green-500 text-white uppercase py-3 rounded-lg my-2 disabled:bg-green-600"
+              className="bg-green-500 hover:bg-green-800 duration-300 text-white uppercase py-3 rounded-lg my-2 disabled:bg-green-600"
               onClick={confirm1}
               disabled={branch ? false : true}
             ></Button>
@@ -100,25 +102,25 @@ export default function Branch(params) {
             <thead>
               <tr className="bg-gray-200 w-full">
                 <th className="w-60 py-3 px-4 text-start">Branch</th>
-                <th className="w-48 text-start">Action</th>
+                <th className="w-48 px-4 text-start">Action</th>
               </tr>
             </thead>
             <tbody>
               {Branch.map((doc, index) => (
-                <tr className="py-2">
-                  <td className="px-4">{doc.branch}</td>
-                  <td className="flex items-center gap-3 py-2">
-                    <button
-                      className="bg-blue-500 rounded-full p-3 text-white"
+                <tr className="py-2 h-16">
+                  <td className="px-4 h-full">{doc.branch}</td>
+                  <td className="h-full px-4">
+                    <Button
+                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-3 text-white"
                       onClick={() => {
                         setId(doc._id);
                         setOpenModel(true);
                       }}
                     >
                       <BiEdit size={16} />
-                    </button>
+                    </Button>
                     <Button
-                      className="bg-red-500 rounded-full p-3 text-white "
+                      className="bg-red-500 ml-3 hover:bg-red-800 duration-300 rounded-full p-3 text-white "
                       onClick={() =>
                         confirmDialog({
                           message: "Are you sure you want to delete ?",
@@ -182,9 +184,10 @@ const FormModel = ({ close, id }) => {
           onChange={(e) => setBranch(e.target.value)}
         />
         <button
-          className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
+          className="flex justify-center items-center gap-3 py-3 bg-blue-500 hover:bg-blue-800 duration-300 w-full rounded-lg my-3 uppercase text-white"
           onClick={confirm1}
         >
+          <PiUpload/>
           Update
         </button>
       </div>

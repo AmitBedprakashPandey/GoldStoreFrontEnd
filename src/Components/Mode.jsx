@@ -56,8 +56,8 @@ export default function Mode() {
       <ModeFormModel id={modeId} />
 
       </Dialog>
-      <div className="flex justify-center pt-5 ">
-        <div className="grid place-content-center mx-2 border bg-white w-auto p-5 shadow-gray-400 shadow-md rounded-lg">
+      <div className="flex justify-center h-screen bg-white pt-5 ">
+        <div className="flex flex-col mx-2 ">
           <div className="my-5 text uppercase font-bold">
             <label className="">Payment Mode</label>
           </div>
@@ -70,7 +70,7 @@ export default function Mode() {
               onChange={(e) => setPyMode(e.target.value)}
             />
             <button
-              className="bg-green-500 py-3 rounded-lg my-2 disabled:bg-green-700"
+              className="bg-green-500 hover:bg-green-800 duration-300 py-3 rounded-lg my-2 disabled:bg-green-700"
               onClick={saveMode}
               disabled={pymode ? false : true}
             >
@@ -91,7 +91,7 @@ export default function Mode() {
                   <td className="px-4">{doc.mode}</td>
                   <td className="flex items-center gap-3 py-2">
                     <button
-                      className="bg-blue-500 rounded-full p-3 text-white"
+                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-3 text-white"
                       onClick={() => {
                         setModeId(doc._id);
                         setModeOpenModel(true);
@@ -100,7 +100,7 @@ export default function Mode() {
                       <FilePenLine size={16} />
                     </button>
                     <button
-                      className="bg-red-500 rounded-full p-3 text-white "
+                      className="bg-red-500 hover:bg-red-800 duration-300 rounded-full p-3 text-white "
                       onClick={() => {
                         dispatch(deletePyMode(doc._id)).then((res) => {
                           toast(res?.payload?.message);
@@ -156,7 +156,7 @@ const ModeFormModel = ({ close, id }) => {
             onChange={pyModeHandler}
           />
           <button
-            className="py-3 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
+            className="py-3 bg-blue-500 hover:bg-blue-800 duration-300 w-full rounded-lg my-3 uppercase text-white"
             onClick={update}
           >
             Update

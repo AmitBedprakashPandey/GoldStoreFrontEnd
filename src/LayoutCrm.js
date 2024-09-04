@@ -1,8 +1,7 @@
-import "./App.css";
-import { Route, Routes } from "react-router-dom";
 import PrintGST from "./Components/PrintWithGST";
 import Print from "./Components/Print";
 import CreateCustomer from "./Components/CreateCustomer";
+import { Route, Routes } from "react-router-dom";
 import Navbar from "./Components/NavBar";
 import Quotation from "./Components/Quotation";
 import InvoiceWithoutGst from "./Components/InvoiceWithoutGst";
@@ -14,17 +13,10 @@ import CompanyInfo from "./Components/CompanyInfo";
 import Bank from "./Components/Bank";
 import Mode from "./Components/Mode";
 import QuotationWithoutGst from "./Components/QuatationWithoutGst";
-import FrontPage from "./FrontPage/FrontPage";
-import LayoutCrm from "./LayoutCrm";
-import LivePrice from "./Components/LivePrice";
-function App() {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<FrontPage />} />
-      </Routes>
-      <Routes>
-        <Route path="/crm" element={<HomePage />}>
+export default function LayoutCrm(params) {
+    return<>
+    
+    <Route path="/crm" element={<HomePage />}>
           <Route path="login" element={<LogingPage />} />
           <Route path="print" element={<Print />} />
           <Route path="printgst" element={<PrintGST />} />
@@ -37,11 +29,6 @@ function App() {
           <Route path="company" element={<CompanyInfo />} />
           <Route path="bank" element={<Bank />} />
           <Route path="mode" element={<Mode />} />
-          <Route path="master/liveprice" element={<LivePrice />} />
         </Route>
-      </Routes>
     </>
-  );
 }
-
-export default App;

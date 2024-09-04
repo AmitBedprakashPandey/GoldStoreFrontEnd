@@ -10,7 +10,7 @@ import {
 } from "../Store/Slice/CompanySlice";
 import { fetchAllState } from "../Store/Slice/StateSlice";
 import toast, { toastConfig } from "react-simple-toasts";
-import { Camera } from "lucide-react";
+import { PiCamera, PiFloppyDisk, PiUpload } from "react-icons/pi";
 import { Button } from "primereact/button";
 import { BiInfoCircle } from "react-icons/bi";
 import Compressor from "compressorjs";
@@ -25,8 +25,6 @@ function CompanyInfo() {
 
   const [modal2Open, setModal2Open] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
-
-
 
   toastConfig({
     duration: 2000,
@@ -162,9 +160,9 @@ function CompanyInfo() {
         } flex justify-center`}
       >
         <div
-          className={`w-full md:w-[600px] border-gray-300 border absolute top-15 shadow-gray-400 shadow-lg rounded-lg  p-5 bg-white h-auto `}
+          className={`w-full md:w-[600px] border-gray-300 border absolute top-20 shadow-slate-800 shadow-lg rounded-lg  p-5 bg-white h-auto `}
         >
-          <h1 className="text-3xl font-bold text-center py-5">Company Info</h1>
+          <h1 className="text-lg font-bold text-center py-5">Company Info</h1>
           <div className="flex flex-col gap-5 items-center">
             <div className="relative">
               <input
@@ -178,7 +176,7 @@ function CompanyInfo() {
               {selectedImage ? (
                 <img
                   src={selectedImage}
-                  className="w-40 h-40 rounded-full shadow-gray-500 shadow-md border"
+                  className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border"
                 />
               ) : (
                 <div className="w-[120px] h-[120px] rounded-full shadow-gray-500 shadow-md border flex justify-center items-center">
@@ -189,11 +187,11 @@ function CompanyInfo() {
                 htmlFor="logoimg"
                 className="absolute bottom-0 right-0 border-black border rounded-full p-2 bg-white"
               >
-                <Camera size={20} />
+                <PiCamera size={20} />
               </label>
             </div>
-            <div className="flex flex-col my-2 w-full">
-              <label className="py-1">Company Name</label>
+            <div className="flex flex-col my-1 w-full">
+              <label className="">Company Name</label>
               <input
                 placeholder="Enter company name"
                 name="name"
@@ -203,8 +201,8 @@ function CompanyInfo() {
               />
             </div>
           </div>
-          <div className="flex flex-col my-2">
-            <label className="py-1">Address </label>
+          <div className="flex flex-col my-1">
+            <label className="">Address </label>
             <input
               placeholder="Enter address"
               name="address"
@@ -213,9 +211,9 @@ function CompanyInfo() {
               className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
             />
           </div>
-          <div className="grid md:grid-cols-3 gap-3 my-2">
+          <div className="grid md:grid-cols-3 gap-3 my-1">
             <div className="flex flex-col w-full">
-              <label className="py-1">State </label>
+              <label className="">State </label>
               <select
                 placeholder="Enter address"
                 name="state"
@@ -234,7 +232,7 @@ function CompanyInfo() {
               </select>
             </div>
             <div className="flex flex-col">
-              <label className="py-1">City </label>
+              <label className="">City </label>
               <input
                 placeholder="Enter address"
                 name="city"
@@ -244,7 +242,7 @@ function CompanyInfo() {
               />
             </div>
             <div className="flex flex-col">
-              <label className="py-1">Pin code </label>
+              <label className="">Pin code </label>
               <input
                 placeholder="Enter address"
                 name="pincode"
@@ -254,9 +252,9 @@ function CompanyInfo() {
               />
             </div>
           </div>
-          <div className="grid md:grid-cols-2 gap-3 my-2">
+          <div className="grid md:grid-cols-2 gap-3 my-1">
             <div className="flex flex-col w-full">
-              <label className="py-1">Office Number </label>
+              <label className="">Office Number </label>
               <input
                 placeholder="Enter address"
                 name="office"
@@ -266,7 +264,7 @@ function CompanyInfo() {
               />
             </div>
             <div className="flex flex-col w-full">
-              <label className="py-1">Mobile Number </label>
+              <label className="">Mobile Number </label>
               <input
                 placeholder="Enter address"
                 name="mobile"
@@ -277,7 +275,7 @@ function CompanyInfo() {
             </div>
           </div>
           <div className="flex flex-col w-full">
-            <label className="py-1">Email </label>
+            <label className="">Email </label>
             <input
               type="email"
               placeholder="Enter address"
@@ -287,9 +285,9 @@ function CompanyInfo() {
               className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
             />
           </div>
-          <div className="grid md:grid-cols-2 gap-3 my-2">
+          <div className="grid md:grid-cols-2 gap-3 my-1">
             <div className="flex flex-col w-full">
-              <label className="py-1">PAN Number </label>
+              <label className="">PAN Number </label>
               <input
                 type="text"
                 placeholder="Enter address"
@@ -300,7 +298,7 @@ function CompanyInfo() {
               />
             </div>
             <div className="flex flex-col w-full">
-              <label className="py-1">GST Number </label>
+              <label className="">GST Number </label>
               <input
                 type="text"
                 placeholder="Enter address"
@@ -316,17 +314,21 @@ function CompanyInfo() {
               <>
                 <Button
                   onClick={confirm1}
-                  label="save"
-                  className="w-full capitalize bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-                />
+                  className="w-full flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                >
+                  <PiFloppyDisk />
+                  Save
+                </Button>
               </>
             ) : (
               <>
                 <Button
                   onClick={confirm2}
-                  className="btn w-full capitalize bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold text-center"
-                  label={"update"}
-                />
+                  className="btn flex justify-center gap-3 w-full capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                >
+                  <PiUpload />
+                  Upload
+                </Button>
               </>
             )}
           </div>

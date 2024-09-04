@@ -1,167 +1,188 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchAllInvoices, updateInvoice } from "../Store/Slice/InvoiceSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { DataTable } from "primereact/datatable";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
 import moment from "moment";
-import { Check, Eye, X } from "lucide-react";
+import { PiCheck, PiEye, PiX, PiPrinterDuotone, PiMagnifyingGlassDuotone } from "react-icons/pi";
 
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
 
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
-function Invoices(params) {  
+import { Column } from "primereact/column";
+function Invoices(params) {
   const dispatch = useDispatch();
   const [from, setFrom] = useState();
   const [id, setId] = useState();
   const [Model, setModel] = useState(false);
   const [to, setTo] = useState();
   const [invoiceArray, setInvoiceArray] = useState([]);
-  
+
   useEffect(() => {
     dispatch(fetchAllCustomers());
     dispatch(fetchAllInvoices());
   }, [Model]);
-  
-  const { Invoices, loading } = useSelector((state) => state.Invoices
-  );
-    
+
+  const { Invoices, loading } = useSelector((state) => state.Invoices);
 
   useEffect(() => {
     setInvoiceArray(Invoices);
   }, [Invoices]);
 
   const filteredArray = Invoices
-  ? Invoices.filter((bill) => {
-      const billDate = new Date(bill.quotdate);
-      const fromDateObj = from ? new Date(from) : null;
-      const toDateObj = to ? new Date(to) : null;
+    ? Invoices.filter((bill) => {
+        const billDate = new Date(bill.quotdate);
+        const fromDateObj = from ? new Date(from) : null;
+        const toDateObj = to ? new Date(to) : null;
 
-      const isDateInRange =
-        (!fromDateObj || billDate >= fromDateObj) &&
-        (!toDateObj || billDate <= toDateObj);
+        const isDateInRange =
+          (!fromDateObj || billDate >= fromDateObj) &&
+          (!toDateObj || billDate <= toDateObj);
 
-      return isDateInRange;
-    })
-  : [];
+        return isDateInRange;
+      })
+    : [];
 
   const findData = () => {
     setInvoiceArray(filteredArray);
   };
 
+  const indexNumberBody = () => {};
+
+  const actionBody = () => {};
+
   return (
     <div className="pt-5">
       {loading && <Loading />}
       {Model && <ViewPrint id={id} close={() => setModel(false)} />}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 m-3 max-w-[600px] mx-3 lg:mx-auto bg-white p-3 shadow-gray-400 shadow-md border-gray-300 border rounded-md">
-        <div className="grid md:grid-cols-1">
-          <label className="font-semibold">From : </label>
-          <input
-            type="date"
-            value={moment(from).format("YYYY-MM-DD")}
-            onChange={(e) => setFrom(e.target.value)}
-            className="w-full py-3 border px-3"
-          />
-        </div>
-        <div className="grid md:grid-cols-1">
-          <label className="font-semibold">To : </label>
-          <input
-            type="date"
-            className="w-full py-3 border px-3"
-            value={moment(to).format("YYYY-MM-DD")}
-            onChange={(e) => setTo(e.target.value)}
-          />
-        </div>
-        <div className="">
+      <div className=" mx-auto w-12/12 md:w-9/12 lg:w-4/12    ">
+        <div className="grid grid-cols-1 md:grid-cols-3 bg-white m-3 p-3 gap-3 md:gap-5 shadow-gray-400 shadow-md border-gray-300 border rounded-md">
+          <div className="grid md:grid-cols-1">
+            <label className="font-medium text-sm">From : </label>
+            <input
+              type="date"
+              value={moment(from).format("YYYY-MM-DD")}
+              onChange={(e) => setFrom(e.target.value)}
+              className="w-full py-3 border px-3"
+            />
+          </div>
+          <div className="grid md:grid-cols-1">
+            <label className="font-medium text-sm">To : </label>
+            <input
+              type="date"
+              className="w-full py-3 border px-3"
+              value={moment(to).format("YYYY-MM-DD")}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+          <div className="">
           <button
-            className="bg-blue-500 py-5 px-10 rounded-xl w-full lg:mt-8"
+            className="flex gap-3 text-lg text-white font-bold items-center justify-center bg-blue-500 py-5 px-10 rounded-xl w-full lg:mt-8"
             onClick={findData}
           >
-            Find
+            <PiMagnifyingGlassDuotone />Find
           </button>
         </div>
+        </div>
       </div>
-      <div className="relative overflow-x-auto mx-auto flex justify-center w-auto ">
-      
-        <table className="overflow-x-scroll  shadow-gray-400 shadow-md border-gray-300 border rounded-md bg-white">
-          <thead>
-            <tr className="text-sm bg-gray-200">
-            <th className="py-3 px-2 w-20 text-start">#</th>
-            <th className="py-3 px-2 w-20 text-start capitalize">Bill No.</th>
-            <th className="py-3 px-2 w-56 text-start capitalize">Customer</th>
-              <th className="py-3 px-2 w-56 text-start capitalize">Decription</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">weight</th>
-
-              <th className="py-3 px-2 w-16 text-start capitalize">Rate</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Tax</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Bal. Amit</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Grnd. Amt</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Mode</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
-              <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
-            </tr>
-          </thead>
-          <tbody className="overflow-hidden overflow-y-scroll ">
-            {invoiceArray?.map((doc, index) => (
-             <tr key={index} className="text-sm bg-gray-50 border-b border-slate-500">
-                <td className="py-3 px-2 w-20 text-start">{index +1}</td>
-                <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
-                <td className="py-3 px-2 w-56 text-start">
-                  {doc.customer}
-                </td>
-                <td className="py-3 px-2 w-56 text-start">
-                  {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.desc}</span>
-                  ))}
-                </td>
-
-                <td className="py-3 px-2 w-28 text-start">
-                  {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.weight || 0}</span>
-                  ))}
-                </td>
-                <td className="py-3 px-2 w-16 text-start">
-                  {doc?.invoice.map((doc, index) => (
-                    <span key={index}>{doc.rate || 0}</span>
-                  ))}
-                </td>
-                <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.ttax).toFixed(2)}</td>
-                <td className="py-3 px-2 w-16 text-start">{doc.balamt}</td>
-                <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
-                <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
-                <td className="py-3 px-2 w-16 text-start">
-                  {doc.status === false ? (
-                    <Check
-                      size={36}
-                      strokeWidth={5}
-                      absoluteStrokeWidth
-                      color="green"
-                    />
-                  ) : (
-                    <X
-                      size={36}
-                      strokeWidth={5}
-                      absoluteStrokeWidth
-                      color="red"
-                    />
-                  )}
-                </td>
-                <td className="py-3 px-2 w-16 text-start">
-                  <button
-                    className="bg-blue-500 p-3 rounded-full text-white"
-                    onClick={() => {
-                      setId(doc._id);
-                      setModel(true);
-                    }}
-                  >
-                    <Eye />
-                  </button>
-                </td>
+      <div className=" mx-auto w-12/12 h-9/12 md:w-9/12 lg:12/12">
+        <div className="relative overflow-x-auto bg-white m-3 p-3 shadow-md shadow-slate-500 rounded-md border">
+          <table className="w-full">
+            <thead>
+              <tr className="text-sm bg-gray-200">
+                <th className="py-3 px-2 w-20 text-start">#</th>
+                <th className="py-3 px-2 w-20 text-start  capitalize">
+                  Bill No.
+                </th>
+                <th className="py-3 px-2 w-56 text-start capitalize">
+                  Customer
+                </th>
+                <th className="py-3 px-2 w-56 text-start capitalize">
+                  Decription
+                </th>
+                <th className="py-3 px-2 w-28 text-start capitalize ">
+                  weight (grams)
+                </th>
+                <th className="py-3 px-2 w-16 text-start capitalize ">Rate</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Tax</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">
+                  Bal. Amit
+                </th>
+                <th className="py-3 px-2 w-16 text-start capitalize">
+                  Grnd. Amt
+                </th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Mode</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
+                <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="overflow-hidden overflow-y-scroll ">
+              {invoiceArray?.map((doc, index) => (
+                <tr
+                  key={index}
+                  className="text-sm bg-gray-50 border-b border-slate-500"
+                >
+                  <td className="py-3 px-2 w-20 text-start">{index + 1}</td>
+                  <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
+                  <td className="py-3 px-2 w-56 text-start">{doc.customer}</td>
+                  <td className="py-3 px-2 w-56 text-start">
+                    {doc?.invoice.map((doc, index) => (
+                      <span key={index}>{doc.desc}</span>
+                    ))}
+                  </td>
+
+                  <td className="py-3 px-2 w-28 text-start">
+                    {doc?.invoice.map((doc, index) => (
+                      <span key={index}>{doc.weight || 0}</span>
+                    ))}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    {doc?.invoice.map((doc, index) => (
+                      <span key={index}>{doc.rate || 0}</span>
+                    ))}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    {parseFloat(doc.ttax || 0).toFixed(2)}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">{doc.balamt}</td>
+                  <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
+                  <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    {doc.status === false ? (
+                      <PiCheck
+                        size={36}
+                        strokeWidth={5}
+                        absoluteStrokeWidth
+                        color="green"
+                      />
+                    ) : (
+                      <PiX
+                        size={36}
+                        strokeWidth={5}
+                        absoluteStrokeWidth
+                        color="red"
+                      />
+                    )}
+                  </td>
+                  <td className="py-3 px-2 w-16 text-start">
+                    <button
+                      className="bg-blue-500 p-3 rounded-full text-white"
+                      onClick={() => {
+                        setId(doc._id);
+                        setModel(true);
+                      }}
+                    >
+                      <PiEye />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -173,22 +194,20 @@ const ViewPrint = ({ close, id }) => {
   const [print, setPrint] = useState();
 
   const { Company } = useSelector((state) => state.Company);
-  const { Invoices, loading } = useSelector(
-    (state) => state.Invoices
-  );
+  const { Invoices, loading } = useSelector((state) => state.Invoices);
   const { Customer } = useSelector((state) => state.Customers);
 
   useEffect(() => {
     const invoice = Invoices.filter((doc) => doc._id === id);
     const customer = Customer.filter((doc) => doc.name === invoice[0].customer);
-    setPrint({ ...invoice[0],customer });    
+    setPrint({ ...invoice[0], customer });
   }, [id]);
 
   const onCancel = () => {
-     dispatch(updateInvoice({ ...print, status: true })).then(()=>close())
+    dispatch(updateInvoice({ ...print, status: true })).then(() => close());
   };
   const onUnDoCancel = () => {
-    dispatch(updateInvoice({ ...print, status: false })).then(()=>close())
+    dispatch(updateInvoice({ ...print, status: false })).then(() => close());
   };
   return (
     <>
@@ -199,29 +218,30 @@ const ViewPrint = ({ close, id }) => {
         <div className="md:fixed flex items-center top-0 z-50 m-3">
           <ReactToPrint
             trigger={() => (
-              <button className="rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3 uppercase">
+              <button className="flex  items-center  gap-3 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3 uppercase">
+                <PiPrinterDuotone />
                 print
               </button>
             )}
             content={() => componentRef.current}
           />
-         <button
-            className="ml-3 rounded-md text-xs md:text-sm text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
+          <button
+            className="ml-3 rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
             onClick={print?.status === true ? onUnDoCancel : onCancel}
           >
             {print?.status === true ? "undo cancel" : "cancel"}
           </button>
 
-        <button
-          type="button"
-          onClick={close}
-           className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-2.5 uppercase"
+          <button
+            type="button"
+            onClick={close}
+            className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
           >
-         Close
-        </button>
-          </div>
+            Close
+          </button>
+        </div>
         <div className="A4Page p-3 relative" ref={componentRef}>
-        {print?.status === true ? (
+          {print?.status === true ? (
             <img
               src={Cancel}
               alt="cancel logo"
@@ -232,8 +252,12 @@ const ViewPrint = ({ close, id }) => {
           )}
           <div className="border-black border-2">
             <div className="flex justify-between items-center p-2">
-            <div className="w-28 h-24 ">
-              <img src={Company.logo} className="w-full h-full" alt="holmart" />
+              <div className="w-28 h-24 ">
+                <img
+                  src={Company.logo}
+                  className="w-full h-full"
+                  alt="holmart"
+                />
               </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold">JAI MATA DI</h3>
@@ -249,22 +273,18 @@ const ViewPrint = ({ close, id }) => {
             <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
               <div className="flex flex-col">
                 <label className="text-lg">
-                Invoice No : <span>{print?.quot}</span>
+                  Invoice No : <span>{print?.quot}</span>
                 </label>
                 <label className="text-lg">
                   Date :{" "}
-                  <span>
-                    {moment(print?.quotdate).format("DD-MM-YYYY")}
-                  </span>
+                  <span>{moment(print?.quotdate).format("DD-MM-YYYY")}</span>
                 </label>
                 <label className="text-lg">
                   State Code : <span></span>
                 </label>
               </div>
               <div className="flex flex-col w-72">
-                <label className="text-lg">
-                  Payment Mode : {print?.mode}
-                </label>
+                <label className="text-lg">Payment Mode : {print?.mode}</label>
                 <label className="text-lg">
                   Delivery Mode : <span></span>
                 </label>
@@ -290,44 +310,61 @@ const ViewPrint = ({ close, id }) => {
               </div>
             </div>
             <div className="flex justify-between">
-            <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
+              <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
                 <div className="px-3 py-2 h-32 ">
                   <label className="flex">
                     <label className="w-[120px] font-bold">Billed to :</label>
                     <ul className="">
-                      <li className="text-md text-blue-700 font-bold mt-1 capitalize">{Company?.name}</li>
-                      <li className="text-sm text-blue-700 font-normal">{Company?.address}</li>
+                      <li className="text-md text-blue-700 font-bold mt-1 capitalize">
+                        {Company?.name}
+                      </li>
+                      <li className="text-sm text-blue-700 font-normal">
+                        {Company?.address}
+                      </li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
                   <label className="text-sm font-bold">
-                    Party PAN : <span className="font-normal">{Company?.pan}</span>
+                    Party PAN :{" "}
+                    <span className="font-normal">{Company?.pan}</span>
                   </label>
                   <label className="text-sm font-bold">
-                    Party Mobile No. : <span className="font-normal">{Company?.mobile}</span>
+                    Party Mobile No. :{" "}
+                    <span className="font-normal">{Company?.mobile}</span>
                   </label>
                   <label className="text-sm font-bold">
-                    GSTIN / UIN : <span className="font-normal">{Company?.gst}</span>
+                    GSTIN / UIN :{" "}
+                    <span className="font-normal">{Company?.gst}</span>
                   </label>
                 </div>
               </div>
               <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
                 <div className="px-3 py-2 h-32 ">
                   <label className="flex text-lg">
-                    <label className="w-[120px] text-sm font-bold">Shipped to :</label>
+                    <label className="w-[120px] text-sm font-bold">
+                      Shipped to :
+                    </label>
                     <ul className="text-sm capitalize">
-                      <li className="font-bold text-md">{print?.customer[0]?.name}</li>
+                      <li className="font-bold text-md">
+                        {print?.customer[0]?.name}
+                      </li>
                       <li>{Customer?.address}</li>
                     </ul>
                   </label>
                 </div>
                 <div className="w-full px-3 flex flex-col">
                   <label className="text-sm font-bold">
-                    Party PAN : <span className="font-normal">{print?.customer[0]?.pan}</span>
+                    Party PAN :{" "}
+                    <span className="font-normal">
+                      {print?.customer[0]?.pan}
+                    </span>
                   </label>
                   <label className="text-sm font-bold">
-                    Party Mobile No. : <span className="font-normal">{print?.customer[0]?.mobile}</span>
+                    Party Mobile No. :{" "}
+                    <span className="font-normal">
+                      {print?.customer[0]?.mobile}
+                    </span>
                   </label>
                 </div>
               </div>

@@ -1,5 +1,4 @@
-import { Plus } from "lucide-react";
-import { Trash } from "lucide-react";
+import { PiPlusBold, PiTrash, PiPrinterDuotone, PiFloppyDisk, PiUpload, PiMagnifyingGlass } from "react-icons/pi";
 import { useEffect, useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +23,7 @@ import moment from "moment";
 import Loading from "./Loading";
 import { Modal } from "antd";
 import { Dialog } from "primereact/dialog";
-import { PiPlusBold } from "react-icons/pi";
+
 import { Button } from "primereact/button";
 function Invoice2({}) {
   const [formData, setFormData] = useState();
@@ -260,7 +259,7 @@ function Invoice2({}) {
       >
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
-      <div className="mb-20 mt-10 p-3 bg-white shadow-gray-400 shadow-md rounded-lg overflow-hidden">
+      <div className="mb-20 mt-10 p-3 bg-white overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
             <label className="">Branch Name : </label>
@@ -292,9 +291,10 @@ function Invoice2({}) {
                 className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
               <button
-                className="py-2 px-5 bg-blue-500 rounded-lg text-white font-bold "
+                className="flex items-center gap-3 py-2 px-5 bg-blue-500 rounded-lg text-white font-bold "
                 onClick={quotionIdHandler}
               >
+                <PiMagnifyingGlass />
                 Find
               </button>
             </div>
@@ -505,64 +505,67 @@ function Invoice2({}) {
             className="border p-3 rounded-full bg-blue-500 text-white absolute right-3 top-0 cursor-pointer"
             onClick={AddBtn}
           >
-            <Plus />
+            <PiPlusBold />
           </button>
         </div>
 
         <div className="relative overflow-x-auto mx-0 py-3 flex md:justify-center ">
-          <table
-            border={1}
-            className="overflow-x-scroll lg:overflow-x-hidden shadow-gray-400 shadow-md border-gray-300 border"
-          >
+          <table   className="overflow-x-scroll lg:overflow-x-hidden ">
             <tr className="text-sm bg-gray-100 flex">
-              <th className="w-48 py-3 px-2 flex ">Description</th>
-              <th className="w-20 flex py-3 px-2 ">Wight</th>
-              <th className="w-10 flex py-3 px-2  ">Qty.</th>
-              <th className="w-32 flex py-3 px-2  ">Make Charg.%</th>
-              <th className="w-16 flex py-3 px-2  ">Rate</th>
-              <th className="w-16 flex py-3 px-2  ">Amt.</th>
-              <th className="w-28 flex py-3 px-2  ">Discount %</th>
-              <th className="w-28 flex py-3 px-2  ">Net Tot.</th>
-              <th className="flex py-3 px-2  ">Action</th>
+              <th className="w-48 py-3 justify-center flex ">Description</th>
+              <th className="w-20 flex py-3 justify-center ">Wight</th>
+              <th className="w-10 flex py-3 justify-center  ">Qty.</th>
+              <th className="w-32 flex py-3 justify-center  ">Make Charg.%</th>
+              <th className="w-16 flex py-3 justify-center  ">Rate</th>
+              <th className="w-16 flex py-3 justify-center  ">Amt.</th>
+              <th className="w-16 flex py-3 justify-center  ">SGST</th>
+              <th className="w-16 flex py-3 justify-center  ">CGST</th>
+              <th className="w-16 flex py-3 justify-center  ">IGST</th>
+              <th className="w-28 flex py-3 justify-center  ">Discount %</th>
+              <th className="w-28 flex py-3 justify-center  ">Net Tot.</th>
+              <th className="flex w-16 py-3 justify-center  ">Action</th>
             </tr>
 
             <div className="max-h-48">
               {invoiceArray?.map((doc, index) => (
-                <tr key={index} className="text-sm flex items-center py-1.5">
-                  <td className="w-48 px-2  flex  truncate">{doc?.desc}</td>
-                  <td className="px-2   w-20  truncate">
+                <tr key={index} className="text-sm h-14 flex items-center">
+                  <td className="w-48 h-full justify-center  flex items-center ">{doc?.desc}</td>
+                  <td className="justify-center h-full flex items-center  w-20  ">
                     {parseFloat(doc?.weight || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-10  truncate">
+                  <td className="flex h-full items-center justify-center   w-10  ">
                     {doc?.qty || 0}
                   </td>
-                  <td className="flex  w-32 px-10  truncate">
+                  <td className="flex h-full items-center w-32 px-10  ">
                     {parseFloat(doc?.mcharg || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-16  truncate">
+                  <td className="flex h-full items-center justify-center   w-16  ">
                     {parseFloat(doc?.rate || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2  w-16  truncate">
+                  <td className="flex h-full items-center justify-center  w-16  ">
                     {parseFloat(doc?.total || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-16  truncate">
+                  <td className="flex h-full items-center justify-center   w-16  ">
                     {parseFloat(doc?.sgst || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-16  truncate">
+                  <td className="flex h-full items-center justify-center   w-16  ">
                     {parseFloat(doc?.cgst || 0).toFixed(2)}
                   </td>
-                  <td className="flex px-2   w-16  truncate">
+                  <td className="flex h-full items-center justify-center   w-16  ">
                     {parseFloat(doc?.igst || 0).toFixed(2)}
                   </td>
-                  <td className="flex  px-2  w-24 ">
+                  <td className="w-28 flex h-full items-center justify-center  ">
+                    {parseFloat(doc?.disc || 0).toFixed(2)}
+                  </td>
+                  <td className="flex h-full items-center  justify-center  w-28 ">
                     {parseFloat(doc?.nettotal).toFixed(2)}
                   </td>
-                  <td className="flex gap-2   w-16 ">
+                  <td className="flex h-full items-center gap-2 justify-center  w-16 ">
                     <button
                       className="bg-red-500 duration-300 text-white hover:bg-red-600 p-1.5 rounded-full"
                       onClick={() => RemoveBtn(index)}
                     >
-                      <Trash />
+                      <PiTrash />
                     </button>
                   </td>
                 </tr>
@@ -694,7 +697,7 @@ function Invoice2({}) {
       </div>
       <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t">
         <button
-          className="py-3 px-10 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
+          className="flex gap-3 items-center py-3 px-8 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
           onClick={() => setModal1Open(true)}
           disabled={
             buttonLable === "save" &&
@@ -707,21 +710,24 @@ function Invoice2({}) {
               : true
           }
         >
+          <PiFloppyDisk />
           save
         </button>
         <button
-          className="py-3 px-10 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
+          className="flex gap-3 items-center  py-3 px-8 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
           onClick={() => setModal2Open(true)}
           disabled={buttonLable === "update" ? false : true}
         >
+          <PiUpload />
           update
         </button>
 
         <button
           disabled={buttonLable === "update" ? false : true}
-          className="py-3 px-10 text-white disabled:bg-red-700 bg-red-500 rounded-md hover:bg-red-600 uppercase"
+          className="flex gap-3 items-center  py-3 px-8 text-white disabled:bg-red-700 bg-red-500 rounded-md hover:bg-red-600 uppercase"
           onClick={printWithGST}
         >
+          <PiPrinterDuotone/>
           Print
         </button>
       </div>

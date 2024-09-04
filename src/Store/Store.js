@@ -15,6 +15,7 @@ import StateSlice from "./Slice/StateSlice";
 import QuatationSlice from "./Slice/QuatationSlice";
 import QuatationWithoutGst from "./Slice/QuatationWithoutgstSlice";
 import InvoiceNumbergstSlice from "./Slice/InvoiceNumbergstSlice";
+import LivePriceSlice from "./Slice/LivePriceSlice";
 
 export const Store = configureStore({
   reducer: {
@@ -34,6 +35,7 @@ export const Store = configureStore({
     State: StateSlice,
     Quotation: QuatationSlice,
     QuotationWithoutGst: QuatationWithoutGst,
+    LivePrice:LivePriceSlice
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
