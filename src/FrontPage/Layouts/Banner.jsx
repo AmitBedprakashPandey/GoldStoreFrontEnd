@@ -18,7 +18,7 @@ export default function Banner(params) {
               Discover The best of best
             </strong>
             <p className="text-xs">
-              To open the dial pad in a mobile device using ReactJS
+             We Deliver Quality and Good luck
             </p>
           </motion.div>
           <motion.div

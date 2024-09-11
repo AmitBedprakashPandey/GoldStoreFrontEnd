@@ -8,19 +8,33 @@ import InfoCard from "./Layouts/InfoCard";
 import LivePriceCard from "./Layouts/LivePriceCard";
 import Navbar from "./Layouts/NavBar";
 
+import { getCompany } from "../Store/Slice/LivePriceSlice";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+
 export default function FrontPage(params) {
+  
+  const dispatch = useDispatch()
+
+  const [data,setData]=useState()
+
+  useEffect(()=>{
+      dispatch(getCompany()).then((doc) =>setData(doc.payload))
+  },[dispatch])
+  
+  
   return (
-    <div className="bg-red-950 h-screen eczar-font relative w-full bg-cover bg-center"
+    <div className="bg-red-950 h-screen eczar-font relative w-screen bg-cover bg-center"
     style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
-      <Navbar />
+      <Navbar data={data}/>
       <Banner />
       <LivePriceCard />
       {/* <Catagory /> */}
-      <GalleryCard />
+      {/* <GalleryCard /> */}
       {/* <InfoCard /> */}
 
-      <Footer /> 
+      <Footer data={data} /> 
     </div>
   );
 }

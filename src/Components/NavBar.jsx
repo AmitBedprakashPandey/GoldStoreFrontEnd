@@ -85,35 +85,35 @@ function NavBar({children }) {
       children: (
         <ul className="text-base grid">
           <Link
-            to={"/company"}
+            to={"master/company"}
             onClick={onClose}
             className={`text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer`}
           >
             CompanyInfo
           </Link>
           <Link
-            to={"/createcustomer"}
+            to={"master/createcustomer"}
             onClick={onClose}
             className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
           >
             customer master
           </Link>
           <Link
-            to={"/branch"}
+            to={"master/branch"}
             onClick={onClose}
             className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
           >
             Branch master
           </Link>
           <Link
-            to={"/bank"}
+            to={"master/bank"}
             onClick={onClose}
             className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
           >
             Bank
           </Link>
           <Link
-            to={"/mode"}
+            to={"master/mode"}
             onClick={onClose}
             className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
           >
@@ -135,14 +135,14 @@ function NavBar({children }) {
       children: (
         <ul className="grid">
           <Link
-            to={"/invoice"}
+            to={"invoice/invoice"}
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
             Entry invoice (without GST)
           </Link>
           <Link
-            to={"/invoicegst"}
+            to={"invoice/invoicegst"}
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
@@ -158,14 +158,14 @@ function NavBar({children }) {
       children: (
         <ul className="grid">
           <Link
-            to={"/quotation"}
+            to={"report/quotation"}
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
             get Quotation (GST)
           </Link>
           <Link
-            to={"/quotationwithoutgst"}
+            to={"report/quotationwithoutgst"}
             onClick={onClose}
             className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
           >
@@ -212,31 +212,31 @@ function NavBar({children }) {
                 <div className="dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 mx-auto z-50">
                   <ul className="text-base grid">
                     <Link
-                      to={"company"}
+                      to={"master/company"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       CompanyInfo
                     </Link>
                     <Link
-                      to={"createcustomer"}
+                      to={"master/createcustomer"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       customer master
                     </Link>
                     <Link
-                      to={"branch"}
+                      to={"master/branch"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Branch master
                     </Link>
                     <Link
-                      to={"bank"}
+                      to={"master/bank"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Bank
                     </Link>
                     <Link
-                      to={"mode"}
+                      to={"master/mode"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Mode
@@ -259,13 +259,13 @@ function NavBar({children }) {
                 <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
                   <ul className="text-base grid">
                     <Link
-                      to={"invoice"}
+                      to={"invoice/invoice"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Get Invoice (non GST)
                     </Link>
                     <Link
-                      to={"invoicegst"}
+                      to={"invoice/invoicegst"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Get Invoice (GST)
@@ -282,13 +282,13 @@ function NavBar({children }) {
                 <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
                   <ul className="text-base grid">
                     <Link
-                      to={"quotation"}
+                      to={"report/quotation"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Quotation (GST)
                     </Link>
                     <Link
-                      to={"quotationwithoutgst"}
+                      to={"report/quotationwithoutgst"}
                       className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
                     >
                       Quotation (non GST)
