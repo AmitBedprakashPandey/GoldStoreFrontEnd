@@ -3,7 +3,6 @@ import img2 from "../Assets/images/2.jpg";
 import img3 from "../Assets/images/3.jpg";
 import img4 from "../Assets/images/4.jpg";
 import img5 from "../Assets/images/5.jpg";
-import background from "../Assets/images/background.jpg";
 export default function GalleryCard(params) {
   return (
     <div

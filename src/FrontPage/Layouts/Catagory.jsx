@@ -1,5 +1,4 @@
-import background from "../Assets/images/background.jpg";
-import { motion } from "framer-motion";
+import background from "../Assets/images/background.jpg";import { motion } from "framer-motion";
 import bracelet from "../Assets/images/Catagory/bracelet.jpg";
 import earring from "../Assets/images/Catagory/earring.png";
 import necklace from "../Assets/images/Catagory/necklace.png";

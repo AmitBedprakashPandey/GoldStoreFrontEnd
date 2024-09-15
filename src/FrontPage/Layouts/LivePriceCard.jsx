@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import BackgroundImage from "../Assets/images/background.jpg";
 import { getLivePrice } from "../../Store/Slice/LivePriceSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

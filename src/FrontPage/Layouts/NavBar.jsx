@@ -1,6 +1,5 @@
 import BrandLogo from "../Assets/images/BrandLogo.png";
 export default function Navbar({data}) {
-  console.log(data);
   
   return (
     <div className="relative w-full flex justify-center items-center gap-3 eczar-font p-3 z-40">

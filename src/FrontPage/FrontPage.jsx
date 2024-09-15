@@ -27,7 +27,7 @@ export default function FrontPage(params) {
 
   return (
     <>
-      {loading && <ProgressSpinner/>}
+      {/* {loading && <ProgressSpinner/>} */}
       <div
         className="bg-red-950 h-screen eczar-font relative w-screen bg-cover bg-center overflow-x-hidden"
         style={{ backgroundImage: `url(${BackgroundImage})` }}

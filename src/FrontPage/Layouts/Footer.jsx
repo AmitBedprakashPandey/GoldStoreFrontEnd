@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import BackgroundImage from "../Assets/images/background.jpg";
 export default function Footer({data}) {
   const handleDialPadOpen = () => {
     window.location.href = "tel:" + data?.mobile; // This will open the dial pad

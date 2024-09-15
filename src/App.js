@@ -20,14 +20,15 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<FrontPage />} />
-      </Routes>
-      <Routes>
         <Route path="/crm" element={<HomePage />}>
           <Route path="login" element={<LogingPage />} />
           <Route path="print" element={<Print />} />
           <Route path="printgst" element={<PrintGST />} />
           <Route path="report/quotation" element={<Quotation />} />
-          <Route path="report/quotationwithoutgst" element={<QuotationWithoutGst />} />
+          <Route
+            path="report/quotationwithoutgst"
+            element={<QuotationWithoutGst />}
+          />
           <Route path="invoice/invoicegst" element={<Invoice2 />} />
           <Route path="invoice/invoice" element={<InvoiceWithoutGst />} />
 
