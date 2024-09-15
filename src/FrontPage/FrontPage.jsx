@@ -7,34 +7,40 @@ import GalleryCard from "./Layouts/GalleryCard";
 import InfoCard from "./Layouts/InfoCard";
 import LivePriceCard from "./Layouts/LivePriceCard";
 import Navbar from "./Layouts/NavBar";
-
+import ProgressSpinner from "./Layouts/Loading";
 import { getCompany } from "../Store/Slice/LivePriceSlice";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 
 export default function FrontPage(params) {
-  
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [data,setData]=useState()
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(true);
+    dispatch(getCompany()).then((doc) => {
+      setData(doc.payload);
+      setLoading(false);
+    });
+  }, [dispatch]);
 
-  useEffect(()=>{
-      dispatch(getCompany()).then((doc) =>setData(doc.payload))
-  },[dispatch])
-  
-  
   return (
-    <div className="bg-red-950 h-screen eczar-font relative w-screen bg-cover bg-center"
-    style={{ backgroundImage: `url(${BackgroundImage})` }}
-    >
-      <Navbar data={data}/>
-      <Banner />
-      <LivePriceCard />
-      {/* <Catagory /> */}
-      {/* <GalleryCard /> */}
-      {/* <InfoCard /> */}
+    <>
+      {loading && <ProgressSpinner/>}
+      <div
+        className="bg-red-950 h-screen eczar-font relative w-screen bg-cover bg-center overflow-x-hidden"
+        style={{ backgroundImage: `url(${BackgroundImage})` }}
+      >
+        <Navbar data={data} />
+        <Banner />
+        <LivePriceCard />
+        <Catagory />
+        <GalleryCard />
+        <InfoCard data={data} />
 
-      <Footer data={data} /> 
-    </div>
+        <Footer data={data} />
+      </div>
+    </>
   );
 }

@@ -7,8 +7,8 @@ export default function Footer({data}) {
 
 
   return (
-    <div className={`fixed bottom-0  w-full bg-cover bg-center overflow-hidden flex items-center justify-evenly py-5 z-50 `}
-    style={{ backgroundImage: `url(${BackgroundImage})` }}
+    <div className={`w-full bg-cover bg-center overflow-hidden flex items-center justify-evenly py-5 z-40 `}
+    // style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
       <div className="z-20 ">
         <label className="text-white lg:text-2xl">
@@ -23,12 +23,12 @@ export default function Footer({data}) {
       </div>
 
       <motion.button
-       initial={{scale:0}}
+       initial={{scale:0.8}}
        whileInView={{scale:1}}
        transition={{ease:'easeInOut',duration:0.2}}
        viewport={{once:'true'}}
         onClick={handleDialPadOpen}
-        className="w-56 bg-yellow-500 hover:bg-yellow-600 duration-300 font-bold capitalize py-3 px-6 rounded-lg z-20"
+        className="w-40 text-sm md:text-base md:w-56 bg-yellow-500 hover:bg-yellow-600 duration-300 font-bold capitalize py-3 px-6 rounded-lg z-20"
       >
         +91 {data?.mobile}
       </motion.button>
