@@ -106,7 +106,7 @@ export default function LivePrice(params) {
     setPublicPrice(indexToRemove);
   };
   return (
-    <div className="px-10 pt-5">
+    <div className="px-10 pt-5 bg-white flex-1">
       <Dialog
         visible={visible}
         onHide={() => setVisible(false)}

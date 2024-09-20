@@ -15,6 +15,8 @@ import Mode from "./Components/Mode";
 import QuotationWithoutGst from "./Components/QuatationWithoutGst";
 import FrontPage from "./FrontPage/FrontPage";
 import LivePrice from "./Components/LivePrice";
+import Settings from "./Components/Settings";
+import WebsiteSetting from "./Setting/WebsiteSetting";
 function App() {
   return (
     <>
@@ -23,6 +25,10 @@ function App() {
         <Route path="/crm" element={<HomePage />}>
           <Route path="login" element={<LogingPage />} />
           <Route path="print" element={<Print />} />
+          <Route path="setting" element={<Settings />} >
+          
+          <Route path="websitesetting" element={<WebsiteSetting />} />
+          </Route>
           <Route path="printgst" element={<PrintGST />} />
           <Route path="report/quotation" element={<Quotation />} />
           <Route

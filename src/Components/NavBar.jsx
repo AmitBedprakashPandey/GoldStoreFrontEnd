@@ -5,47 +5,52 @@ import {
   PiPowerBold,
   PiListBold,
   PiCaretDownBold,
+  PiGear,
 } from "react-icons/pi";
-import { Avatar, Drawer } from "antd";
+import { Avatar, Drawer, Collapse } from "antd";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate,Outlet } from "react-router-dom";
-import { Collapse } from "antd";
-import { fetchByUser } from "../Store/Slice/CompanySlice";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Store/Slice/AuthSlice";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
 import { fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
 import { fetchOneInvoiceNumberGst } from "../Store/Slice/InvoiceNumbergstSlice";
-function NavBar({children }) {
+
+function NavBar() {
   const [open, setOpen] = useState(false);
   const { Company } = useSelector((state) => state.Company);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
-    
-    dispatch(fetchByUser(localStorage.getItem("user")));
+    const user = localStorage.getItem("user");
     if (!localStorage.getItem("token")) {
       navigate("/crm/login");
+    } else {
+      dispatch(fetchByUser(user));
     }
   }, [dispatch, navigate]);
 
   useEffect(() => {
-    dispatch(fetchOneInvoicesNumber(Company._id));
-    dispatch(fetchOneInvoiceNumberGst(Company._id));
-    if (Company && Company.name) {
+    if (Company?._id) {
+      dispatch(fetchOneInvoicesNumber(Company._id));
+      dispatch(fetchOneInvoiceNumberGst(Company._id));
+    }
+    if (Company?.name) {
       document.title = Company.name.toUpperCase();
     }
   }, [Company, dispatch]);
 
-  const logoutBtn = () => {
+  const logoutBtn = useCallback(() => {
     dispatch(logout());
     navigate("/crm/login");
-  };
+  }, [dispatch, navigate]);
 
-  const confirm1 = () => {
+  const confirmLogout = useCallback(() => {
     confirmDialog({
       closable: false,
-      message: "Are you sure you want to logout ?",
+      message: "Are you sure you want to logout?",
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
       defaultFocus: "accept",
@@ -53,16 +58,13 @@ function NavBar({children }) {
       rejectClassName: "py-3 px-6 mr-3 border",
       accept: logoutBtn,
     });
-  };
+  }, [logoutBtn]);
 
-  const showDrawer = () => {
-    setOpen(true);
-  };
+  const toggleDrawer = useCallback(() => {
+    setOpen((prevOpen) => !prevOpen);
+  }, []);
 
-  const onClose = () => {
-    setOpen(false);
-  };
-  const items = [
+  const items = useMemo(() => [
     {
       key: "0",
       showArrow: false,
@@ -82,107 +84,29 @@ function NavBar({children }) {
     {
       key: "1",
       label: "Master",
-      children: (
-        <ul className="text-base grid">
-          <Link
-            to={"master/company"}
-            onClick={onClose}
-            className={`text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer`}
-          >
-            CompanyInfo
-          </Link>
-          <Link
-            to={"master/createcustomer"}
-            onClick={onClose}
-            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            customer master
-          </Link>
-          <Link
-            to={"master/branch"}
-            onClick={onClose}
-            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Branch master
-          </Link>
-          <Link
-            to={"master/bank"}
-            onClick={onClose}
-            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Bank
-          </Link>
-          <Link
-            to={"master/mode"}
-            onClick={onClose}
-            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Mode
-          </Link>
-          <Link
-            to={"master/liveprice"}
-            onClick={onClose}
-            className="text-lg py-5 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-          >
-            Liver Price
-          </Link>
-        </ul>
-      ),
+      children: <NavLinkList onClose={toggleDrawer} links={masterLinks} />,
     },
     {
       key: "2",
       label: "Enter Invoice",
-      children: (
-        <ul className="grid">
-          <Link
-            to={"invoice/invoice"}
-            onClick={onClose}
-            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            Entry invoice (without GST)
-          </Link>
-          <Link
-            to={"invoice/invoicegst"}
-            onClick={onClose}
-            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            Entry invoice (GST)
-          </Link>
-        </ul>
-      ),
+      children: <NavLinkList onClose={toggleDrawer} links={invoiceLinks} />,
     },
     {
       key: "3",
       label: "Reports",
-
-      children: (
-        <ul className="grid">
-          <Link
-            to={"report/quotation"}
-            onClick={onClose}
-            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            get Quotation (GST)
-          </Link>
-          <Link
-            to={"report/quotationwithoutgst"}
-            onClick={onClose}
-            className="text-lg px-5 py-5 hover:bg-gray-300 capitalize cursor-pointer"
-          >
-            get Quotation (non GST)
-          </Link>
-        </ul>
-      ),
+      children: <NavLinkList onClose={toggleDrawer} links={reportLinks} />,
     },
-  ];
+  ], [Company, toggleDrawer]);
+
   return (
     <>
-    <ConfirmDialog/>
-      <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md fixed top-0 left-0 right-0 z-40">
+      <ConfirmDialog />
+      <div className="bg-yellow-500 py-3 px-5 lg:px-24 text-2xl flex justify-between items-center shadow-slate-400 shadow-md  top-0 left-0 right-0 z-40">
         <div className="flex gap-3 items-center">
-          <PiListBold size={32} onClick={showDrawer} className=" lg:hidden" />
+          <PiListBold size={32} onClick={toggleDrawer} className=" lg:hidden" />
           <img
             src={Company?.logo}
+            alt="Company Logo"
             className="w-8 h-8 md:w-10 md:h-10 lg:w-10 lg:h-10 overflow-hidden rounded-lg bg-cover bg-center"
           />
           <label className="uppercase font-bold text-sm md:text-lg lg:text-xl">
@@ -190,160 +114,109 @@ function NavBar({children }) {
           </label>
         </div>
         <div className="lg:hidden flex gap-5">
-          <Link to={"/crm"}>
+          <Link to="/crm">
             <PiHouseDuotone />
           </Link>
-          <button onClick={confirm1}>
+          <button onClick={confirmLogout}>
             <PiPowerBold />
           </button>
         </div>
-        <div className="hidden lg:block">
-          <ul className=" flex gap-10 items-center">
-            <li>
-              <Link to={"/crm"} className="dropdownbtn text-lg font-semibold">
-                Home
-              </Link>
-            </li>
-            <li>
-              <div className="relative">
-                <button className="dropdownbtn text-lg font-semibold">
-                  Master
-                </button>
-                <div className="dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 mx-auto z-50">
-                  <ul className="text-base grid">
-                    <Link
-                      to={"master/company"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      CompanyInfo
-                    </Link>
-                    <Link
-                      to={"master/createcustomer"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      customer master
-                    </Link>
-                    <Link
-                      to={"master/branch"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Branch master
-                    </Link>
-                    <Link
-                      to={"master/bank"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Bank
-                    </Link>
-                    <Link
-                      to={"master/mode"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Mode
-                    </Link>
-                    <Link
-                      to={"master/liveprice"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Live Price
-                    </Link>
-                  </ul>
-                </div>
-              </div>
-            </li>
-            <li>
-              <div className="relative">
-                <button className="dropdownbtn text-lg font-semibold">
-                  Invoice
-                </button>
-                <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
-                  <ul className="text-base grid">
-                    <Link
-                      to={"invoice/invoice"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Get Invoice (non GST)
-                    </Link>
-                    <Link
-                      to={"invoice/invoicegst"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Get Invoice (GST)
-                    </Link>
-                  </ul>
-                </div>
-              </div>
-            </li>
-            <li>
-              <div className="relative">
-                <button className="dropdownbtn text-lg font-semibold">
-                  Report
-                </button>
-                <div className=" dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
-                  <ul className="text-base grid">
-                    <Link
-                      to={"report/quotation"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Quotation (GST)
-                    </Link>
-                    <Link
-                      to={"report/quotationwithoutgst"}
-                      className="py-2 px-3 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                    >
-                      Quotation (non GST)
-                    </Link>
-                  </ul>
-                </div>
-              </div>
-            </li>
-            <li className=" relative">
-              <div className="dropdownbtn flex items-center gap-3 py-2">
-                <PiUserCircle color="#000" />
-                <span className="text-base italic truncate">
-                  {localStorage.getItem("user")}
-                </span>
-
-                <PiCaretDownBold size={16} />
-              </div>
-              <div className="dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute  top-9 right-0 z-50">
-                <button
-                  type="button"
-                  className="w-full flex items-center gap-3 text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
-                  onClick={confirm1}
-                >
-                  <PiPowerBold /> Logout
-                </button>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <NavBarLinks user={localStorage.getItem("user")} confirmLogout={confirmLogout} />
       </div>
-      <Drawer
-        closable={false}
-        onClose={onClose}
-        open={open}
-        placement="left"
-        style={{ padding: 0 }}
-      >
-        <Collapse
-          items={items}
-          accordion
-          bordered={false}
-          className="bg-yellow-100 rounded-none p-0 "
-        />
+      <Drawer closable={false} onClose={toggleDrawer} open={open} placement="left">
+        <Collapse items={items} accordion bordered={false} className="bg-yellow-100 rounded-none p-0 " />
         <div className="py-2 absolute bottom-0 left-0 right-0 flex justify-center items-center">
-          copyright
           <PiCopyright size={15} /> 2024
         </div>
       </Drawer>
-
-
-
-      {/* <main className="mt-14">{children}</main> */}
-     
     </>
   );
 }
+
+const NavLinkList = ({ links, onClose }) => (
+  <ul className="text-base grid">
+    {links.map(({ to, label }) => (
+      <Link
+        key={to}
+        to={to}
+        onClick={onClose}
+        className="text-base py-3 px-5 w-full hover:bg-red-100 capitalize duration-300 cursor-pointer"
+      >
+        {label}
+      </Link>
+    ))}
+  </ul>
+);
+
+const NavBarLinks = ({ user, confirmLogout }) => (
+  <div className="hidden lg:block">
+    <ul className="flex gap-10 items-center">
+      <NavBarLink to="/crm" label="Home" />
+      <NavBarDropdown label="Master" links={masterLinks} />
+      <NavBarDropdown label="Invoice" links={invoiceLinks} />
+      <NavBarDropdown label="Report" links={reportLinks} />
+      <li className="relative">
+        <div className="dropdownbtn flex items-center gap-3 py-2">
+          <PiUserCircle color="#000" />
+          <span className="text-base italic truncate">{user}</span>
+          <PiCaretDownBold size={16} />
+        </div>
+        <div className="dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute top-9 right-0 z-50">
+          {/* <Link
+            to="setting"
+            className="w-full flex items-center gap-3 text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
+          >
+            <PiGear /> Settings
+          </Link> */}
+          <button
+            type="button"
+            className="w-full flex items-center gap-3 text-start px-4 py-2 text-lg hover:bg-red-100 capitalize duration-300 cursor-pointer"
+            onClick={confirmLogout}
+          >
+            <PiPowerBold /> Logout
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+);
+
+const NavBarLink = ({ to, label }) => (
+  <li>
+    <Link to={to} className="dropdownbtn text-base font-semibold">
+      {label}
+    </Link>
+  </li>
+);
+
+const NavBarDropdown = ({ label, links }) => (
+  <li>
+    <div className="relative">
+      <button className="dropdownbtn text-base font-semibold py-3">{label}</button>
+      <div className="dropdown-menu overflow-hidden w-56 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
+        <NavLinkList links={links} onClose={() => {}} />
+      </div>
+    </div>
+  </li>
+);
+
+const masterLinks = [
+  { to: "master/company", label: "Company Info" },
+  { to: "master/createcustomer", label: "Customer Master" },
+  { to: "master/branch", label: "Branch Master" },
+  { to: "master/bank", label: "Bank" },
+  { to: "master/mode", label: "Mode" },
+  { to: "master/liveprice", label: "Live Price" },
+];
+
+const invoiceLinks = [
+  { to: "invoice/invoice", label: "Entry Invoice (non GST)" },
+  { to: "invoice/invoicegst", label: "Entry Invoice (GST)" },
+];
+
+const reportLinks = [
+  { to: "report/quotation", label: "Get Quotation (GST)" },
+  { to: "report/quotationwithoutgst", label: "Get Quotation (non GST)" },
+];
 
 export default NavBar;

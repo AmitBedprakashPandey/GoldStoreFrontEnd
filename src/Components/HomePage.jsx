@@ -12,14 +12,15 @@ function HomePage(params) {
   }, []);
 
   return (
-    <>
-    <Navbar />
-    
-    <div className=" bg-white w-screen h-screen">
-      <div className="mt-14" />
-<Outlet/>
+    <div className="relative bg-slate-200 w-screen h-fit">
+      <Navbar />
+
+      <div className="w-full h-full">
+        <Outlet />
+
+      </div>
+      
     </div>
-      </>
   );
 }
 export default HomePage;
