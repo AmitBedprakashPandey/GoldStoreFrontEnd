@@ -59,7 +59,7 @@ export default function Catagory(params) {
       <h1 className="2xl:ml-[15%] text-orange-300 font-bold text-4xl p-4 z-30">
        Jewellery Catagory
       </h1>
-      <div className="w-full custom-scroll-on-mobile lg:flex lg:justify-center  py-5">
+      <div className="w-full sm custom-scroll-on-mobile lg:flex lg:justify-center  py-5">
         <div className="flex">
           {jewelryTypes.map((item, index) => (
             <Item data={item} key={index}  />

@@ -21,30 +21,51 @@
   background-position: center;
   opacity: 1;
   z-index: 10;
-  pointer-events: none; /* Ensures the background is not interactive */
+  pointer-events: none;
+  /* Ensures the background is not interactive */
 }
 
 /* Custom class to show scrollbar only on mobile */
 .custom-scroll-on-mobile {
-  overflow-x: hidden; /* Hide scrollbar by default */
+  overflow-x: hidden;
+  /* Hide scrollbar by default */
 }
 
 /* Show scrollbar on mobile devices */
 @media (max-width: 640px) {
   .custom-scroll-on-mobile {
-    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
   }
 
   .custom-scroll-on-mobile::-webkit-scrollbar {
-    height: 8px; /* Adjusts height for horizontal scrollbar */
+    height: 8px;
+    /* Adjusts height for horizontal scrollbar */
   }
 
   .custom-scroll-on-mobile::-webkit-scrollbar-thumb {
-    background-color: #7f1d1d; /* Custom color for scrollbar thumb */
+    background-color: #7f1d1d;
+    /* Custom color for scrollbar thumb */
     border-radius: 4px;
   }
 
   .custom-scroll-on-mobile::-webkit-scrollbar-track {
-    background-color: #450a0a; /* Custom color for scrollbar track */
+    background-color: #450a0a;
+    /* Custom color for scrollbar track */
   }
+}
+
+.p-carousel-indicator {
+  background-color: white;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -ms-border-radius: 100%;
+  -o-border-radius: 100%;
+}
+.p-highlight {
+  background-color: red;
+
 }

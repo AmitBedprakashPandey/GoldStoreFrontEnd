@@ -33,7 +33,6 @@ export const getLivePrice = createAsyncThunk(
     }
   }
 );
-
 export const getCompany = createAsyncThunk(
   "FrontPage/getCompany",
   async (data, { rejectWithValue }) => {

@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { confirmDialog } from "primereact/confirmdialog";
 import {
   fetchByUser,
   createCompany,
@@ -15,19 +15,18 @@ import {
   PiUpload,
   PiBuildings,
   PiInfoBold,
-  PiCaretRight,
-  PiCaretRightBold,
   PiYoutubeLogoFill,
   PiFacebookLogoFill,
   PiInstagramLogoFill,
   PiWhatsappLogoFill,
   PiMapPinAreaFill,
+  PiSlideshow,
+  PiTrash
 } from "react-icons/pi";
 import { Button } from "primereact/button";
 import { BiInfoCircle } from "react-icons/bi";
 import Compressor from "compressorjs";
 import { state } from "./TextUtilits";
-import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 function CompanyInfo() {
   const navigate = useNavigate();
@@ -37,9 +36,8 @@ function CompanyInfo() {
   const [formData, setformData] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImage2, setSelectedImage2] = useState(null);
+  const [bannerList, setBannerList] = useState([]);
 
-  const [modal2Open, setModal2Open] = useState(false);
-  const [modal1Open, setModal1Open] = useState(false);
 
   toastConfig({
     duration: 2000,
@@ -56,7 +54,8 @@ function CompanyInfo() {
       } else {
         setformData(doc.payload);
         setSelectedImage(doc.payload.logo);
-        setSelectedImage2(doc.payload.ownerimg)
+        setSelectedImage2(doc.payload.ownerimg);
+        setBannerList(doc.payload?.banner)
         // setButtonName("u");
       }
     });
@@ -71,26 +70,36 @@ function CompanyInfo() {
   };
 
   const onSubmit = () => {
-    dispatch(createCompany({ ...formData, logo: selectedImage,ownerimg:selectedImage2 })).then(
-      (doc) => {
-        if (!doc.error) {
-          setTimeout(() => {
-            navigate("/");
-          }, 2000);
-        }
+    dispatch(
+      createCompany({
+        ...formData,
+        logo: selectedImage,
+        ownerimg: selectedImage2,
+        banner: bannerList,
+      })
+    ).then((doc) => {
+      if (!doc.error) {
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       }
-    );
+    });
   };
 
   const onUpdate = () => {
-    dispatch(updateCompany({ ...formData, logo: selectedImage,ownerimg:selectedImage2 })).then(
-      (doc) => {
-        if (!doc.error) {
-          dispatch(fetchByUser());
-          toast(doc.payload.message);
-        }
+    dispatch(
+      updateCompany({
+        ...formData,
+        logo: selectedImage,
+        ownerimg: selectedImage2,
+        banner: bannerList,
+      })
+    ).then((doc) => {
+      if (!doc.error) {
+        dispatch(fetchByUser());
+        toast(doc.payload.message);
       }
-    );
+    });
   };
 
   const confirm1 = () => {
@@ -168,9 +177,63 @@ function CompanyInfo() {
         reject(error);
       }
     });
-  }
+  };
+
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const handleBannerImageChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    let validFiles = [];
+
+    selectedFiles.forEach((file) => {
+      // Check if file size is under 500KB
+      if (file.size <= 500 * 1024) {
+        validFiles.push(file);
+      } else {
+        alert(
+          `The file ${file.name} is larger than 500KB and will not be uploaded.`
+        );
+      }
+    });
+
+    if (validFiles.length + bannerList.length > 4) {
+      alert("You can only upload up to 4 images in total.");
+      return;
+    }
+
+    const compressAndConvertImages = async (files) => {
+      const newImages = [];
+
+      for (const file of files) {
+        // Compress the image
+        await new Promise((resolve, reject) => {
+          new Compressor(file, {
+            quality: 0.6, // Adjust the quality as needed
+            success: async (compressedResult) => {
+              // Convert the compressed image to Base64
+              const base64Image = await blobUrlToBase64(compressedResult);
+
+              newImages.push(base64Image);
+              resolve();
+            },
+            error: (err) => {
+              console.error(err);
+              reject(err);
+            },
+          });
+        });
+      }
+
+      setBannerList([...newImages]);
+    };
+
+    compressAndConvertImages(validFiles);
+  };
+
+  const deleteBanner=(indexBanner)=>{
+    const newArray = bannerList.filter((_, index) => index !== indexBanner);
+    setBannerList(newArray)
+  }
   return (
     <>
       {/* <ConfirmDialog /> */}
@@ -206,6 +269,21 @@ function CompanyInfo() {
                 />
               </button>
               <small>Owner Info</small>
+            </div>
+            <hr className="w-36 border border-slate-400" />
+            <div className="flex flex-col items-center">
+              <button
+                onClick={() => setActiveIndex(2)}
+                className={`${
+                  activeIndex === 2 ? "bg-cyan-500" : "bg-white"
+                } border-2 border-cyan-500 w-14 h-14 rounded-full flex justify-center items-center`}
+              >
+                <PiSlideshow
+                  size={30}
+                  color={activeIndex === 2 ? "#fff" : "#000"}
+                />
+              </button>
+              <small>Banner</small>
             </div>
           </div>
         </div>
@@ -375,151 +453,210 @@ function CompanyInfo() {
         )}
         {activeIndex === 1 && (
           <div className="flex justify-center">
-
-          <div className="md:w-[600px] bg-white p-5 mx-3 rounded-md shadow-md shadow-slate-500">
-            <div className="flex flex-col items-center w-full"> 
-              <div className="relative w-24 h-24">
-                <input
-                  id="logoimg"
-                  type="file"
-                  accept=".png, .jpg, .jpeg"
-                  name="logo"
-                  onChange={handleImageChange2}
-                  className="hidden"
-                />
-                {selectedImage2 ? (
-                  <img
-                    src={selectedImage2}
-                    className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border"
+            <div className="md:w-[600px] bg-white p-5 mx-3 rounded-md shadow-md shadow-slate-500">
+              <div className="flex flex-col items-center w-full">
+                <div className="relative w-24 h-24">
+                  <input
+                    id="logoimg"
+                    type="file"
+                    accept=".png, .jpg, .jpeg"
+                    name="logo"
+                    onChange={handleImageChange2}
+                    className="hidden"
                   />
-                ) : (
-                  <div className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border flex justify-center items-center">
-                    Logo
-                  </div>
-                )}
-                <label
-                  htmlFor="logoimg"
-                  className="absolute bottom-0 right-0 border-slate-500 border rounded-full p-1 bg-white"
-                >
-                  <PiCamera size={20} strokeWidth={2} />
-                </label>
-              </div>
-              <div className="flex flex-col my-1 w-full">
-                <label className="">Owner Name</label>
-                <input
-                  placeholder="Enter name"
-                  name="owner"
-                  value={formData?.owner}
-                  onChange={formDataHandler}
-                  className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
-                />
-              </div>
-              <div className="flex items-center my-3 w-full gap-3">
-                <label className="">
-                  <PiYoutubeLogoFill color="red" size={40} />
-                </label>
-                <input
-                  placeholder="Enter Link"
-                  name="youtube"
-                  value={formData?.youtube}
-                  onChange={formDataHandler}
-                  className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
-                />
-              </div>
-              <div className="flex items-center gap-3 my-3 w-full">
-                <label className="">
-                  <PiFacebookLogoFill size={40} color="blue" />
-                </label>
-                <input
-                  placeholder="Enter link"
-                  name="facebook"
-                  value={formData?.facebook}
-                  onChange={formDataHandler}
-                  className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
-                />
-              </div>
-              <div className="flex items-center gap-3 my-3 w-full">
-                <label className="">
-                  <PiInstagramLogoFill size={40} className="text-orange-500" />
-                </label>
-                <input
-                  type="url"
-                  placeholder="Enter link"
-                  name="insta"
-                  value={formData?.insta}
-                  onChange={formDataHandler}
-                  className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
-                />
-              </div>
-              <div className="flex items-center gap-3 my-3 w-full">
-                <label className="">
-                  <PiWhatsappLogoFill size={40} className="text-green-500" />
-                </label>
-
-                <InputNumber
-                  type="url"
-                  useGrouping={false}
-                  placeholder="Enter number"
-                  name="whatsapp"
-                  value={formData?.whatsapp}
-                  onChange={(e) => formDataHandler(e.originalEvent)}
-                  inputClassName=" py-3 px-2 w-full "
-                  className="w-full border shadow-slate-200 shadow-md  rounded-md"
-                />
-              </div>
-              <div className="flex items-center gap-3 my-3 w-full">
-                <label className="">
-                  <PiMapPinAreaFill size={40} className="text-blue-800" />
-                </label>
-
-                <input
-                  type="url"
-                  useGrouping={false}
-                  placeholder="Enter link"
-                  name="map"
-                  value={formData?.map}
-                  onChange={formDataHandler}
-                 className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
-                />
-              </div>
-            </div>
-            <div className="mt-10 ">
-              {buttonName === "s" ? (
-                <div className="flex justify-between px-3">
-                  <Button
-                    onClick={() => setActiveIndex(0)}
-                    className="flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                  {selectedImage2 ? (
+                    <img
+                      src={selectedImage2}
+                      className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border flex justify-center items-center">
+                      Logo
+                    </div>
+                  )}
+                  <label
+                    htmlFor="logoimg"
+                    className="absolute bottom-0 right-0 border-slate-500 border rounded-full p-1 bg-white"
                   >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={confirm1}
-                    className="flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-                  >
-                    <PiFloppyDisk />
-                    Save
-                  </Button>
+                    <PiCamera size={20} strokeWidth={2} />
+                  </label>
                 </div>
-              ) : (
-                <div className="flex justify-between px-3">
-                  <Button
-                    onClick={() => setActiveIndex(0)}
-                    className="btn flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={confirm2}
-                    className="btn flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-                  >
-                    <PiUpload />
-                    Upload
-                  </Button>
+                <div className="flex flex-col my-1 w-full">
+                  <label className="">Owner Name</label>
+                  <input
+                    placeholder="Enter name"
+                    name="owner"
+                    value={formData?.owner}
+                    onChange={formDataHandler}
+                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  />
                 </div>
-              )}
+                <div className="flex items-center my-3 w-full gap-3">
+                  <label className="">
+                    <PiYoutubeLogoFill color="red" size={40} />
+                  </label>
+                  <input
+                    placeholder="Enter Link"
+                    name="youtube"
+                    value={formData?.youtube}
+                    onChange={formDataHandler}
+                    className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  />
+                </div>
+                <div className="flex items-center gap-3 my-3 w-full">
+                  <label className="">
+                    <PiFacebookLogoFill size={40} color="blue" />
+                  </label>
+                  <input
+                    placeholder="Enter link"
+                    name="facebook"
+                    value={formData?.facebook}
+                    onChange={formDataHandler}
+                    className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  />
+                </div>
+                <div className="flex items-center gap-3 my-3 w-full">
+                  <label className="">
+                    <PiInstagramLogoFill
+                      size={40}
+                      className="text-orange-500"
+                    />
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="Enter link"
+                    name="insta"
+                    value={formData?.insta}
+                    onChange={formDataHandler}
+                    className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  />
+                </div>
+                <div className="flex items-center gap-3 my-3 w-full">
+                  <label className="">
+                    <PiWhatsappLogoFill size={40} className="text-green-500" />
+                  </label>
+
+                  <InputNumber
+                    type="url"
+                    useGrouping={false}
+                    placeholder="Enter number"
+                    name="whatsapp"
+                    value={formData?.whatsapp}
+                    onChange={(e) => formDataHandler(e.originalEvent)}
+                    inputClassName=" py-3 px-2 w-full "
+                    className="w-full border shadow-slate-200 shadow-md  rounded-md"
+                  />
+                </div>
+                <div className="flex items-center gap-3 my-3 w-full">
+                  <label className="">
+                    <PiMapPinAreaFill size={40} className="text-blue-800" />
+                  </label>
+
+                  <input
+                    type="url"
+                    useGrouping={false}
+                    placeholder="Enter link"
+                    name="map"
+                    value={formData?.map}
+                    onChange={formDataHandler}
+                    className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between w-full py-5">
+                <Button
+                  onClick={() => setActiveIndex(0)}
+                  label="Back"
+                  className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                ></Button>
+                <Button
+                  onClick={() => setActiveIndex(2)}
+                  label="Next"
+                  className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                ></Button>
+              </div>
             </div>
           </div>
+        )}
+
+        {activeIndex === 2 && (
+          <div className="flex justify-center">
+            <div className="md:w-[600px] bg-white p-5 mx-3 rounded-md shadow-md shadow-slate-500">
+              <div className="w-full">
+                <div className="w-full flex items-center relative">
+                  <div className="grid">
+                    <input
+                      id="logoimg"
+                      type="file"
+                      accept=".png, .jpg, .jpeg"
+                      name="logo"
+                      multiple
+                      onChange={handleBannerImageChange}
+                      disabled={bannerList.length >= 4}
+                      className="w-"
+                    />
+                    <small className="text-red-500 font-semibold">
+                      Select image max size 5000x2500px and max 4 images only
+                      less then 500kb
+                    </small>
+                  </div>
+                </div>
+
+                <div
+                  style={{ display: "grid", gap: "10px", marginTop: "20px" }}
+                >
+                  {bannerList.map((image, index) => (
+                    <div className="relative">
+                      <Button onClick={()=>deleteBanner(index)} icon={<PiTrash />} className="w-10 h-10 absolute top-0 right-0 text-white bg-red-500 rounded-full" />
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`uploaded-${index}`}
+                      // width={100}
+                      // height={100}
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-10 ">
+                {buttonName === "s" ? (
+                  <div className="flex justify-between px-3">
+                    <Button
+                      onClick={() => setActiveIndex(0)}
+                      className="flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      onClick={confirm1}
+                      className="flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                    >
+                      <PiFloppyDisk />
+                      Save
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex justify-between px-3">
+                    <Button
+                      onClick={() => setActiveIndex(0)}
+                      className="btn flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      onClick={confirm2}
+                      className="btn flex justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                    >
+                      <PiUpload />
+                      Upload
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
         )}
       </div>
     </>

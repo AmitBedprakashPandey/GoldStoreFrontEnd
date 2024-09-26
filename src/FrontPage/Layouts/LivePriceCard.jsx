@@ -7,7 +7,7 @@ export default function LivePriceCard(params) {
   const [matrial, setMaterial] = useState([]);
   useEffect(() => {
     dispatch(getLivePrice()).then((doc) => {
-      setMaterial(doc.payload.data.price);
+      setMaterial(doc.payload?.data?.price);
     });
   }, [matrial]);
 
@@ -18,7 +18,7 @@ export default function LivePriceCard(params) {
         // style={{ backgroundImage: `url(${BackgroundImage})` }}
       >
         <div className="relative w-full flex justify-center flex-wrap gap-3 z-50">
-          {matrial.map((item, index) => (<>
+          {matrial?.map((item, index) => (<>
             <GoldItems data={item} />         
           
           </>

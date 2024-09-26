@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
+import {PiWhatsappLogoDuotone} from "react-icons/pi";
+import {Tag} from "primereact/tag";
+import FloatIcons from "./FloatIcons";
 export default function Footer({ data }) {
   const OpenDialPad = () => {
     window.location.href = "tel:" + data?.mobile; // This will open the dial pad
   };
+
 
   return (
     <div
