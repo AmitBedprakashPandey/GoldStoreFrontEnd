@@ -7,12 +7,15 @@ export const fetchAllCustomers = createAsyncThunk(
   "Customer/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${url}/customer/${localStorage.getItem('user')}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        `${url}/customer/${localStorage.getItem("user")}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -80,12 +83,18 @@ const initialState = {
   Customer: [],
   error: null,
   loading: false,
+  message: null,
 };
 
 const customersSlice = createSlice({
   name: "Customer",
   initialState,
-  reducers: {},
+  reducers: {
+    clearNotifications(state) {
+      state.message = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllCustomers.pending, (state) => {
@@ -107,8 +116,9 @@ const customersSlice = createSlice({
         state.error = null;
       })
       .addCase(createCustomer.fulfilled, (state, action) => {
-        state.loading = false;
         state.Customer.push(action.payload); // assuming the payload is the newly created customer
+        state.loading = false;
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(createCustomer.rejected, (state, action) => {
@@ -120,11 +130,14 @@ const customersSlice = createSlice({
         state.error = null;
       })
       .addCase(updateCustomer.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.Customer.findIndex(customer => customer._id === action.payload._id);
+        const index = state.Customer.findIndex(
+          (customer) => customer._id === action.payload._id
+        );
         if (index !== -1) {
           state.Customer[index] = action.payload; // update the customer in the state
         }
+        state.loading = false;
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(updateCustomer.rejected, (state, action) => {
@@ -136,8 +149,13 @@ const customersSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteCustomer.fulfilled, (state, action) => {
+        console.log(action.payload);
+        
+        state.Customer = state.Customer.filter(
+          (customer) => customer._id !== action.payload.data._id
+        ); // remove the customer from the state
         state.loading = false;
-        state.Customer = state.Customer.filter(customer => customer._id !== action.meta.arg); // remove the customer from the state
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(deleteCustomer.rejected, (state, action) => {
@@ -146,5 +164,5 @@ const customersSlice = createSlice({
       });
   },
 });
-
+export const { clearNotifications } = customersSlice.actions;
 export default customersSlice.reducer;

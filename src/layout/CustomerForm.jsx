@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllCustomers,
   createCustomer,
   updateCustomer,
+  clearNotifications
 } from "../Store/Slice/CustomerSlice";
 import { BiInfoCircle } from "react-icons/bi";
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import Loading from "../Components/Loading";
-import toast, { toastConfig } from "react-simple-toasts";
+import { Toast } from "primereact/toast";
 import moment from "moment";
 import { fetchAllState } from "../Store/Slice/StateSlice";
 import RippleButton from "../Components/RippleButton";
@@ -19,7 +20,9 @@ export default function Form({ close, Mode, id }) {
   const [dateBirth, setDateBirth] = useState("");
   const [aB, setAB] = useState("");
   const dispatch = useDispatch();
-  const { Customer, loading } = useSelector((state) => state.Customers);
+
+
+  const { Customer, loading,message,error } = useSelector((state) => state.Customers);
 
   useEffect(() => {
     if (id) {
@@ -43,15 +46,13 @@ export default function Form({ close, Mode, id }) {
     }));
   }, [dateBirth, aB]);
 
+
   const handleAction = async (action) => {
     const actionDispatch =
       action === "save" ? createCustomer(customerData) : updateCustomer(customerData);
 
     try {
-      const result = await dispatch(actionDispatch).unwrap();
-      toast(result.message);
-      dispatch(fetchAllCustomers());
-
+      await dispatch(actionDispatch).unwrap();      
       if (action === "save") {
         setCustomerData({});
         setDateBirth("");
@@ -59,7 +60,7 @@ export default function Form({ close, Mode, id }) {
         close();
       }
     } catch (error) {
-      toast("An error occurred");
+console.error(error);
     }
   };
 
@@ -69,7 +70,7 @@ export default function Form({ close, Mode, id }) {
       header: "Confirmation",
       icon: <BiInfoCircle size={20} />,
       defaultFocus: "accept",
-      acceptClassName: "bg-cyan-500 p-3 text-white",
+      acceptClassName: "bg-blue-500 p-3 text-white",
       rejectClassName: "p-3 mr-3",
       accept: () => handleAction(action),
     });
@@ -77,6 +78,7 @@ export default function Form({ close, Mode, id }) {
 
   return (
     <>
+ 
       {loading && <Loading />}
       {/* <ConfirmDialog /> */}
       <div className="p-3 z-40 bg-white relative overflow-hidden">

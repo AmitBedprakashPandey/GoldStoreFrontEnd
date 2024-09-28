@@ -11,6 +11,7 @@ import { Store } from "./Store/Store";
 
 const value = {
   ripple: true,
+  
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

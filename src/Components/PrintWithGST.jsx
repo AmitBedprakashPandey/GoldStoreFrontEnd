@@ -1,25 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
-import { useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchOnePrint } from "../Store/Slice/PrintSlice";
 import moment from "moment";
-import { fetchByUser } from "../Store/Slice/CompanySlice";
 
 function Print(params) {
-  const data = useLocation();
-  const dispatch = useDispatch();
-  const componentRef = useRef();
-  const { Print } = useSelector((state) => state.print);
-  const { Company } = useSelector((state) => state.Company);
+  const [paramdata, setParamData] = useState();
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("printData");
+    if (storedData) {
+      setParamData(JSON.parse(storedData));
+    }
+  }, []);
 
-  // useEffect(() => {        
-    
-  //   dispatch(fetchOnePrint(data.state.invoiceId));
-  //       dispatch(fetchByUser(localStorage.getItem("user")));
-  // }, [dispatch]);
+  const componentRef = useRef();
   return (
     <>
       <ReactToPrint
@@ -34,24 +28,30 @@ function Print(params) {
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
             <div className="w-28 h-28 flex justify-center items-center">
-              <img src={Company?.logo} />
+              <img src={paramdata?.company?.logo} />
             </div>
             <div className="text-center">
-            <h3 className="text-lg font-semibold">JAI MATA DI</h3>
-              <h1 className="font-bold text-3xl uppercase">{data.state.company?.name}</h1>
+              <h3 className="text-lg font-semibold">JAI MATA DI</h3>
+              <h1 className="font-bold text-3xl uppercase">
+                {paramdata?.company?.name}
+              </h1>
               <h3 className="text-lg font-semibold">TAX INVOICE</h3>
             </div>
             <div>
-              <img src={Holmark} width={100} alt="holmart"/>
+              <img src={Holmark} width={100} alt="holmart" />
             </div>
           </div>
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
               <label className="text-md font-bold">
-                Invoice No : <span className="font-normal">{data.state.formData.quot}</span>
+                Invoice No :{" "}
+                <span className="font-normal">{paramdata?.formData.quot}</span>
               </label>
               <label className="text-md font-bold">
-                Date :  <span className="font-normal">{moment(data.state.quotdate).format("DD-MM-YYYY")}</span>
+                Date :{" "}
+                <span className="font-normal">
+                  {moment(paramdata?.quotdate).format("DD-MM-YYYY")}
+                </span>
               </label>
               <label className="text-md font-bold">
                 State Code : <span className="font-normal"></span>
@@ -59,9 +59,8 @@ function Print(params) {
             </div>
             <div className="flex flex-col w-72">
               <label className="text-md font-bold">
-                Payment Mode : <span className="font-normal">
-                  {data.state.formData?.mode}
-                  </span>
+                Payment Mode :{" "}
+                <span className="font-normal">{paramdata?.formData?.mode}</span>
               </label>
               <label className="text-md font-bold">
                 Delivery Mode : <span className="font-normal"></span>
@@ -89,52 +88,64 @@ function Print(params) {
           </div>
           <div className="flex justify-between">
             <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
-            <div className="px-3 h-32 ">
+              <div className="px-3 h-32 ">
                 <label className="flex text-lg">
                   <label className="w-[120px] text-sm font-bold mt-3">
-                  Billed to :
-
+                    Billed to :
                   </label>
                   <ul className="text-sm mt-3 capitalize">
-                    <li>{data.state.company?.name}</li>
-                    <li >{data.state.company?.address}</li>
-                    </ul> 
+                    <li>{paramdata?.company?.name}</li>
+                    <li>{paramdata?.company?.address}</li>
+                  </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm font-bold">
-                  Party PAN : <span className="font-normal">{data.state.company?.pan}</span>
+                  Party PAN :{" "}
+                  <span className="font-normal">{paramdata?.company?.pan}</span>
                 </label>
                 <label className="text-sm font-bold">
-                  Party Mobile No. : <span className="font-normal">{data.state.company?.mobile}</span>
+                  Party Mobile No. :{" "}
+                  <span className="font-normal">
+                    {paramdata?.company?.mobile}
+                  </span>
                 </label>
                 <label className="text-sm font-bold">
-                  GSTIN / UIN : <span className="font-normal">{data.state.company?.gst}</span>
+                  GSTIN / UIN :{" "}
+                  <span className="font-normal">{paramdata?.company?.gst}</span>
                 </label>
               </div>
             </div>
             <div className="w-full border-black border border-t-0 border-b-0 border-r-0 py-2">
               <div className="px-3 h-32 ">
                 <label className="flex text-lg">
-                <label className="w-[120px] text-sm font-bold mt-3">
-                  Shipped to :
-
+                  <label className="w-[120px] text-sm font-bold mt-3">
+                    Shipped to :
                   </label>
                   <ul className="text-sm mt-3">
-                    <li>{data.state.customer[0]?.name}</li>
-                    <li >{data.state.customer[0]?.address}</li>
-                    </ul> 
+                    <li>{paramdata?.customer[0]?.name}</li>
+                    <li>{paramdata?.customer[0]?.address}</li>
+                  </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm font-bold">
-                  Party PAN : <span className="font-normal">{data.state.customer[0]?.pan}</span>
+                  Party PAN :{" "}
+                  <span className="font-normal">
+                    {paramdata?.customer[0]?.pan}
+                  </span>
                 </label>
                 <label className="text-sm font-bold">
-                  Party Mobile No. : <span className="font-normal">{data.state.customer[0]?.mobile}</span>
+                  Party Mobile No. :{" "}
+                  <span className="font-normal">
+                    {paramdata?.customer[0]?.mobile}
+                  </span>
                 </label>
                 <label className="text-sm font-bold">
-                  GSTIN / UIN : <span className="font-normal">{data.state.customer[0]?.gst}</span>
+                  GSTIN / UIN :{" "}
+                  <span className="font-normal">
+                    {paramdata?.customer[0]?.gst}
+                  </span>
                 </label>
               </div>
             </div>
@@ -149,7 +160,9 @@ function Print(params) {
                   <th className=" border-black text-center  border w-40">
                     Description Goods
                   </th>
-                  <th className=" border-black text-center  border w-10">HSN</th>
+                  <th className=" border-black text-center  border w-10">
+                    HSN
+                  </th>
                   <th className=" border-black text-center  border w-16">
                     PURITY
                   </th>
@@ -181,25 +194,46 @@ function Print(params) {
               </thead>
 
               <tbody>
-                {data.state.invoice?.map((doc, index) => (
-                <tr className="text-xs">
-                  <td className="border-black  text-center border border-l-0 w-5 py-2">
-                    1
-                  </td>
-                  <td className=" border-black text-start pl-3  border w-40">{doc?.desc}</td>
-                  <td className=" border-black text-center  border w-10">{doc?.hsn}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.purity}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.weight}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.mcharg}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.qty}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.rate}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.sgst}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.cgst}</td>
-                  <td className=" border-black text-center  border w-16">{doc?.igst}</td>
-                  <td className=" border-black text-center  border border-r-0 w-28">{doc?.nettotal}</td>
-                </tr>
-                ))
-                }
+                {paramdata?.invoice?.map((doc, index) => (
+                  <tr className="text-xs">
+                    <td className="border-black  text-center border border-l-0 w-5 py-2">
+                      1
+                    </td>
+                    <td className=" border-black text-start pl-3  border w-40">
+                      {doc?.desc}
+                    </td>
+                    <td className=" border-black text-center  border w-10">
+                      {doc?.hsn}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.purity}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.weight}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.mcharg}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.qty}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.rate}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.sgst}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.cgst}
+                    </td>
+                    <td className=" border-black text-center  border w-16">
+                      {doc?.igst}
+                    </td>
+                    <td className=" border-black text-center  border border-r-0 w-28">
+                      {doc?.nettotal}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
 
               <tfoot>
@@ -208,39 +242,43 @@ function Print(params) {
                     colSpan={11}
                     className="text-xs border-black border border-l-0 w-5 text-end pr-3"
                   >
-                   Total Discount
+                    Total Discount
                   </th>
 
                   <th
                     colSpan={4}
                     className=" text-xs border-black border border-r-0 w-16"
-                  >{data.state.formData.tdisc}</th>
+                  >
+                    {paramdata?.formData.tdisc}
+                  </th>
                 </tr>
                 <tr className="text-xs">
                   <th
                     colSpan={11}
                     className="border-black text-end pr-3 border border-l-0 w-5"
                   >
-                  Total  Tax
+                    Total Tax
                   </th>
 
                   <th
                     colSpan={4}
                     className=" border-black border border-r-0 w-16"
-                  >{data.state.formData.ttax}</th>
+                  >
+                    {paramdata?.formData.ttax}
+                  </th>
                 </tr>
                 <tr className="text-xs">
                   <th
                     colSpan={11}
                     className="border-black border border-l-0 border-r-0 w-5 text-end pr-3"
                   >
-                  Grand Total
+                    Grand Total
                   </th>
                   <th
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16 pl-3"
                   >
-                    {parseFloat(data.state.formData.gtotal).toFixed()}
+                    {parseFloat(paramdata?.formData.gtotal).toFixed()}
                   </th>
                 </tr>
               </tfoot>

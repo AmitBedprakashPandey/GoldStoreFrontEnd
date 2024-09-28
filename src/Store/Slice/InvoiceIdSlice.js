@@ -24,14 +24,16 @@ export const fetchOneInvoicesNumber = createAsyncThunk(
   "InvoiceId/fetchAll",
   async (id, { rejectWithValue }) => {
     try {
-
-
+      console.log(id);
+      
       const response = await axios.get(`${url}/invoiceid/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
         },
       });
+      console.log(response.data);
+      
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -43,15 +45,14 @@ export const UpdateInvoicesNumber = createAsyncThunk(
   "InvoiceId/update",
   async (data, { rejectWithValue }) => {
     try {
-        console.log("slice",data);
+      console.log("slice", data);
 
-      const response = await axios.put(`${url}/invoiceid/${data}`,
-        {headers: {    
+      const response = await axios.put(`${url}/invoiceid/${data}`, {
+        headers: {
           "Content-Type": "application/json",
-           Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
-      );
+          Authorization: `${localStorage.getItem("token")}`,
+        },
+      });
       return response.data; // assuming response contains updated data
     } catch (error) {
       return rejectWithValue(error.message);
@@ -62,13 +63,19 @@ export const UpdateInvoicesNumber = createAsyncThunk(
 const initialState = {
   InvoicesNumber: [],
   error: null,
+  message: null,
   loading: false,
 };
 
 const InvoiceIdSlice = createSlice({
   name: "InvoiceId",
   initialState,
-  reducers: {},
+  reducers: {
+    clearNotification(state) {
+      state.message = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchOneInvoicesNumber.pending, (state) => {
@@ -91,20 +98,25 @@ const InvoiceIdSlice = createSlice({
       })
       .addCase(createInvoicesId.fulfilled, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber.push(action.payload); // assuming the payload is the newly created invoiceid
+        state.InvoicesNumber.push(action.payload.data);
+        state.message = action.payload.message; // assuming the payload is the newly created invoiceid
         state.error = null;
       })
       .addCase(createInvoicesId.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload.error;
       })
       .addCase(UpdateInvoicesNumber.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(UpdateInvoicesNumber.fulfilled, (state, action) => {
+        const index = state.InvoicesNumber.findIndex(
+          (doc) => doc._id === action.payload.data._id
+        );
+        state.InvoicesNumber[index] = action.payload.data;
         state.loading = false;
-        state.InvoicesNumber = action.payload; // assuming the payload is the newly created invoiceid
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(UpdateInvoicesNumber.rejected, (state, action) => {
@@ -113,5 +125,5 @@ const InvoiceIdSlice = createSlice({
       });
   },
 });
-
+export const { clearNotification } = InvoiceIdSlice.actions;
 export default InvoiceIdSlice.reducer;

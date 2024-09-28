@@ -23,9 +23,8 @@ export const fetchByUser = createAsyncThunk(
 export const createCompany = createAsyncThunk(
   "company/create",
   async (data, { rejectWithValue }) => {
-
     try {
-      const response = await axios.post(`${url}/company`,data, {
+      const response = await axios.post(`${url}/company`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -60,7 +59,7 @@ export const updateCompany = createAsyncThunk(
 );
 
 const initialState = {
-  Company: [],
+  Company: "",
   error: null,
   message: null,
   loading: false,
@@ -70,8 +69,9 @@ const CompanySlice = createSlice({
   name: "Company",
   initialState,
   reducers: {
-    getCompany: (state, action) => {
-      state.Company = action.payload;
+    clearNotification(state) {
+      state.message = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -95,8 +95,9 @@ const CompanySlice = createSlice({
         state.error = null;
       })
       .addCase(createCompany.fulfilled, (state, action) => {
+        state.Company = action.payload.data; // assuming the payload is the newly created company
         state.loading = false;
-        state.Company = action.payload; // assuming the payload is the newly created company
+        state.message = action.payload.message
         state.error = null;
       })
       .addCase(createCompany.rejected, (state, action) => {
@@ -108,9 +109,9 @@ const CompanySlice = createSlice({
         state.error = null;
       })
       .addCase(updateCompany.fulfilled, (state, action) => {
+        state.Company = action.payload.data; // assuming the payload is the newly created company
         state.loading = false;
         state.message = action.payload.message;
-        state.Company = action.payload; // assuming the payload is the newly created company
         state.error = null;
       })
       .addCase(updateCompany.rejected, (state, action) => {
@@ -119,5 +120,5 @@ const CompanySlice = createSlice({
       });
   },
 });
-export const { getCompany } = CompanySlice.actions;
+export const { clearNotification } = CompanySlice.actions;
 export default CompanySlice.reducer;

@@ -12,12 +12,7 @@ export default function FloatIcons({scrollButton, OwnerImg, facebook, whatsapp, 
     window.location.href = url;
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth", // Smooth scroll
-    });
-  };
+
   return (
       <div className="flex justify-end sticky bottom-3 px-5 ">
         <div className="flex flex-col items-center gap-5">

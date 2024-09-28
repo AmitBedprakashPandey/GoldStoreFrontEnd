@@ -7,12 +7,15 @@ export const fetchAllBranch = createAsyncThunk(
   "Branch/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${url}/branch/${localStorage.getItem('user')}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        `${url}/branch/${localStorage.getItem("user")}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -69,6 +72,7 @@ export const updateBranch = createAsyncThunk(
           },
         }
       );
+
       return response.data; // assuming response contains updated data
     } catch (error) {
       return rejectWithValue(error.message);
@@ -79,13 +83,19 @@ export const updateBranch = createAsyncThunk(
 const initialState = {
   Branch: [],
   error: null,
+  message: null,
   loading: false,
 };
 
 const BranchsSlice = createSlice({
   name: "Branch",
   initialState,
-  reducers: {},
+  reducers: {
+    clearNotification(state) {
+      state.message = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllBranch.pending, (state) => {
@@ -108,7 +118,8 @@ const BranchsSlice = createSlice({
       })
       .addCase(createBranch.fulfilled, (state, action) => {
         state.loading = false;
-        state.Branch.push(action.payload); // assuming the payload is the newly created branch
+        state.Branch.push(action.payload.data); // assuming the payload is the newly created branch
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(createBranch.rejected, (state, action) => {
@@ -121,10 +132,13 @@ const BranchsSlice = createSlice({
       })
       .addCase(updateBranch.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.Branch.findIndex(branch => branch._id === action.payload._id);
+        const index = state.Branch.findIndex(
+          (branch) => branch._id === action.payload.data._id
+        );
         if (index !== -1) {
-          state.Branch[index] = action.payload; // update the branch in the state
+          state.Branch[index] = action.payload.data; //  update the branch in the state
         }
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(updateBranch.rejected, (state, action) => {
@@ -136,8 +150,11 @@ const BranchsSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteBranch.fulfilled, (state, action) => {
+        state.Branch = state.Branch.filter(
+          (branch) => branch._id !== action.payload.data._id
+        );
         state.loading = false;
-        state.Branch = state.Branch.filter(branch => branch._id !== action.meta.arg); // remove the branch from the state
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(deleteBranch.rejected, (state, action) => {
@@ -146,5 +163,5 @@ const BranchsSlice = createSlice({
       });
   },
 });
-
+export const { clearNotification } = BranchsSlice.actions;
 export default BranchsSlice.reducer;

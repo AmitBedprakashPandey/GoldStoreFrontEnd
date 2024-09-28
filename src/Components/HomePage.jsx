@@ -6,13 +6,13 @@ import { Outlet } from "react-router-dom";
 function HomePage(params) {
   const [model1Open, setModel1open] = useState(true);
 
-  useEffect(() => {
-    document.body.style.overflowX = "hidden";
-    return () => (document.body.style.overflowX = "scroll");
-  }, []);
+  // useEffect(() => {
+  //   document.body.style.overflowX = "hidden";
+  //   return () => (document.body.style.overflowX = "scroll");
+  // }, []);
 
   return (
-    <div className="relative bg-slate-200 w-screen h-fit">
+    <div className="relative bg-slate-200 w-full h-screen">
       <Navbar />
 
       <div className="w-full h-full">

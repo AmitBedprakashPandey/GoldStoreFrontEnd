@@ -207,14 +207,14 @@ function Invoice2({}) {
   ]);
 
   const printWithGST = () => {
-    navigate("/printgst", {
-      state: {
-        company: Company,
-        customer: Customer.filter((doc) => doc?.name === formData?.customer),
-        formData: formData,
-        invoice: invoiceArray,
-      },
-    });
+    const data = {
+      company: Company,
+      customer: Customer.filter((doc) => doc?.name === formData?.customer),
+      formData: formData,
+      invoice: invoiceArray,
+    };
+    sessionStorage.setItem("printData", JSON.stringify(data));
+    window.open("/printgst", "_blank");
   };
   const save = () => {
     disptch(

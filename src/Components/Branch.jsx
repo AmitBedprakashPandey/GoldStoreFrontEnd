@@ -64,7 +64,7 @@ export default function Branch(params) {
 
   return (
     <>
-      <ConfirmDialog />
+      {/* <ConfirmDialog /> */}
 
       <Dialog
         header="Update"
@@ -100,7 +100,7 @@ export default function Branch(params) {
 
           <table>
             <thead>
-              <tr className="bg-gray-200 w-full">
+              <tr className="bg-gray-50 w-full">
                 <th className="w-60 py-3 px-4 text-start">Branch</th>
                 <th className="w-48 px-4 text-start">Action</th>
               </tr>
@@ -140,6 +140,8 @@ export default function Branch(params) {
               ))}
             </tbody>
           </table>
+
+ 
         </div>
       </div>
     </>
@@ -159,9 +161,7 @@ const FormModel = ({ close, id }) => {
     }
   }, []);
   const update = () => {
-    dispatch(updateBranch({ _id: id, branch: branch })).then((res) => {
-      toast(res?.payload?.message);
-    });
+    dispatch(updateBranch({ _id: id, branch: branch }))
   };
 
   const confirm1 = () => {

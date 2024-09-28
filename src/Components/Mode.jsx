@@ -1,60 +1,88 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog } from "primereact/dialog";
 import { confirmDialog } from "primereact/confirmdialog";
-import { FilePenLine, Trash, X } from "lucide-react";
-import toast, { toastConfig } from "react-simple-toasts";
+import { PiInfoDuotone, PiPencilLine, PiTrash } from "react-icons/pi";
+import { Toast } from "primereact/toast";
 import Loading from "./Loading";
 import {
   createPyMode,
   fetchAllPyMode,
   deletePyMode,
   updatePyMode,
+  clearNotifications,
 } from "../Store/Slice/PayModeSlice";
 
 export default function Mode() {
   const dispatch = useDispatch();
   const [pymode, setPyMode] = useState();
-
   const [modeOpenModel, setModeOpenModel] = useState(false);
+  const toast = useRef(null);
 
   const [modeId, setModeId] = useState();
 
-  const { PyMode, loading } = useSelector((state) => state.Mode);
+  const { PyMode, loading, message, error } = useSelector(
+    (state) => state.Mode
+  );
 
   useEffect(() => {
     dispatch(fetchAllPyMode());
   }, [dispatch]);
 
-  toastConfig({
-    duration: 2000,
-    zIndex: 1000,
-    className:
-      "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
-  });
-
+  useEffect(() => {
+    if (message) {
+      toast.current.show({
+        severity: "success",
+        summary: message,
+        life: 2000,
+        closable: false,
+        icon: null,
+        className: "bg-black text-white z-50",
+      });
+      dispatch(clearNotifications());
+    }
+    if (error) {
+      toast.current.show({
+        severity: "error",
+        summary: error,
+        life: 2000,
+        icon: null,
+        closable: false,
+        classNames: "z-50",
+      });
+      dispatch(clearNotifications());
+    }
+  }, [message, error]);
 
   const saveMode = () => {
     dispatch(
       createPyMode({ mode: pymode, user: localStorage.getItem("user") })
-    ).then((res) => {
-      toast(res?.payload?.message);
-      setPyMode("");
-      dispatch(fetchAllPyMode());
+    );
+  };
+
+  const deleteAction = (id) => {
+    confirmDialog({
+      message: "Are you sure you want to delete ?",
+      header: "Confirmation",
+      icon: <PiInfoDuotone size={20} />,
+      defaultFocus: "accept",
+      acceptClassName: "bg-red-500 p-3 text-white",
+      rejectClassName: "p-3 mr-3",
+      accept: () => dispatch(deletePyMode(id)),
     });
   };
 
   return (
     <>
+      <Toast ref={toast} position="bottom-center" />
       {loading && <Loading />}
       <Dialog
-      header={'Update Mode'}
-      visible={modeOpenModel}
-      onHide={() => setModeOpenModel(false)}
-      className="w-96 mx-10"
+        header={"Update Mode"}
+        visible={modeOpenModel}
+        onHide={() => setModeOpenModel(false)}
+        className="w-96 mx-10"
       >
-      <ModeFormModel id={modeId} />
-
+        <ModeFormModel id={modeId} />
       </Dialog>
       <div className="flex justify-center h-screen bg-white pt-5 ">
         <div className="flex flex-col mx-2 ">
@@ -97,18 +125,13 @@ export default function Mode() {
                         setModeOpenModel(true);
                       }}
                     >
-                      <FilePenLine size={16} />
+                      <PiPencilLine size={16} />
                     </button>
                     <button
                       className="bg-red-500 hover:bg-red-800 duration-300 rounded-full p-3 text-white "
-                      onClick={() => {
-                        dispatch(deletePyMode(doc._id)).then((res) => {
-                          toast(res?.payload?.message);
-                          dispatch(fetchAllPyMode());
-                        });
-                      }}
+                      onClick={() => deleteAction(doc._id)}
                     >
-                      <Trash size={16} />
+                      <PiTrash size={16} />
                     </button>
                   </td>
                 </tr>
@@ -122,46 +145,40 @@ export default function Mode() {
 }
 
 const ModeFormModel = ({ close, id }) => {
-  const { PyMode, loading } = useSelector((state) => state.Mode);
+  const { PyMode, message, error } = useSelector((state) => state.Mode);
   const [pyMode, setPyMode] = useState();
   const dispatch = useDispatch();
-  const pyModeHandler=(e)=>{
-    setPyMode({...pyMode,[e.target.name]:e.target.value})
-  }
+
+  const pyModeHandler = (e) => {
+    setPyMode({ ...pyMode, [e.target.name]: e.target.value });
+  };
   useEffect(() => {
     if (id) {
       const single = PyMode.filter((doc) => doc._id === id);
       setPyMode(single[0]);
     }
   }, [id]);
+
   const update = () => {
-    dispatch(updatePyMode(pyMode)).then((res) => {
-      toast(res?.payload?.message);
-      dispatch(fetchAllPyMode());
-    });
+    dispatch(updatePyMode(pyMode));
   };
-
-
-
 
   return (
     <>
-      {loading && <Loading />}
-        <div className="bg-white rounded-lg flex flex-col justify-center items-center relative">
-       
-          <input
-            className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
-            name="mode"
-            value={pyMode?.mode}
-            onChange={pyModeHandler}
-          />
-          <button
-            className="py-3 bg-blue-500 hover:bg-blue-800 duration-300 w-full rounded-lg my-3 uppercase text-white"
-            onClick={update}
-          >
-            Update
-          </button>
-        </div>
+      <div className="bg-white rounded-lg flex flex-col justify-center items-center relative">
+        <input
+          className="w-full border rounded-lg py-2 px-3 shadow-gray-300 shadow-md"
+          name="mode"
+          value={pyMode?.mode}
+          onChange={pyModeHandler}
+        />
+        <button
+          className="py-3 bg-blue-500 hover:bg-blue-800 duration-300 w-full rounded-lg my-3 uppercase text-white"
+          onClick={update}
+        >
+          Update
+        </button>
+      </div>
     </>
   );
 };

@@ -22,14 +22,16 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<FrontPage />} />
+          <Route path="/print" element={<Print />} />
+          <Route path="/printgst" element={<PrintGST />} />
         <Route path="/crm" element={<HomePage />}>
           <Route path="login" element={<LogingPage />} />
-          <Route path="print" element={<Print />} />
-          <Route path="setting" element={<Settings />} >
-          
-          <Route path="websitesetting" element={<WebsiteSetting />} />
+          <Route path="setting" element={<Settings />}>
+            <Route path="websitesetting" element={<WebsiteSetting />} />
           </Route>
-          <Route path="printgst" element={<PrintGST />} />
+          {/* print without GST */}
+          {/* print with GST  */}
+
           <Route path="report/quotation" element={<Quotation />} />
           <Route
             path="report/quotationwithoutgst"

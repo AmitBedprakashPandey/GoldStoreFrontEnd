@@ -32,20 +32,21 @@ export default function BankMode() {
   }, [dispatch]);
 
   const saveBank = useCallback(() => {
-    dispatch(createPyBank({ bank: pybank, user: localStorage.getItem("user") }))
-      .then((res) => {
-        toast(res?.payload?.message);
-        setPyBank("");
-        dispatch(fetchAllPyBank());
-      });
-  }, [dispatch, pybank]);
-
-  const handleDelete = useCallback((id) => {
-    dispatch(deletePyBank(id)).then((res) => {
+    dispatch(
+      createPyBank({ bank: pybank, user: localStorage.getItem("user") })
+    ).then((res) => {
       toast(res?.payload?.message);
+      setPyBank("");
       dispatch(fetchAllPyBank());
     });
-  }, [dispatch]);
+  }, [dispatch, pybank]);
+
+  const handleDelete = useCallback(
+    (id) => {
+      dispatch(deletePyBank(id));
+    },
+    [dispatch]
+  );
 
   const handleEdit = useCallback((id) => {
     setBankId(id);
@@ -82,14 +83,14 @@ export default function BankMode() {
               onClick={saveBank}
               disabled={!pybank}
             >
-              <PiFloppyDisk/>
+              <PiFloppyDisk />
               Save
             </button>
           </div>
 
           <table>
             <thead>
-              <tr className="bg-gray-200 w-full">
+              <tr className="bg-gray-50 w-full">
                 <th className="w-60 py-3 px-4 text-start">Bank</th>
                 <th className="w-48 px-4 text-start">Action</th>
               </tr>
@@ -107,7 +108,6 @@ export default function BankMode() {
                     </Button>
                     <Button
                       className="bg-red-500 ml-4 hover:bg-red-800 duration-300 rounded-full p-3 text-white"
-                   
                       onClick={() =>
                         confirmDialog({
                           message: "Are you sure you want to delete ?",
@@ -117,7 +117,8 @@ export default function BankMode() {
                           acceptClassName: "bg-red-500 p-3 text-white",
                           rejectClassName: "p-3 mr-3",
                           accept: () => handleDelete(doc._id),
-                        })}
+                        })
+                      }
                     >
                       <PiTrash size={16} />
                     </Button>
@@ -162,7 +163,7 @@ const BankFormModel = ({ id }) => {
         className="flex justify-center items-center gap-3 py-3 hover:bg-blue-800 duration-300 bg-blue-500 w-full rounded-lg my-3 uppercase text-white"
         onClick={updateBank}
       >
-        <PiUpload/>
+        <PiUpload />
         Update
       </Button>
     </div>

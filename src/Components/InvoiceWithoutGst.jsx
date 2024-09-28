@@ -8,7 +8,15 @@ import {
   fetchOneInvoice,
   updateInvoice,
 } from "../Store/Slice/InvoiceWithoutGstSlice";
-import { PiFloppyDisk, PiPlusBold, PiTrash, PiUpload, PiMagnifyingGlass, PiPrinterDuotone } from "react-icons/pi";
+import {
+  PiFloppyDisk,
+  PiPlusBold,
+  PiTrash,
+  PiUpload,
+  PiMagnifyingGlass,
+  PiPrinterDuotone,
+  PiInfo,
+} from "react-icons/pi";
 import { Dialog } from "primereact/dialog";
 import { fetchAllBranch } from "../Store/Slice/BranchSlice";
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
@@ -24,6 +32,7 @@ import { Modal } from "antd";
 import moment from "moment";
 import Loading from "./Loading";
 import { Button } from "primereact/button";
+import { confirmDialog } from "primereact/confirmdialog";
 function Invoice2({}) {
   const [formData, setFormData] = useState();
 
@@ -72,6 +81,7 @@ function Invoice2({}) {
     disptch(fetchAllCustomers());
     disptch(fetchAllPyBank());
     disptch(fetchAllPyMode());
+    disptch(fetchOneInvoicesNumber(Company?._id));
     setInvoiceDate(moment().format("YYYY-MM-DD"));
   }, [disptch]);
 
@@ -182,14 +192,14 @@ function Invoice2({}) {
   ]);
 
   const printWithoutGST = () => {
-    navigate("/print", {
-      state: {
-        company: Company,
-        customer: Customer.filter((doc) => doc?.name === formData?.customer),
-        formData: formData,
-        invoice: invoiceArray,
-      },
-    });
+    const data = {
+      company: Company,
+      customer: Customer.filter((doc) => doc?.name === formData?.customer),
+      formData: formData,
+      invoice: invoiceArray,
+    };
+    sessionStorage.setItem("printData", JSON.stringify(data));
+    window.open("/print", "_blank");
   };
 
   const save = () => {
@@ -252,6 +262,19 @@ function Invoice2({}) {
     }
   }, [navigate]);
 
+  const confirm1 = () => {
+    confirmDialog({
+      message: "Are you sure you want to update ?",
+      header: "Confirmation",
+      icon: <PiInfo />,
+      defaultFocus: "accept",
+      acceptClassName:
+        "bg-blue-500 hover:bg-blue-600 px-4 py-3 text-white ml-3",
+      rejectClassName: "px-4 py-3 ml-3",
+      accept: () => update(),
+      // reject
+    });
+  };
   return (
     <div className="lg:mx-16 ">
       {loading && <Loading />}
@@ -266,7 +289,7 @@ function Invoice2({}) {
       >
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
-      <div className="mb-20 mt-10 p-3 bg-white overflow-hidden">
+      <div className=" mt-3 p-3 bg-white overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
             <label className="">Branch Name : </label>
@@ -468,7 +491,7 @@ function Invoice2({}) {
           </button>
         </div>
         <div className="relative overflow-x-auto mx-0 py-3 flex md:justify-center ">
-        <table   className="overflow-x-scroll lg:overflow-x-hidden ">
+          <table className="overflow-x-scroll lg:overflow-x-hidden ">
             <tr className="h-10 overflow-hidden text-sm bg-gray-100 flex">
               <th className="w-48 py-3 justify-center flex ">Description</th>
               <th className="w-24 flex py-3 justify-center ">Wight (g)</th>
@@ -484,7 +507,9 @@ function Invoice2({}) {
             <div className="max-h-48">
               {invoiceArray?.map((doc, index) => (
                 <tr key={index} className="text-sm h-14 flex items-center">
-                  <td className="w-48 h-full justify-center  flex items-center ">{doc?.desc}</td>
+                  <td className="w-48 h-full justify-center  flex items-center ">
+                    {doc?.desc}
+                  </td>
                   <td className="justify-center h-full flex items-center  w-24  ">
                     {parseFloat(doc?.weight || 0).toFixed(2)}
                   </td>
@@ -500,7 +525,7 @@ function Invoice2({}) {
                   <td className="flex h-full justify-center items-center  w-20  ">
                     {parseFloat(doc?.total || 0).toFixed(2)}
                   </td>
-                  
+
                   <td className="w-16 flex h-full items-center justify-center  ">
                     {parseFloat(doc?.disc || 0).toFixed(2)}
                   </td>
@@ -642,7 +667,7 @@ function Invoice2({}) {
           </div>
         </div>
       </div>
-      <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t-2">
+      <div className="flex  justify-center py-3 gap-2  bg-white border-t-2">
         <button
           className=" flex items-center gap-3 py-3 px-8 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
           onClick={() => setModal1Open(true)}
@@ -662,7 +687,7 @@ function Invoice2({}) {
         </button>
         <button
           className="flex items-center gap-3 py-3 px-8 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
-          onClick={() => setModal2Open(true)}
+          onClick={confirm1}
           disabled={buttonLable === "update" ? false : true}
         >
           <PiUpload />
@@ -673,7 +698,7 @@ function Invoice2({}) {
           className="flex items-center gap-3 py-3 px-8 text-white disabled:bg-yellow-700 disabled:cursor-not-allowed bg-yellow-500 rounded-md hover:bg-yellow-600 uppercase"
           onClick={printWithoutGST}
         >
-          <PiPrinterDuotone/>
+          <PiPrinterDuotone />
           Print
         </button>
       </div>

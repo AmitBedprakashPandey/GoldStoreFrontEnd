@@ -12,6 +12,8 @@ import { getCompany } from "../Store/Slice/LivePriceSlice";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import FloatIcons from "./Layouts/FloatIcons";
+import { PiArrowCircleUpFill, PiWhatsappLogoDuotone } from "react-icons/pi";
+import { Tag } from "primereact/tag";
 
 export default function FrontPage(params) {
   const dispatch = useDispatch();
@@ -34,11 +36,31 @@ export default function FrontPage(params) {
   }, [dispatch]);
 
   const handleScroll = () => {
-    if (window.scrollY > 300) { // Adjust the threshold as needed
+    // Get the height of the viewport
+    const halfScreenHeight = window.innerHeight / 2;
+
+    // Show the button when scrolled more than half of the screen height
+    if (window.scrollY > halfScreenHeight) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
     }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth", // Smooth scroll
+    });
+  };
+
+  const openWhatsApp = (phoneNumber) => {
+    // Format the URL for WhatsApp
+    const url = `https://wa.me/${phoneNumber}`;
+
+    // Open the URL
+    window.location.href = url;
   };
 
   useEffect(() => {
@@ -53,7 +75,7 @@ export default function FrontPage(params) {
       {loading && <ProgressSpinner />}
 
       <div
-        className="bg-red-950 h-screen eczar-font relative w-screen bg-cover bg-center overflow-x-hidden"
+        className="bg-red-950 w-full eczar-font relative px-3 bg-cover bg-center"
         style={{ backgroundImage: `url(${BackgroundImage})` }}
       >
         <Navbar data={data} />
@@ -62,8 +84,37 @@ export default function FrontPage(params) {
         <Catagory />
         <GalleryCard />
         <InfoCard data={data} />
-        <FloatIcons scrollButton={isVisible} OwnerImg={data?.ownerimg} />
-        <Footer data={data} />
+
+
+        <div className="flex justify-end sticky bottom-3 px-5 ">
+        <div className="flex flex-col items-center gap-5">
+        <button
+          onClick={() => openWhatsApp(data?.whatsapp)}
+          className="relative rounded-full h-14 w-14"
+        >
+          <Tag
+            icon={<PiWhatsappLogoDuotone />}
+            className="absolute right-0 -top-2 rounded-full"
+          />
+          <img
+            src={data?.ownerimg}
+            className="rounded-full overflow-hidden h-14 w-14"
+          />
+        </button>
+      {isVisible&& 
+        
+        <button
+        onClick={scrollToTop}
+        className=" text-white"
+        >
+       <PiArrowCircleUpFill size={40} />
+        </button>
+      }
+        </div>
+      </div>
+        <Footer data={data} /> 
+        {/* 
+        */}
       </div>
     </>
   );

@@ -1,26 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
-import { useLocation } from "react-router-dom";
 import moment from "moment";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchOnePrint } from "../Store/Slice/PrintWithoutGstSlice";
-import { fetchByUser } from "../Store/Slice/CompanySlice";
 function Print() {
-  const dispatch = useDispatch();
-  const data = useLocation();
-  const { Print } = useSelector((state) => state.Printwithoutgst);
-  const { Company } = useSelector((state) => state.Company);
   const componentRef = useRef();
-  const { InvoicesNumber  } = useSelector(
-    (state) => state.InvoiceID
-  );
-  useEffect(() => {    
-    
-    dispatch(fetchByUser(localStorage.getItem("user")));
-    dispatch(fetchOnePrint(data));    
-  }, [dispatch]);
+  const [paramdata, setParamData] = useState();
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("printData");
+    if (storedData) {
+      setParamData(JSON.parse(storedData));
+    }
+  }, []);
+
   return (
     <>
       <ReactToPrint
@@ -35,12 +27,12 @@ function Print() {
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
             <div className="w-28 h-28 flex justify-between items-center">
-              <img src={data.state.company?.logo} />
+              <img src={paramdata?.company?.logo} />
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">JAI MATA DI</h3>
               <h1 className="font-bold text-3xl uppercase">
-                {data.state.company?.name}
+                {paramdata?.company?.name}
               </h1>
               <h3 className="text-lg font-semibold">TAX INVOICE</h3>
             </div>
@@ -51,11 +43,14 @@ function Print() {
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
               <label className="text-md font-bold">
-                Invoice No : <span className="font-normal">{data.state.formData?.quot}</span>
+                Invoice No :{" "}
+                <span className="font-normal">{paramdata?.formData?.quot}</span>
               </label>
               <label className="text-md font-bold">
                 Date :{" "}
-                <span className="font-normal">{moment(data.state.formData?.quotdate).format("DD-MM-YYYY")}</span>
+                <span className="font-normal">
+                  {moment(paramdata?.formData?.quotdate).format("DD-MM-YYYY")}
+                </span>
               </label>
               {/* <label className="text-md font-bold">
                 State Code : <span></span>
@@ -64,10 +59,7 @@ function Print() {
             <div className="flex flex-col w-72">
               <label className="text-md font-bold">
                 Payment Mode :
-                <span className="font-normal">
-                {data.state.formData?.mode} 
-
-                </span>
+                <span className="font-normal">{paramdata?.formData?.mode}</span>
               </label>
               <label className="text-md font-bold">
                 Delivery Mode : <span className="font-normal"></span>
@@ -82,41 +74,56 @@ function Print() {
             <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
               <div className="px-3 h-32 ">
                 <label className="flex text-lg py-3">
-                  <label className="text-sm font-bold w-[120px]">Billed to :</label>
+                  <label className="text-sm font-bold w-[120px]">
+                    Billed to :
+                  </label>
                   <ul className="text-sm capitalize">
-                    <li>{data.state.company?.name}</li>
-                    <li>{data.state.company?.address}</li>
+                    <li>{paramdata?.company?.name}</li>
+                    <li>{paramdata?.company?.address}</li>
                   </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm font-bold">
-                  Party PAN : <span className="font-normal">{data.state.company?.pan}</span>
+                  Party PAN :{" "}
+                  <span className="font-normal">{paramdata?.company?.pan}</span>
                 </label>
                 <label className="text-sm font-bold">
-                  Party Mobile No. : <span className="font-normal">{data.state.company?.mobile}</span>
+                  Party Mobile No. :{" "}
+                  <span className="font-normal">
+                    {paramdata?.company?.mobile}
+                  </span>
                 </label>
                 <label className="text-sm font-bold">
-                  GSTIN / UIN : <span className="font-normal">{data.state.company?.gst}</span>
+                  GSTIN / UIN :{" "}
+                  <span className="font-normal">{paramdata?.company?.gst}</span>
                 </label>
               </div>
             </div>
             <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
               <div className="px-3 h-32 ">
                 <label className="flex text-lg py-2">
-                  <label className="w-[120px] text-sm font-bold">Shipped to :</label>
+                  <label className="w-[120px] text-sm font-bold">
+                    Shipped to :
+                  </label>
                   <ul className="text-sm  capitalize">
-                    <li>{data.state.customer[0]?.name}</li>
-                    <li>{data.state.customer[0]?.address}</li>
+                    <li>{paramdata?.customer[0]?.name}</li>
+                    <li>{paramdata?.customer[0]?.address}</li>
                   </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
                 <label className="text-sm font-bold">
-                  Party PAN : <span className="font-normal">{data.state.customer[0]?.pan}</span>
+                  Party PAN :{" "}
+                  <span className="font-normal">
+                    {paramdata?.customer[0]?.pan}
+                  </span>
                 </label>
                 <label className="text-sm font-bold">
-                  Party Mobile No. : <span className="font-normal">{data.state.customer[0]?.mobile}</span>
+                  Party Mobile No. :{" "}
+                  <span className="font-normal">
+                    {paramdata?.customer[0]?.mobile}
+                  </span>
                 </label>
               </div>
             </div>
@@ -156,7 +163,7 @@ function Print() {
               </thead>
 
               <tbody>
-                {data.state.invoice?.map((doc, index) => (
+                {paramdata?.invoice?.map((doc, index) => (
                   <tr key={index} className="text-xs">
                     <td className="border-black  text-center border border-l-0 w-5 py-2">
                       {index + 1}
@@ -201,7 +208,7 @@ function Print() {
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16  pl-3"
                   >
-                    {parseFloat(data.state.formData?.tdisc).toFixed(2)}
+                    {parseFloat(paramdata?.formData?.tdisc).toFixed(2)}
                   </th>
                 </tr>
                 <tr className="text-xs">
@@ -216,7 +223,8 @@ function Print() {
                     className=" border-black border border-r-0 text-center w-16 pl-3"
                   >
                     {parseFloat(
-                      Number(data.state.formData?.tamt) - Number(data.state.formData?.tdisc)
+                      Number(paramdata?.formData?.tamt) -
+                        Number(paramdata?.formData?.tdisc)
                     ).toFixed()}
                   </th>
                 </tr>

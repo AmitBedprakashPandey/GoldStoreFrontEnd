@@ -62,13 +62,19 @@ export const UpdateInvoiceNumberGst = createAsyncThunk(
 const initialState = {
   InvoiceNumberGst: [],
   error: null,
+  message : null,
   loading: false,
 };
 
 const invoicegstSlice = createSlice({
   name: "invoicegst",
   initialState,
-  reducers: {},
+  reducers: {
+    clearNotification(state) {
+      state.message = null;
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchOneInvoiceNumberGst.pending, (state) => {
@@ -90,8 +96,9 @@ const invoicegstSlice = createSlice({
         state.error = null;
       })
       .addCase(createInvoicesId.fulfilled, (state, action) => {
+        state.InvoiceNumberGst.push(action.payload.data); // assuming the payload is the newly created invoicegst
         state.loading = false;
-        state.InvoiceNumberGst.push(action.payload); // assuming the payload is the newly created invoicegst
+        state.message = action.payload.message
         state.error = null;
       })
       .addCase(createInvoicesId.rejected, (state, action) => {
@@ -105,6 +112,7 @@ const invoicegstSlice = createSlice({
       .addCase(UpdateInvoiceNumberGst.fulfilled, (state, action) => {
         state.loading = false;
         state.InvoiceNumberGst = action.payload; // assuming the payload is the newly created invoicegst
+        
         state.error = null;
       })
       .addCase(UpdateInvoiceNumberGst.rejected, (state, action) => {

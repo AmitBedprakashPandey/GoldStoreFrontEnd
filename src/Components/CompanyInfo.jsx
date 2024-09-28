@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { confirmDialog } from "primereact/confirmdialog";
 import {
@@ -21,7 +21,8 @@ import {
   PiWhatsappLogoFill,
   PiMapPinAreaFill,
   PiSlideshow,
-  PiTrash
+  PiTrash,
+  PiPlus,
 } from "react-icons/pi";
 import { Button } from "primereact/button";
 import { BiInfoCircle } from "react-icons/bi";
@@ -31,13 +32,13 @@ import { InputNumber } from "primereact/inputnumber";
 function CompanyInfo() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { Company } = useSelector((state) => state.Company);
   const User = localStorage.getItem("user");
   const [buttonName, setButtonName] = useState("u");
-  const [formData, setformData] = useState();
+  const [formData, setformData] = useState(Company);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImage2, setSelectedImage2] = useState(null);
   const [bannerList, setBannerList] = useState([]);
-
 
   toastConfig({
     duration: 2000,
@@ -50,13 +51,13 @@ function CompanyInfo() {
     dispatch(fetchAllState());
     dispatch(fetchByUser(User)).then((doc) => {
       if (doc.payload.message) {
-        // setButtonName("s");
+        setButtonName("s");
       } else {
         setformData(doc.payload);
         setSelectedImage(doc.payload.logo);
         setSelectedImage2(doc.payload.ownerimg);
-        setBannerList(doc.payload?.banner)
-        // setButtonName("u");
+        setBannerList(doc.payload?.banner);
+        setButtonName("u");
       }
     });
   }, [dispatch]);
@@ -96,7 +97,7 @@ function CompanyInfo() {
       })
     ).then((doc) => {
       if (!doc.error) {
-        dispatch(fetchByUser());
+        // dispatch(fetchByUser());
         toast(doc.payload.message);
       }
     });
@@ -177,7 +178,7 @@ function CompanyInfo() {
         reject(error);
       }
     });
-  };
+  }
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -230,10 +231,11 @@ function CompanyInfo() {
     compressAndConvertImages(validFiles);
   };
 
-  const deleteBanner=(indexBanner)=>{
+  const deleteBanner = (indexBanner) => {
     const newArray = bannerList.filter((_, index) => index !== indexBanner);
-    setBannerList(newArray)
-  }
+    setBannerList(newArray);
+  };
+
   return (
     <>
       {/* <ConfirmDialog /> */}
@@ -255,7 +257,7 @@ function CompanyInfo() {
               </button>
               <small>Company Info</small>
             </div>
-            <hr className="w-36 border border-slate-400" />
+            <hr className="w-16 border border-slate-400" />
             <div className="flex flex-col items-center">
               <button
                 onClick={() => setActiveIndex(1)}
@@ -270,7 +272,7 @@ function CompanyInfo() {
               </button>
               <small>Owner Info</small>
             </div>
-            <hr className="w-36 border border-slate-400" />
+            <hr className="w-16 border border-slate-400" />
             <div className="flex flex-col items-center">
               <button
                 onClick={() => setActiveIndex(2)}
@@ -290,7 +292,7 @@ function CompanyInfo() {
         {activeIndex === 0 && (
           <div className="w-full flex justify-center">
             <div
-              className={`w-full md:w-[600px] px-8 m-3 rounded-md shadow-md shadow-slate-500 bg-white `}
+              className={`w-full max-w-[600px] pl-4 pr-8  rounded-md shadow-md shadow-slate-500 bg-white `}
             >
               <h1 className="text-lg font-bold text-center py-5">
                 Company Info
@@ -452,8 +454,8 @@ function CompanyInfo() {
           </div>
         )}
         {activeIndex === 1 && (
-          <div className="flex justify-center">
-            <div className="md:w-[600px] bg-white p-5 mx-3 rounded-md shadow-md shadow-slate-500">
+          <div className="w-full flex justify-center">
+            <div className="w-full max-w-[600px] pl-4 pr-8 bg-white rounded-md shadow-md shadow-slate-500">
               <div className="flex flex-col items-center w-full">
                 <div className="relative w-24 h-24">
                   <input
@@ -580,22 +582,28 @@ function CompanyInfo() {
         )}
 
         {activeIndex === 2 && (
-          <div className="flex justify-center">
-            <div className="md:w-[600px] bg-white p-5 mx-3 rounded-md shadow-md shadow-slate-500">
+          <div className="w-full flex justify-center">
+            <div className="w-full max-w-[600px] p-3 pl-4 pr-8 bg-white rounded-md shadow-md shadow-slate-500">
               <div className="w-full">
                 <div className="w-full flex items-center relative">
                   <div className="grid">
                     <input
                       id="logoimg"
                       type="file"
-                      accept=".png, .jpg, .jpeg"
+                      accept=""
                       name="logo"
                       multiple
                       onChange={handleBannerImageChange}
                       disabled={bannerList.length >= 4}
-                      className="w-"
+                      className="hidden"
                     />
-                    <small className="text-red-500 font-semibold">
+                    <label
+                      htmlFor="logoimg"
+                      className="flex justify-between px-4   items-center gap-2 bg-blue-500 hover:bg-blue-600 duration-300 text-white w-32 py-3 rounded-xl "
+                    >
+                      <PiPlus size={20} /> <p>Choose</p>
+                    </label>
+                    <small className="text-red-500 font-semibold py-3">
                       Select image max size 5000x2500px and max 4 images only
                       less then 500kb
                     </small>
@@ -606,17 +614,21 @@ function CompanyInfo() {
                   style={{ display: "grid", gap: "10px", marginTop: "20px" }}
                 >
                   {bannerList.map((image, index) => (
-                    <div className="relative">
-                      <Button onClick={()=>deleteBanner(index)} icon={<PiTrash />} className="w-10 h-10 absolute top-0 right-0 text-white bg-red-500 rounded-full" />
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`uploaded-${index}`}
-                      // width={100}
-                      // height={100}
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
+                    <div key={index} className="relative">
+                      <Button
+                        onClick={() => deleteBanner(index)}
+                        icon={<PiTrash />}
+                        className="w-10 h-10 absolute top-0 right-0 text-white bg-red-500 rounded-full"
+                      />
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`uploaded-${index}`}
+                        // width={100}
+                        // height={100}
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
