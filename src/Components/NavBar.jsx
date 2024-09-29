@@ -4,18 +4,14 @@ import {
   PiHouseDuotone,
   PiPowerBold,
   PiListBold,
-  PiCaretDownBold,
-  PiGear,
+  PiCaretDownBold
 } from "react-icons/pi";
 import { Sidebar } from "primereact/sidebar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Store/Slice/AuthSlice";
-import { fetchByUser } from "../Store/Slice/CompanySlice";
-import { fetchOneInvoicesNumber } from "../Store/Slice/InvoiceIdSlice";
-import { fetchOneInvoiceNumberGst } from "../Store/Slice/InvoiceNumbergstSlice";
 import { Avatar } from "primereact/avatar";
 import { PanelMenu } from "primereact/panelmenu";
 import { Button } from "primereact/button";
@@ -26,8 +22,8 @@ function NavBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+
   useEffect(() => {
-    dispatch(fetchByUser(localStorage.getItem("user")));
     if (!localStorage.getItem("token")) {
       navigate("/crm/login");
     }

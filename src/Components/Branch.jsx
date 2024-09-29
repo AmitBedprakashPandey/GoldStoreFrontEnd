@@ -71,9 +71,9 @@ export default function Branch(params) {
         maximizable={false}
         visible={openModel}
 
-        
+        draggable={false}
         onHide={() => setOpenModel(!openModel)}
-        className="w-96 mx-10"
+        className="max-w-96 mx-10"
       >
         <FormModel close={() => setOpenModel(!openModel)} id={id} />
       </Dialog>

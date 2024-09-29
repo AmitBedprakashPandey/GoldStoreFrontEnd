@@ -242,7 +242,7 @@ function CompanyInfo() {
 
       <div>
         <div className="w-full flex justify-center py-5">
-          <div className="flex gap-5 justify-around items-center">
+          <div className="flex gap-5  px-4 justify-around items-center">
             <div className="flex flex-col items-center">
               <button
                 onClick={() => setActiveIndex(0)}
@@ -255,9 +255,9 @@ function CompanyInfo() {
                   color={activeIndex === 0 ? "#fff" : "#000"}
                 />
               </button>
-              <small>Company Info</small>
+              <small className="text-nowrap">Company Info</small>
             </div>
-            <hr className="w-16 border border-slate-400" />
+            <hr className="w-12 border border-slate-400" />
             <div className="flex flex-col items-center">
               <button
                 onClick={() => setActiveIndex(1)}
@@ -270,9 +270,9 @@ function CompanyInfo() {
                   color={activeIndex === 1 ? "#fff" : "#000"}
                 />
               </button>
-              <small>Owner Info</small>
+              <small className="text-nowrap">Owner Info</small>
             </div>
-            <hr className="w-16 border border-slate-400" />
+            <hr className="w-12 border border-slate-400" />
             <div className="flex flex-col items-center">
               <button
                 onClick={() => setActiveIndex(2)}
@@ -292,7 +292,7 @@ function CompanyInfo() {
         {activeIndex === 0 && (
           <div className="w-full flex justify-center">
             <div
-              className={`w-full max-w-[600px] pl-4 pr-8  rounded-md shadow-md shadow-slate-500 bg-white `}
+              className={`w-full max-w-[600px] p-3  rounded-md shadow-md shadow-slate-500 bg-white `}
             >
               <h1 className="text-lg font-bold text-center py-5">
                 Company Info
@@ -455,7 +455,7 @@ function CompanyInfo() {
         )}
         {activeIndex === 1 && (
           <div className="w-full flex justify-center">
-            <div className="w-full max-w-[600px] pl-4 pr-8 bg-white rounded-md shadow-md shadow-slate-500">
+            <div className="w-full max-w-[600px] p-3 bg-white rounded-md shadow-md shadow-slate-500">
               <div className="flex flex-col items-center w-full">
                 <div className="relative w-24 h-24">
                   <input
@@ -583,7 +583,7 @@ function CompanyInfo() {
 
         {activeIndex === 2 && (
           <div className="w-full flex justify-center">
-            <div className="w-full max-w-[600px] p-3 pl-4 pr-8 bg-white rounded-md shadow-md shadow-slate-500">
+            <div className="w-full max-w-[600px] p-3 bg-white rounded-md shadow-md shadow-slate-500">
               <div className="w-full">
                 <div className="w-full flex items-center relative">
                   <div className="grid">

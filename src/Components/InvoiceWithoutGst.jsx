@@ -289,7 +289,7 @@ function Invoice2({}) {
       >
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
-      <div className=" mt-3 p-3 bg-white overflow-hidden">
+      <div className=" mt- p-3 bg-white overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
             <label className="">Branch Name : </label>
@@ -669,7 +669,7 @@ function Invoice2({}) {
       </div>
       <div className="flex  justify-center py-3 gap-2  bg-white border-t-2">
         <button
-          className=" flex items-center gap-3 py-3 px-8 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
+          className=" flex items-center gap-2 py-3 px-4 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
           onClick={() => setModal1Open(true)}
           disabled={
             buttonLable === "save" &&
@@ -686,7 +686,7 @@ function Invoice2({}) {
           save
         </button>
         <button
-          className="flex items-center gap-3 py-3 px-8 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 py-3 px-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
           onClick={confirm1}
           disabled={buttonLable === "update" ? false : true}
         >
@@ -695,7 +695,7 @@ function Invoice2({}) {
         </button>
         <button
           disabled={buttonLable === "update" ? false : true}
-          className="flex items-center gap-3 py-3 px-8 text-white disabled:bg-yellow-700 disabled:cursor-not-allowed bg-yellow-500 rounded-md hover:bg-yellow-600 uppercase"
+          className="flex items-center gap-2 py-3 px-4 text-white disabled:bg-yellow-700 disabled:cursor-not-allowed bg-yellow-500 rounded-md hover:bg-yellow-600 uppercase"
           onClick={printWithoutGST}
         >
           <PiPrinterDuotone />

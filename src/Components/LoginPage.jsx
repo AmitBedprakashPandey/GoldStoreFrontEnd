@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../Store/Slice/AuthSlice";
+import { fetchByUser } from "../Store/Slice/CompanySlice";
+import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
+import { fetchAllPyBank } from "../Store/Slice/PayBankSlice";
+import { fetchAllBranch } from "../Store/Slice/BranchSlice";
+import { fetchAllPyMode } from "../Store/Slice/PayModeSlice";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", pass: "" });
@@ -16,6 +21,19 @@ export default function LoginPage() {
     }
   }, [navigate]);
 
+  const handleFetchData = () => {
+    const user = localStorage.getItem("user");
+    dispatch(fetchByUser(user));
+    dispatch(fetchAllCustomers());
+    dispatch(fetchAllPyBank());
+    dispatch(fetchAllBranch());
+    dispatch(fetchAllPyMode());
+  };
+
+  useLayoutEffect(() => {
+    handleFetchData(); // Dispatch the actions on layout effect, if needed
+  }, []);
+
   const formDataHandler = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -26,7 +44,9 @@ export default function LoginPage() {
     if (loginUser.fulfilled.match(resultAction)) {
       const token = localStorage.getItem("token");
       if (token) {
-        navigate(Company ? "/crm" : "/company");
+
+        navigate("/crm");
+        handleFetchData();
       }
     }
   }, [dispatch, formData, navigate, Company]);
@@ -46,7 +66,10 @@ export default function LoginPage() {
           )}
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-900"
+              >
                 Email address
               </label>
               <input
@@ -62,7 +85,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-900"
+              >
                 Password
               </label>
               <input

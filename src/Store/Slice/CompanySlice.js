@@ -82,6 +82,7 @@ const CompanySlice = createSlice({
       })
       .addCase(fetchByUser.fulfilled, (state, action) => {
         state.loading = false;
+
         state.Company = action.payload;
         state.error = null;
       })
@@ -97,7 +98,7 @@ const CompanySlice = createSlice({
       .addCase(createCompany.fulfilled, (state, action) => {
         state.Company = action.payload.data; // assuming the payload is the newly created company
         state.loading = false;
-        state.message = action.payload.message
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(createCompany.rejected, (state, action) => {

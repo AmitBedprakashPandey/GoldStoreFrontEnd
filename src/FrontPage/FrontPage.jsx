@@ -86,15 +86,15 @@ export default function FrontPage(params) {
         <InfoCard data={data} />
 
 
-        <div className="flex justify-end sticky bottom-3 px-5 ">
-        <div className="flex flex-col items-center gap-5">
+       <div className="sticky bottom-0 px-5 z-50">
+        <div className="absolute bottom-0 right-0 flex flex-col items-center gap-5">
         <button
           onClick={() => openWhatsApp(data?.whatsapp)}
           className="relative rounded-full h-14 w-14"
         >
           <Tag
             icon={<PiWhatsappLogoDuotone />}
-            className="absolute right-0 -top-2 rounded-full"
+            className="absolute right-0 -top-2 h-6 w-6 rounded-full"
           />
           <img
             src={data?.ownerimg}

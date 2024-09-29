@@ -26,11 +26,10 @@ function CreateCustomer() {
   const { Customer, loading, message, error } = useSelector(
     (state) => state.Customers
   );
-  const [modal2Open, setModal2Open] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllCustomers());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (message) {

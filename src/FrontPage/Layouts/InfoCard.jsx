@@ -28,12 +28,12 @@ export default function InfoCard({ data }) {
       // style={{ backgroundImage: `url(${background})` }}
     >
       <div className="flex items-center flex-col gap-5 py-5">
-        <div className="border-2 w-72 h-72 rounded-full overflow-hidden my-3">
+        <div className="border-2 min-w-52 min-h-52 max-w-72 max-h-72 rounded-full overflow-hidden my-3">
           <img src={data?.ownerimg} className="w-full h-full" />
         </div>
         <div className="flex flex-col items-center justify-center">
-          <p className="text-white text-5xl flex flex-wrap">{data?.owner}</p>
-          <small className="text-white">(Founder & Owner)</small>
+          <p className="text-white text-4xl md:text-5xl flex flex-wrap">{data?.owner}</p>
+          <small className="text-white text-base">(Founder & Owner)</small>
           <div className="flex gap-4 py-0">
             <p className="text-white flex flex-wrap items-center gap-3">
               <PiPhone />
@@ -47,13 +47,13 @@ export default function InfoCard({ data }) {
               <PiEnvelopeDuotone /> {data?.email}
             </p>
           </div>
-          <div className="flex gap-4 py-0">
+          <div className="grid md:grid-cols-2 gap-2 mt-3">
             <p className="text-white flex flex-wrap">GST NO. {data?.gst}</p>
             <p className="text-white flex flex-wrap">PAN NO. {data?.pan}</p>
           </div>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 mt-3">
             <PiMapPinLineFill className="text-white" size={30} />
-            <p className="text-white w-80 flex flex-wrap">{data?.address}</p>
+            <p className="text-white capitalize w-72 flex flex-wrap">{data?.address}</p>
           </div>
           <div className="flex gap-4 py-3">
             {data?.youtube && (

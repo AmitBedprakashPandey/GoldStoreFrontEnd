@@ -259,7 +259,7 @@ function Invoice2({}) {
       >
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
-      <div className="mb-20 mt-10 p-3 bg-white overflow-hidden">
+      <div className="mt-0 p-3 bg-white overflow-hidden">
         <div className="grid lg:grid-cols-3">
           <div className="m-3">
             <label className="">Branch Name : </label>
@@ -695,9 +695,9 @@ function Invoice2({}) {
           </div>
         </div>
       </div>
-      <div className="flex gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white py-3 border-t">
+      <div className="flex gap-2 justify-center  bg-white py-3 border-t">
         <button
-          className="flex gap-3 items-center py-3 px-8 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
+          className="flex gap-2 items-center py-3 px-4 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
           onClick={() => setModal1Open(true)}
           disabled={
             buttonLable === "save" &&
@@ -714,7 +714,7 @@ function Invoice2({}) {
           save
         </button>
         <button
-          className="flex gap-3 items-center  py-3 px-8 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
+          className="flex gap-2 items-center  py-3 px-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 uppercase disabled:bg-blue-700 disabled:cursor-not-allowed"
           onClick={() => setModal2Open(true)}
           disabled={buttonLable === "update" ? false : true}
         >
@@ -724,7 +724,7 @@ function Invoice2({}) {
 
         <button
           disabled={buttonLable === "update" ? false : true}
-          className="flex gap-3 items-center  py-3 px-8 text-white disabled:bg-red-700 bg-red-500 rounded-md hover:bg-red-600 uppercase"
+          className="flex gap-2 items-center  py-3 px-4 text-white disabled:bg-red-700 bg-red-500 rounded-md hover:bg-red-600 uppercase"
           onClick={printWithGST}
         >
           <PiPrinterDuotone/>

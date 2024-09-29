@@ -14,13 +14,13 @@ export default function Footer({ data }) {
       // style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
       <div className="z-20 ">
-        <label className="text-white lg:text-2xl">
+        <label className="text-xs md:text-base text-white lg:text-2xl">
           Contact Us{" "}
           <span className="text-orange-300 font-bold  eczar-font">
             {data?.name}
           </span>
         </label>
-        <p className="text-white lg:text-xs  w-8/12 hidden md:block">
+        <p className="text-white text-nowrap lg:text-xs  w-8/12 hidden md:block">
           call on this number for more informations
         </p>
       </div>
@@ -31,7 +31,7 @@ export default function Footer({ data }) {
         transition={{ ease: "easeInOut", duration: 0.2 }}
         viewport={{ once: "true" }}
         onClick={OpenDialPad}
-        className="w-40 text-sm md:text-base md:w-56 bg-yellow-500 hover:bg-yellow-600 duration-300 font-bold capitalize py-3 px-6 rounded-lg z-20"
+        className="text-xs md:text-base bg-yellow-500 hover:bg-yellow-600 duration-300 font-bold capitalize py-3 px-6 rounded-lg z-20"
       >
         +91 {data?.whatsapp}
       </motion.button>

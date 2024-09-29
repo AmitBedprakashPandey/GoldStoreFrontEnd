@@ -60,7 +60,7 @@ export default function Catagory(params) {
        Jewellery Catagory
       </h1>
       <div className="w-full sm custom-scroll-on-mobile lg:flex lg:justify-center  py-5">
-        <div className="flex">
+        <div className="flex items-center gap-2">
           {jewelryTypes.map((item, index) => (
             <Item data={item} key={index}  />
           ))}
@@ -77,9 +77,9 @@ const Item = ({data}) => {
       whileInView={{ scale: 1 }}
       transition={{ ease: "easeInOut", duration: 0.2 }}
       viewport={{ once: "true" }}
-      className="flex flex-col flex-shrink-0 w-36 items-center"
+      className="flex flex-col flex-shrink-0 items-center"
     >
-      <div className="border-4 border-orange-300 overflow-hidden rounded-full h-32 w-32 bg-rose-950">
+      <div className="border-4 border-orange-300 overflow-hidden rounded-full h-24 w-24 bg-rose-950">
         <img src={data.img}/>
       </div>
       <label className="text-orange-300 py-4 font-medium capitalize">

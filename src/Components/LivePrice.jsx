@@ -111,6 +111,7 @@ export default function LivePrice(params) {
         visible={visible}
         onHide={() => setVisible(false)}
         maximized={true}
+        headerClassName="p- m-0"
       >
         <div className="mt-10">
           <DataTable value={livePrice} className="">
@@ -128,7 +129,7 @@ export default function LivePrice(params) {
           </DataTable>
         </div>
       </Dialog>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between gap-3 items-center">
         <div className="flex items-center gap-3">
           <Button
             icon={<PiListBold />}
@@ -148,7 +149,14 @@ export default function LivePrice(params) {
             disabled={publicPrice.length === 0}
             icon={<PiCloudArrowUpDuotone />}
             onClick={publicHandler}
-            className="gap-3 font-normal px-5 py-1.5 flex justify-center text-white bg-blue-700 hover:bg-blue-800 duration-300"
+            className="hidden md:block gap-3 font-normal px-5 py-1.5 md:flex justify-center text-white bg-blue-700 hover:bg-blue-800 duration-300"
+          />
+          <Button
+            // label="Public"
+            disabled={publicPrice.length === 0}
+            icon={<PiCloudArrowUpDuotone />}
+            onClick={publicHandler}
+            className="md:hidden py-2 font-normal flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 duration-300"
           />
         </div>
       </div>
