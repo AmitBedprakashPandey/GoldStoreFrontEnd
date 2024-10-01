@@ -30,6 +30,8 @@ function NavBar() {
   }, [dispatch, navigate]);
 
   useEffect(() => {
+  
+    
     if (Company?.name) {
       document.title = Company.name.toUpperCase();
     }
