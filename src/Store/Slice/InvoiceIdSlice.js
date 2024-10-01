@@ -26,7 +26,7 @@ export const fetchOneInvoicesNumber = createAsyncThunk(
     try {
       console.log(id);
       
-      const response = await axios.get(`${url}/invoiceid/${id}`, {
+      const response = await axios.get(`${url}/invoiceid/${localStorage.getItem("companyid")}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
@@ -84,7 +84,7 @@ const InvoiceIdSlice = createSlice({
       })
       .addCase(fetchOneInvoicesNumber.fulfilled, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber = action.payload;
+        state.InvoicesNumber = action.payload?.number;
         state.error = null;
       })
       .addCase(fetchOneInvoicesNumber.rejected, (state, action) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dropdown } from "primereact/dropdown";
 import { useDispatch, useSelector } from "react-redux";
@@ -56,9 +56,7 @@ function Invoice2({}) {
   const [modal2Open, setModal2Open] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
   const [modal3Open, setModal3Open] = useState(false);
-  const { Invoices, error, loading } = useSelector(
-    (state) => state.InvoicesWithoutGst
-  );
+  const { Invoices, error, loading } = useSelector((state) => state.InvoicesWithoutGst);
   const { InvoicesNumber } = useSelector((state) => state.InvoiceID);
   const { Company } = useSelector((state) => state.Company);
   const [InvoiceId, setInvoiceId] = useState();
@@ -76,12 +74,12 @@ function Invoice2({}) {
     setInvoiceData({ ...invoiceData, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    disptch(fetchOneInvoicesNumber()).then((doc)=>{setInvoiceId(Number(doc.payload?.number))});
     disptch(fetchAllBranch());
     disptch(fetchAllCustomers());
     disptch(fetchAllPyBank());
     disptch(fetchAllPyMode());
-    disptch(fetchOneInvoicesNumber(Company?._id));
     setInvoiceDate(moment().format("YYYY-MM-DD"));
   }, [disptch]);
 
@@ -97,10 +95,6 @@ function Invoice2({}) {
       setInvoiceArray(req.payload?.invoice);
     });
   };
-
-  useEffect(() => {
-    setInvoiceId(Number(InvoicesNumber?.number));
-  }, [InvoicesNumber]);
 
   const updateInvoiceInpt = () => {
     const t =

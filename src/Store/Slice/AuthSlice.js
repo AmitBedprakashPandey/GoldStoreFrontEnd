@@ -33,6 +33,7 @@ export const loginSlice = createSlice({
       state.user = null;
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      sessionStorage.removeItem("printData");
     },
     setUser: (state, action) => {
       state.user = action.payload;

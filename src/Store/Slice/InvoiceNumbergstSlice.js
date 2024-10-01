@@ -26,7 +26,7 @@ export const fetchOneInvoiceNumberGst = createAsyncThunk(
     try {
 
 
-      const response = await axios.get(`${url}/invoicegst/${id}`, {
+      const response = await axios.get(`${url}/invoicegst/${localStorage.getItem("companyid")}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,

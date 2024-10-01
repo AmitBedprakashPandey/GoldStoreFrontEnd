@@ -13,6 +13,12 @@ function Print() {
     }
   }, []);
 
+  useEffect(() => {
+    if (paramdata?.company?.name) {
+      document.title = paramdata?.company?.name?.toUpperCase();
+    }
+  }, [paramdata]);
+
   return (
     <div className="w-screen bg-slate-400">
       <ReactToPrint
