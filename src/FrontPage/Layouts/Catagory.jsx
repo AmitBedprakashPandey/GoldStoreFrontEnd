@@ -1,4 +1,4 @@
-import background from "../Assets/images/background.jpg";import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import bracelet from "../Assets/images/Catagory/bracelet.jpg";
 import earring from "../Assets/images/Catagory/earring.png";
 import necklace from "../Assets/images/Catagory/necklace.png";
@@ -56,8 +56,8 @@ export default function Catagory(params) {
       className="z-40 bg-cover bg-center pt-5"
       // style={{ backgroundImage: `url(${background})` }}
     >
-      <h1 className="2xl:ml-[15%] text-orange-300 font-bold text-4xl p-4 z-30">
-       Jewellery Catagory
+      <h1 className="text-xl text-orange-300 font-bold md:text-2xl p-4 z-30">
+       Catagory
       </h1>
       <div className="w-full sm custom-scroll-on-mobile lg:flex lg:justify-center  py-5">
         <div className="flex items-center gap-2">

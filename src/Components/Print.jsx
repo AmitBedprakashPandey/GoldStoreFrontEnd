@@ -14,16 +14,16 @@ function Print() {
   }, []);
 
   return (
-    <>
+    <div className="w-screen bg-slate-400">
       <ReactToPrint
         trigger={() => (
-          <button className="m-3 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3">
+          <button className="absolute z-50 m-3 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3">
             Print
           </button>
         )}
         content={() => componentRef.current}
       />
-      <div className="A4Page p-3" ref={componentRef}>
+      <div className="A4Page p-3 " ref={componentRef}>
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
             <div className="w-28 h-28 flex justify-between items-center">
@@ -42,12 +42,12 @@ function Print() {
           </div>
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
             <div className="flex flex-col">
-              <label className="text-md font-bold">
-                Invoice No :{" "}
+              <label className=" flex gap-3 text-md font-bold">
+                Invoice No :
                 <span className="font-normal">{paramdata?.formData?.quot}</span>
               </label>
-              <label className="text-md font-bold">
-                Date :{" "}
+              <label className="flex gap-14 text-md font-bold">
+                Date :
                 <span className="font-normal">
                   {moment(paramdata?.formData?.quotdate).format("DD-MM-YYYY")}
                 </span>
@@ -57,14 +57,14 @@ function Print() {
               </label> */}
             </div>
             <div className="flex flex-col w-72">
-              <label className="text-md font-bold">
+              <label className=" flex gap-3 text-md font-bold">
                 Payment Mode :
-                <span className="font-normal">{paramdata?.formData?.mode}</span>
+                <span className="flex gap-3 font-normal">{paramdata?.formData?.mode}</span>
               </label>
-              <label className="text-md font-bold">
+              <label className="flex gap-3 text-md font-bold">
                 Delivery Mode : <span className="font-normal"></span>
               </label>
-              <label className="text-md font-bold">
+              <label className="flex gap-3 text-md font-bold">
                 Place of Supply : <span className="font-normal"></span>
               </label>
             </div>
@@ -78,51 +78,51 @@ function Print() {
                     Billed to :
                   </label>
                   <ul className="text-sm capitalize">
-                    <li>{paramdata?.company?.name}</li>
+                    <li className="uppercase font-bold">{paramdata?.company?.name}</li>
                     <li>{paramdata?.company?.address}</li>
                   </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
-                <label className="text-sm font-bold">
-                  Party PAN :{" "}
-                  <span className="font-normal">{paramdata?.company?.pan}</span>
+                <label className="flex gap-14 text-sm font-bold">
+                  Party PAN :
+                  <span className="font-normal uppercase">{paramdata?.company?.pan}</span>
                 </label>
-                <label className="text-sm font-bold">
+                <label className="flex gap-3 text-sm font-bold">
                   Party Mobile No. :{" "}
                   <span className="font-normal">
                     {paramdata?.company?.mobile}
                   </span>
                 </label>
-                <label className="text-sm font-bold">
+                <label className="flex gap-12 text-sm font-bold">
                   GSTIN / UIN :{" "}
-                  <span className="font-normal">{paramdata?.company?.gst}</span>
+                  <span className="font-normal uppercase">{paramdata?.company?.gst}</span>
                 </label>
               </div>
             </div>
             <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
               <div className="px-3 h-32 ">
-                <label className="flex text-lg py-2">
-                  <label className="w-[120px] text-sm font-bold">
+                <label className="flex gap-3 text-lg py-2">
+                  <label className="text-sm font-bold">
                     Shipped to :
                   </label>
                   <ul className="text-sm  capitalize">
-                    <li>{paramdata?.customer[0]?.name}</li>
-                    <li>{paramdata?.customer[0]?.address}</li>
+                    <li className="uppercase  font-bold">{paramdata?.customer[0]?.name}</li>
+                    <li>{paramdata?.customer[0]?.address || "-"}</li>
                   </ul>
                 </label>
               </div>
               <div className="w-full px-3 flex flex-col">
-                <label className="text-sm font-bold">
-                  Party PAN :{" "}
+                <label className="flex gap-3 text-sm font-bold">
+                  Party PAN :
                   <span className="font-normal">
-                    {paramdata?.customer[0]?.pan}
+                    {paramdata?.customer[0]?.pan || "-"}
                   </span>
                 </label>
-                <label className="text-sm font-bold">
-                  Party Mobile No. :{" "}
+                <label className="flex gap-3 text-sm font-bold">
+                  Party Mobile No. :
                   <span className="font-normal">
-                    {paramdata?.customer[0]?.mobile}
+                    {paramdata?.customer[0]?.mobile || "-"}
                   </span>
                 </label>
               </div>
@@ -284,7 +284,7 @@ function Print() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

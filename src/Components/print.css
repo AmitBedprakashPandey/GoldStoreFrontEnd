@@ -1,22 +1,14 @@
 /* Page Date On Cornner */
-.connerdiv{
-    position: absolute;
-    right: 00px;
-    top: 60px;  
-  }
   @page{
     size: A4;  
     margin: 10mm;
-  
-  
   }
   .A4Page{
-   position: relative;
-   page-break-before: always;
+    position: relative;
+    page-break-before: always;
     page-break-inside: avoid;
-    width: 100%;
-    max-width: 210mm;
-    height: auto;
+    width:21cm;
+    height: 29.7cm;
     margin:0 auto;  
     background-color: #fff;
     overflow-wrap: break-word;

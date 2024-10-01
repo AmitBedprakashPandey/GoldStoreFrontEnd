@@ -1,11 +1,12 @@
 import { PiArrowCircleLeft, PiArrowCircleRight } from "react-icons/pi";
 import { Carousel } from "primereact/carousel";
 import { Button } from "primereact/button";
-export default function Banner({ banner = [] }) {
+import Banner1 from "../Assets/images/banner1.jpg";
+export default function Banner({ banner }) {
   const carouselTemplate = (newData) => {
     return (
       <div className=" w-ful">
-        <img src={newData} className="w-12/12"></img>
+        <img src={newData} loading="lazy" className="w-12/12"></img>
       </div>
     );
   };
@@ -57,10 +58,14 @@ export default function Banner({ banner = [] }) {
     }
 ];
 
+const data =[
+  Banner1
+]
+
   return (
     <div className="relative">
       <Carousel
-        value={banner}
+        value={banner || data}
         numVisible={1}
         autoplayInterval={3000}
         circular

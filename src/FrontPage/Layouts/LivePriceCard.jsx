@@ -1,15 +1,6 @@
 import { motion } from "framer-motion";
-import { getLivePrice } from "../../Store/Slice/LivePriceSlice";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-export default function LivePriceCard(params) {
-  const dispatch = useDispatch();
-  const [matrial, setMaterial] = useState([]);
-  useEffect(() => {
-    dispatch(getLivePrice()).then((doc) => {
-      setMaterial(doc.payload?.data?.price);
-    });
-  }, [matrial]);
+export default function LivePriceCard({matrial}) {
+
 
   return (
     <>

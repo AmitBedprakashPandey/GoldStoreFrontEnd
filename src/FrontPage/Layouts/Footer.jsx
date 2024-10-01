@@ -1,10 +1,7 @@
 import { motion } from "framer-motion";
-import {PiWhatsappLogoDuotone} from "react-icons/pi";
-import {Tag} from "primereact/tag";
-import FloatIcons from "./FloatIcons";
-export default function Footer({ data }) {
+export default function Footer({mobile, brandname}) {
   const OpenDialPad = () => {
-    window.location.href = "tel:" + data?.mobile; // This will open the dial pad
+    window.location.href = "tel:" + mobile; // This will open the dial pad
   };
 
 
@@ -17,7 +14,7 @@ export default function Footer({ data }) {
         <label className="text-xs md:text-base text-white lg:text-2xl">
           Contact Us{" "}
           <span className="text-orange-300 font-bold  eczar-font">
-            {data?.name}
+            {brandname}
           </span>
         </label>
         <p className="text-white text-nowrap lg:text-xs  w-8/12 hidden md:block">
@@ -33,7 +30,7 @@ export default function Footer({ data }) {
         onClick={OpenDialPad}
         className="text-xs md:text-base bg-yellow-500 hover:bg-yellow-600 duration-300 font-bold capitalize py-3 px-6 rounded-lg z-20"
       >
-        +91 {data?.whatsapp}
+        +91 {mobile}
       </motion.button>
     </div>
   );
