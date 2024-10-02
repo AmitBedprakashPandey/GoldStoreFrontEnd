@@ -1,7 +1,6 @@
-.p-button:focus {
+.p-button,
+.p-inputtext:focus {
   box-shadow: none;
-  border: none;
-  outline: none !important;
 }
 
 .p-sidebar-content {
@@ -34,6 +33,7 @@
 }
 
 @media only screen and (max-width : 575px) {
+
   .p-carousel .p-carousel-content .p-carousel-prev,
   .p-carousel .p-carousel-content .p-carousel-next {
     display: none;
@@ -41,6 +41,7 @@
 }
 
 @media only screen and (max-width : 767px) {
+
   .p-carousel .p-carousel-content .p-carousel-prev,
   .p-carousel .p-carousel-content .p-carousel-next {
     display: none;
@@ -48,6 +49,7 @@
 }
 
 @media only screen and (max-width : 1199px) {
+
   .p-carousel .p-carousel-content .p-carousel-prev,
   .p-carousel .p-carousel-content .p-carousel-next {
     display: none;

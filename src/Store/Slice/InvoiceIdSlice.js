@@ -108,10 +108,13 @@ const InvoiceIdSlice = createSlice({
         state.error = null;
       })
       .addCase(UpdateInvoicesNumber.fulfilled, (state, action) => {
-        const index = state.InvoicesNumber.findIndex(
-          (doc) => doc._id === action.payload.data._id
-        );
-        state.InvoicesNumber[index] = action.payload.data;
+        // const index = state.InvoicesNumber.findIndex(
+        //   (doc) => doc._id === action.payload.data._id
+        // );
+        // console.log();
+        
+        // state.InvoicesNumber[index] = action.payload.data;
+        state.InvoicesNumber = action.payload?.number;
         state.loading = false;
         state.message = action.payload.message;
         state.error = null;

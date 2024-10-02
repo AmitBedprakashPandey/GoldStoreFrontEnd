@@ -40,13 +40,13 @@ export default function InfoCard({ data }) {
             </p>
           </div>
           }
-          <div className="grid grid-cols-2 gap-2 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
             <p className="text-white flex flex-wrap">gst no. {data?.gst}</p>
             <p className="text-white flex flex-wrap">PAN NO. {data?.pan}</p>
           </div>
           <div className="flex items-center justify-center gap-3 mt-3">
             <PiMapPinLineFill className="text-white" size={30} />
-            <p className="text-white capitalize w-96  flex flex-wrap">{data?.address}</p>
+            <p className="text-white capitalize w-[80%]  flex flex-wrap">{data?.address}</p>
           </div>
           <div className="flex gap-4 py-3">
             <button onClick={() => openLink(data?.youtube)}>

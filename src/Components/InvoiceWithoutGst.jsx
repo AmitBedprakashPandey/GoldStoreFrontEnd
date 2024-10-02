@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dropdown } from "primereact/dropdown";
 import { useDispatch, useSelector } from "react-redux";
+import { InputNumber } from "primereact/inputnumber";
+import { InputText } from "primereact/inputtext";
 import {
   createInvoice,
   fetchAllInvoices,
@@ -28,12 +30,11 @@ import {
   fetchOneInvoicesNumber,
 } from "../Store/Slice/InvoiceIdSlice";
 import toast, { toastConfig } from "react-simple-toasts";
-import { Modal } from "antd";
 import moment from "moment";
 import Loading from "./Loading";
 import { Button } from "primereact/button";
 import { confirmDialog } from "primereact/confirmdialog";
-function Invoice2({}) {
+function Invoice2() {
   const [formData, setFormData] = useState();
 
   toastConfig({
@@ -53,11 +54,11 @@ function Invoice2({}) {
   const { Customer } = useSelector((state) => state.Customers);
   const { PyMode } = useSelector((state) => state.Mode);
   const { PyBank } = useSelector((state) => state.Bank);
-  const [modal2Open, setModal2Open] = useState(false);
-  const [modal1Open, setModal1Open] = useState(false);
+
   const [modal3Open, setModal3Open] = useState(false);
-  const { Invoices, error, loading } = useSelector((state) => state.InvoicesWithoutGst);
-  const { InvoicesNumber } = useSelector((state) => state.InvoiceID);
+  const { Invoices, error, loading } = useSelector(
+    (state) => state.InvoicesWithoutGst
+  );
   const { Company } = useSelector((state) => state.Company);
   const [InvoiceId, setInvoiceId] = useState();
 
@@ -75,7 +76,9 @@ function Invoice2({}) {
   };
 
   useLayoutEffect(() => {
-    disptch(fetchOneInvoicesNumber()).then((doc)=>{setInvoiceId(Number(doc.payload?.number))});
+    disptch(fetchOneInvoicesNumber()).then((doc) => {
+      setInvoiceId(Number(doc.payload?.number));
+    });
     disptch(fetchAllBranch());
     disptch(fetchAllCustomers());
     disptch(fetchAllPyBank());
@@ -105,9 +108,8 @@ function Invoice2({}) {
       ...invoiceData,
       total: t + (t * Number(invoiceData?.mcharg)) / 100,
       // total: Number(invoiceData?.weight) * Number(invoiceData?.rate) * Number(invoiceData?.qty) + (Number('0.'+invoiceData?.mcharg)) || "",
-      nettotal: parseFloat(
-        Number(invoiceData?.total) - Number(invoiceData?.disc) || 0
-      ).toFixed(2),
+      nettotal:
+        Number(invoiceData?.total) * (1 - Number(invoiceData?.disc) / 100),
     });
     setFormData({
       ...formData,
@@ -118,8 +120,7 @@ function Invoice2({}) {
         )
       ).toFixed(2),
       tdisc: invoiceArray?.reduce(
-        (accumulator, current) =>
-          accumulator + (Number(current.total) * Number(current.disc)) / 100,
+        (accumulator, current) => accumulator + Number(current.disc),
         0
       ),
       gtotal: invoiceArray?.reduce(
@@ -208,7 +209,6 @@ function Invoice2({}) {
       disptch(UpdateInvoicesNumber(Company._id)).then(() => {
         disptch(fetchOneInvoicesNumber(Company._id));
         printWithoutGST();
-        printWithoutGST();
         setInvoiceData({
           ...invoiceData,
           desc: "",
@@ -266,6 +266,19 @@ function Invoice2({}) {
         "bg-blue-500 hover:bg-blue-600 px-4 py-3 text-white ml-3",
       rejectClassName: "px-4 py-3 ml-3",
       accept: () => update(),
+      // reject
+    });
+  };
+  const confirmSave = () => {
+    confirmDialog({
+      message: "Are you sure you want to save ?",
+      header: "Confirmation",
+      icon: <PiInfo />,
+      defaultFocus: "accept",
+      acceptClassName:
+        "bg-blue-500 hover:bg-blue-600 px-4 py-3 text-white ml-3",
+      rejectClassName: "px-4 py-3 ml-3",
+      accept: () => save(),
       // reject
     });
   };
@@ -344,6 +357,7 @@ function Invoice2({}) {
               optionValue="name"
               placeholder="Select Customer"
               filterPlaceholder="Enter name"
+              filterInputAutoFocus={true}
               filter
               className="border-gray-300 border shadow-gray-400 shadow-sm w-full"
               name="customer"
@@ -372,108 +386,118 @@ function Invoice2({}) {
           <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-9">
             <div className="grid">
               <label className="">HSN Code </label>
-              <input
+              <InputText
                 type="text"
                 placeholder="0000"
                 name="hsn"
-                value={invoiceData?.hsn}
+                value={invoiceData?.hsn || "xxxx"}
                 onChange={invoiceDataHandler}
                 className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="">Purity </label>
-              <input
-                type="number"
-                placeholder="0000"
+              <InputNumber
+                placeholder={0}
                 name="purity"
-                value={invoiceData?.purity}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                value={invoiceData?.purity || 0}
+                useGrouping={false}
+                minFractionDigits={2}
+                // onChange={(e)=>console.log(e.originalEvent.target.value)}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="">Weight (g) </label>
-              <input
-                type="number"
+              <InputNumber
                 placeholder="0000"
+                defaultValue={0}
                 name="weight"
-                value={invoiceData?.weight}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                minFractionDigits={2}
+                useGrouping={false}
+                value={invoiceData?.weight || 0}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
 
             <div className="grid">
               <label className="">Rate </label>
-              <input
-                type="number"
+              <InputNumber
                 placeholder="0000"
                 name="rate"
-                value={parseFloat(invoiceData?.rate).toFixed(2)}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                useGrouping={false}
+                minFractionDigits={2}
+                value={invoiceData?.rate || 0}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="">Qty. </label>
-              <input
-                type="number"
+              <InputNumber
                 placeholder="0000"
                 name="qty"
-                value={invoiceData?.qty}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                useGrouping={false}
+                minFractionDigits={2}
+                value={invoiceData?.qty || 0}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="text-sm">
                 Making Charg.<strong>%</strong>
               </label>
-              <input
-                type="tel"
+              <InputNumber
                 placeholder="0000"
                 name="mcharg"
-                value={parseFloat(Number(invoiceData?.mcharg || 0)).toFixed(2)}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                useGrouping={false}
+                minFractionDigits={2}
+                value={invoiceData?.mcharg || 0}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="">Total </label>
-              <input
-                type="tel"
+              <InputNumber
                 disabled
                 placeholder="0000"
                 name="total"
-                value={parseFloat(invoiceData?.total).toFixed(2)}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                minFractionDigits={2}
+                useGrouping={false}
+                value={invoiceData?.total || 0}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="">
                 Disc. <strong>%</strong>
               </label>
-              <input
-                type="tel"
+              <InputNumber
                 placeholder="0000"
                 name="disc"
-                value={invoiceData?.disc}
-                onChange={invoiceDataHandler}
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                useGrouping={false}
+                minFractionDigits={2}
+                value={invoiceData?.disc || 0}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
             <div className="grid">
               <label className="">Net total </label>
-              <input
-                type="tel"
+              <InputNumber
+                useGrouping={false}
                 placeholder="0000"
                 name="nettotal"
+                minFractionDigits={2}
                 value={invoiceData?.nettotal}
-                onChange={invoiceDataHandler}
+                onChange={(e) => invoiceDataHandler(e.originalEvent)}
                 disabled
-                className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
               />
             </div>
           </div>
@@ -543,14 +567,15 @@ function Invoice2({}) {
         <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-8">
           <div className=" grid">
             <label className="">Total Amt.</label>
-            <input
-              type="tel"
+            <InputNumber
               placeholder="0000"
               disabled
               name="tamt"
+              useGrouping={false}
+              maxFractionDigits={2}
               value={formData?.tamt}
-              onChange={formDataHandler}
-              className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+              onChange={(e) => formDataHandler(e.originalEvent)}
+              inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm rounded-md"
             />
           </div>
           <div className=" grid">
@@ -664,14 +689,14 @@ function Invoice2({}) {
       <div className="flex  justify-center py-3 gap-2  bg-white border-t-2">
         <button
           className=" flex items-center gap-2 py-3 px-4 text-white bg-green-500 rounded-md hover:bg-green-600 uppercase disabled:bg-green-700 disabled:cursor-not-allowed"
-          onClick={() => setModal1Open(true)}
+          onClick={confirmSave}
           disabled={
             buttonLable === "save" &&
             formData?.branch &&
             formData?.quot &&
             formData?.quotdate &&
             formData?.customer &&
-            invoiceArray.length != 0
+            invoiceArray.length !== 0
               ? false
               : true
           }
@@ -697,33 +722,7 @@ function Invoice2({}) {
         </button>
       </div>
 
-      <Modal
-        centered
-        open={modal1Open}
-        onOk={() => {
-          save();
-          setModal1Open(false);
-        }}
-        closable={false}
-        onCancel={() => setModal1Open(false)}
-      >
-        <label className="text-3xl ">Are you sure want to save ?</label>
-      </Modal>
-
-      <Modal
-        centered
-        open={modal2Open}
-        onOk={() => {
-          update();
-          setModal2Open(false);
-        }}
-        closable={false}
-        onCancel={() => setModal2Open(false)}
-      >
-        <label className="text-2xl capitalize">
-          Are you sure want to update ?
-        </label>
-      </Modal>
+  
     </div>
   );
 }
