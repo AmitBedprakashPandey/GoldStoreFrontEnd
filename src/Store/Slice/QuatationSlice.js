@@ -84,7 +84,6 @@ export const updateInvoice = createAsyncThunk(
   "Quotation/update",
   async (newData, { rejectWithValue }) => {
     try {
-      console.table(newData);
       
       const response = await axios.put(
         `${url}/invoice/${newData._id}/${localStorage.getItem("user")}`,

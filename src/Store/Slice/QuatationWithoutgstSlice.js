@@ -26,7 +26,6 @@ export const fetchAllQuotationWithoutgsts = createAsyncThunk(
 export const fetchOneQuotationWithoutgsts = createAsyncThunk(
   "QuotationWithoutgstWitoutGst/fetchOne", // Change the action type to fetchOne
   async (id, { rejectWithValue }) => {
-    console.log(id);
     try {
       const response = await axios.get(
         `${url}/invoicewithoutgst/${id}/${localStorage.getItem("user")}`,

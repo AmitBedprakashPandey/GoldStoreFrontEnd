@@ -82,7 +82,6 @@ export const updateInvoice = createAsyncThunk(
         { headers: getAuthHeaders() }
       );
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);

@@ -54,7 +54,6 @@ export const loginSlice = createSlice({
         state.loading = false;
         state.user = null;
         state.error = action.payload.response?.data?.error
-        console.log(action.payload);
       });
   },
 });

@@ -24,7 +24,7 @@ export default function FrontPage(params) {
   const UserData = {
     name : "Shubhlakshmi jewelery",
     ownerimg : OwnerImage,
-    ownername:"SHRI VEERBABU SARRAF",
+    ownername:"SHRI VEER BABU SONY",
     phone1:7011457639,
     phone2:7703844783,
     youtube:"https://www.youtube.com/@shubhlakshmijewellers3265",
@@ -123,8 +123,13 @@ export default function FrontPage(params) {
         <InfoCard data={UserData} />
 
 
+
+        <Footer mobile={UserData?.phone1} brandname={UserData?.name}/> 
+     
+      </div>
+      </div>
        <div className="sticky bottom-0 px-5 z-50">
-        <div className="absolute bottom-0 right-0 flex flex-col items-center gap-5">
+        <div className="absolute bottom-5 right-5 flex flex-col items-center gap-5">
         <button
           onClick={() => openWhatsApp(UserData?.phone1)}
           className="relative rounded-full h-14 w-14"
@@ -138,8 +143,8 @@ export default function FrontPage(params) {
             className="rounded-full overflow-hidden h-14 w-14"
           />
         </button>
-      {isVisible&& 
-        
+
+      {isVisible&&         
         <button
         onClick={scrollToTop}
         className=" text-white"
@@ -148,11 +153,6 @@ export default function FrontPage(params) {
         </button>
       }
         </div>
-      </div>
-
-        <Footer mobile={UserData?.phone1} brandname={UserData?.name}/> 
-     
-      </div>
       </div>
     </>
   );

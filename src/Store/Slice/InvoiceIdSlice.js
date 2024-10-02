@@ -24,7 +24,6 @@ export const fetchOneInvoicesNumber = createAsyncThunk(
   "InvoiceId/fetchAll",
   async (id, { rejectWithValue }) => {
     try {
-      console.log(id);
       
       const response = await axios.get(`${url}/invoiceid/${localStorage.getItem("companyid")}`, {
         headers: {
@@ -32,7 +31,6 @@ export const fetchOneInvoicesNumber = createAsyncThunk(
           Authorization: `${localStorage.getItem("token")}`,
         },
       });
-      console.log(response.data);
       
       return response.data;
     } catch (error) {
@@ -45,7 +43,6 @@ export const UpdateInvoicesNumber = createAsyncThunk(
   "InvoiceId/update",
   async (data, { rejectWithValue }) => {
     try {
-      console.log("slice", data);
 
       const response = await axios.put(`${url}/invoiceid/${data}`, {
         headers: {

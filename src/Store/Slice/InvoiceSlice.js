@@ -77,7 +77,6 @@ export const updateInvoice = createAsyncThunk(
         invoiceData,
         { headers: createHeaders() }
       );
-      console.log(response.data);
       
       return response.data;
     } catch (error) {

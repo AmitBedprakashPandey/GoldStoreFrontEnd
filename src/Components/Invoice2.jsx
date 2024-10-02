@@ -235,7 +235,6 @@ function Invoice2({}) {
   const update = () => {
     disptch(updateInvoice({ ...formData, invoice: invoiceArray })).then(() => {
       toast("update");
-      console.table(formData);
 
       disptch(fetchAllInvoices());
     });
@@ -316,7 +315,7 @@ function Invoice2({}) {
           <div className="m-3 max-w-96">
             <label className="">Customer Name : </label>
             <Dropdown
-              className="border-gray-300 border shadow-gray-400 shadow-sm w-96"
+              className="border-gray-300 border shadow-gray-400 shadow-sm w-full"
               name="customer"
               filterPlaceholder="Enter name"
               placeholder="Select Customer"

@@ -43,7 +43,6 @@ export const UpdateInvoiceNumberGst = createAsyncThunk(
   "invoicegst/update",
   async (data, { rejectWithValue }) => {
     try {
-        console.log("slice",data);
 
       const response = await axios.put(`${url}/invoicegst/${data}`,
         {headers: {    

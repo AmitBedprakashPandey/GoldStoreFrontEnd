@@ -149,7 +149,6 @@ const customersSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteCustomer.fulfilled, (state, action) => {
-        console.log(action.payload);
         
         state.Customer = state.Customer.filter(
           (customer) => customer._id !== action.payload.data._id

@@ -274,11 +274,11 @@ function Invoice2({}) {
       {loading && <Loading />}
       {error && error}
       <Dialog
-        maximized
+        maximized={true}
         closable={false}
         header="Create Customer"
         visible={modal3Open}
-        className="w-screen h-screen"
+        className="w-full"
         onHide={() => setModal3Open(false)}
       >
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
@@ -335,7 +335,7 @@ function Invoice2({}) {
           </div>
         </div>
         <hr className="my-2 border-black" />
-        <div className="flex items-center">
+        <div className="flex items-center relative">
           <div className="m-3 max-w-96">
             <label className="">Customer Name : </label>
             <Dropdown
@@ -345,7 +345,7 @@ function Invoice2({}) {
               placeholder="Select Customer"
               filterPlaceholder="Enter name"
               filter
-              className="border-gray-300 border shadow-gray-400 shadow-sm w-96"
+              className="border-gray-300 border shadow-gray-400 shadow-sm w-full"
               name="customer"
               value={formData?.customer}
               onChange={formDataHandler}

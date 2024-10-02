@@ -4,7 +4,7 @@ import {
   PiHouseDuotone,
   PiPowerBold,
   PiListBold,
-  PiCaretDownBold
+  PiCaretDownBold,
 } from "react-icons/pi";
 import { Sidebar } from "primereact/sidebar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
@@ -22,7 +22,6 @@ function NavBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/crm/login");
@@ -30,8 +29,6 @@ function NavBar() {
   }, [dispatch, navigate]);
 
   useEffect(() => {
-  
-    
     if (Company?.name) {
       document.title = Company.name.toUpperCase();
     }
@@ -54,7 +51,7 @@ function NavBar() {
       accept: logoutBtn,
     });
   }, [logoutBtn]);
-
+  
   const customeHeader = () => {
     return (
       <div className="flex items-center gap-2 ">
@@ -69,12 +66,12 @@ function NavBar() {
       label: "Master",
       icon: "pi pi-file",
       items: [
-        { label: "Company Info", command: () => navigate("master/company") },
-        { label: "Customer", command: () => navigate("master/createcustomer") },
-        { label: "Branch", command: () => navigate("master/branch") },
-        { label: "Bank", command: () => navigate("master/bank") },
-        { label: "Mode", command: () => navigate("master/mode") },
-        { label: "Live Price", command: () => navigate("master/liveprice") },
+        { label: "Company Info", command: () => { navigate("master/company"); setOpen(false); } },
+        { label: "Customer", command: () => { navigate("master/createcustomer"); setOpen(false); } },
+        { label: "Branch", command: () => { navigate("master/branch"); setOpen(false); } },
+        { label: "Bank", command: () => { navigate("master/bank"); setOpen(false); } },
+        { label: "Mode", command: () => { navigate("master/mode"); setOpen(false); } },
+        { label: "Live Price", command: () => { navigate("master/liveprice"); setOpen(false); } },
       ],
     },
     {
@@ -83,11 +80,11 @@ function NavBar() {
       items: [
         {
           label: "Invoice ( Non GST )",
-          command: () => navigate("invoice/invoice"),
+          command: () => { navigate("invoice/invoice"); setOpen(false); },
         },
         {
           label: "Invoice ( GST )",
-          command: () => navigate("invoice/invoicegst"),
+          command: () => { navigate("invoice/invoicegst"); setOpen(false); },
         },
       ],
     },
@@ -97,23 +94,24 @@ function NavBar() {
       items: [
         {
           label: "Quotation ( Non GST )",
-          command: () => navigate("report/quotationwithoutgst"),
+          command: () => { navigate("report/quotationwithoutgst"); setOpen(false); },
         },
         {
           label: "Quotation ( GST )",
-          command: () => navigate("report/quotation"),
+          command: () => { navigate("report/quotation"); setOpen(false); },
         },
       ],
     },
   ];
+  
 
   return (
     <>
       <ConfirmDialog />
-      <div className=" bg-blue-500 py-4 px-3 lg:px-24 lg:py-2  text-2xl flex justify-between items-center shadow-slate-400 shadow-md z-50">
+      <div className=" bg-blue- py-4 px-3 lg:px-24 lg:py-2  text-2xl flex justify-between items-center shadow-slate-400 shadow-m z-50">
         <div className="flex gap-3 items-center">
           <Button
-            icon={<PiListBold size={32} />}
+            icon={<PiListBold size={30} />}
             onClick={() => setOpen(true)}
             className=" lg:hidden text-white"
           />
@@ -121,9 +119,9 @@ function NavBar() {
             shape="circle"
             image={Company?.logo}
             alt="Company Logo"
-            className="w-8 md:w-10 lg:w-14"
+            className="w-8 h-8 md:w-10 lg:w-14"
           />
-          <label className="text-white uppercase font-bold text-sm md:text-lg lg:text-xl">
+          <label className="text-white uppercase font-bold text-xs md:text-lg lg:text-xl">
             {Company?.name}
           </label>
         </div>
@@ -183,7 +181,7 @@ const NavBarLinks = ({ user, confirmLogout }) => (
       <NavBarDropdown label="Report" links={reportLinks} />
       <li className="relative">
         <div className="dropdownbtn text-white flex items-center gap-3 py-2">
-          <PiUserCircle />
+          <Avatar size="normal" shape="circle" label={user?.substring(0, 1)} className="uppercase bg-transparent border" />
           <span className="text-base italic truncate">{user}</span>
           <PiCaretDownBold size={16} />
         </div>
