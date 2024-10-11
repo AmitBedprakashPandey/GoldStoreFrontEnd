@@ -37,7 +37,6 @@ export default function BankMode() {
     ).then((res) => {
       toast(res?.payload?.message);
       setPyBank("");
-      dispatch(fetchAllPyBank());
     });
   }, [dispatch, pybank]);
 
@@ -148,7 +147,6 @@ const BankFormModel = ({ id }) => {
   const updateBank = useCallback(() => {
     dispatch(updatePyBank({ _id: id, bank: pyBank })).then((res) => {
       toast(res?.payload?.message);
-      dispatch(fetchAllPyBank());
     });
   }, [dispatch, id, pyBank]);
 

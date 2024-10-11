@@ -47,7 +47,7 @@ function Invoice2({}) {
 
   const [buttonLable, setButtonLable] = useState("save");
 
-  const [invoiceArray, setInvoiceArray] = useState([]);
+  const [ invoiceArray, setInvoiceArray] = useState([]);
   const [invoiceData, setInvoiceData] = useState();
   const [invoiceDate, setInvoiceDate] = useState();
   const [modal2Open, setModal2Open] = useState(false);
@@ -100,79 +100,24 @@ function Invoice2({}) {
       setInvoiceArray(req.payload?.invoice);
     });
   };
-
-  const calculateNetTotal = () => {
-    const net =
-      Number(invoiceData?.total) -
-      (Number(invoiceData?.total) * Number(invoiceData?.disc)) / 100;
-    const sgsts = (net * Number(invoiceData?.sgst)) / 100;
-    const cgsts = (Number(net) * Number(invoiceData?.cgst)) / 100;
-    const igsts = (Number(net) * Number(invoiceData?.igst)) / 100;
-    return net + sgsts + cgsts + igsts || 0;
-  };
-
-  const updateInvoiceInpt = () => {
-    const t =
-      Number(invoiceData?.weight) *
-      Number(invoiceData?.rate) *
-      Number(invoiceData?.qty);
-    setInvoiceData({
-      ...invoiceData,
-      total: t + (t * Number(invoiceData?.mcharg)) / 100 || 0,
-      // total: Number(invoiceData?.weight) * Number(invoiceData?.rate) * Number(invoiceData?.qty) + (Number('0.'+invoiceData?.mcharg)) || "",
-      nettotal: parseFloat(calculateNetTotal()).toFixed(2) || 0,
-    });
-    setFormData({
-      ...formData,
-      tamt: invoiceArray?.reduce(
-        (accumulator, current) => accumulator + current.total,
-        0
-      ),
-      tdisc: invoiceArray?.reduce(
-        (accumulator, current) =>
-          accumulator + (Number(current.total) * Number(current.disc)) / 100,
-        0
-      ),
-      ttax: invoiceArray?.reduce(
-        (accumulator, current) =>
-          accumulator +
-          ((Number(current?.total) -
-            (Number(current.total) * Number(current.disc)) / 100) *
-            (Number(current?.sgst) +
-              Number(current.cgst) +
-              Number(current.igst))) /
-            100,
-        0
-      ),
-      gtotal: invoiceArray?.reduce(
-        (accumulator, current) =>
-          accumulator + parseFloat(Number(current.nettotal).toFixed(2)),
-        0
-      ),
-      balamt: parseFloat(
-        Number(formData?.gtotal) - Number(formData?.paidamt) ||
-          Number(formData?.gtotal)
-      ).toFixed(2),
-    });
-  };
-
+  
   const AddBtn = () => {
-    setInvoiceArray([...invoiceArray, invoiceData]);
+    setInvoiceArray([...invoiceArray , invoiceData]);
     setInvoiceData({
       ...invoiceData,
       desc: "",
       hsn: "",
-      purity: "",
-      weight: "",
-      rate: "",
-      qty: "",
-      mcharg: "",
-      total: "",
-      disc: "",
-      sgst: "",
-      cgst: "",
-      igst: "",
-      nettotal: "",
+      purity: 0,
+      weight:0,
+      rate: 0,
+      qty: 0,
+      mcharg: 0,
+      total: 0,
+      disc: 0,
+      sgst: 0,
+      cgst: 0,
+      igst: 0,
+      nettotal: 0,
     });
   };
 
@@ -190,28 +135,33 @@ function Invoice2({}) {
       });
     }
     setInvoiceArray(data);
-    updateInvoiceInpt();
   };
 
   useEffect(() => {
-    updateInvoiceInpt();
-  }, [
-    invoiceArray,
-    formData?.balamt,
-    formData?.gtotal,
-    formData?.ttax,
-    formData?.total,
-    formData?.paidamt,
-    invoiceData?.weight,
-    invoiceData?.desc,
-    invoiceData?.rate,
-    invoiceData?.qty,
-    invoiceData?.mcharg,
-    invoiceData?.disc,
-    invoiceData?.sgst,
-    invoiceData?.cgst,
-    invoiceData?.igst,
-  ]);
+    const multi = invoiceData?.weight * invoiceData?.rate * invoiceData?.qty;
+    const total = multi + (multi * invoiceData?.mcharg || 0 ) / 100;
+
+    const sgst = Number(invoiceData?.sgst) || 0; 
+    const cgst = Number(invoiceData?.cgst) || 0; 
+    const igst = Number(invoiceData?.igst) || 0; 
+    
+    const discountedTotal = total -  (total * invoiceData?.disc || 0) / 100;
+    const totalGST = (discountedTotal * sgst) / 100 + (discountedTotal * cgst) / 100 + (discountedTotal * igst) / 100;
+
+
+    const nettotal = discountedTotal + totalGST 
+    setInvoiceData({ ...invoiceData, total,nettotal });
+  }, [invoiceData?.weight,invoiceData?.rate,invoiceData?.qty,invoiceData?.mcharg,invoiceData?.disc,invoiceData?.sgst,invoiceData?.cgst,invoiceData?.igst]);
+
+  useEffect(()=>{
+    const tamt = invoiceArray?.reduce((accumulator, current) => accumulator + current.total,0);
+    const gtotal = invoiceArray?.reduce((accumulator, current) =>accumulator + Number(current.nettotal),0);
+    const tdisc = invoiceArray?.reduce((accumulator, current) => accumulator + Number(current.disc) ,0);
+    const ttax = invoiceArray?.reduce((accumulator, current) =>accumulator + (Number(current.igst) + Number(current.cgst) + Number(current.sgst) ),0);
+    const balamt = formData?.gtotal - formData?.paidamt || gtotal;
+    
+    setFormData({...formData,tamt,gtotal,tdisc,ttax,balamt});
+  },[invoiceArray,formData?.paidamt]);
 
   const printWithGST = () => {
     const data = {
@@ -295,7 +245,7 @@ function Invoice2({}) {
         <CustomerForm close={() => setModal3Open(false)} Mode={"save"} />
       </Dialog>
       <div className="mt-0 p-3 bg-white overflow-hidden">
-        <div className="grid lg:grid-cols-3">
+        <div className="grid lg:grid-cols-3 ">
           <div className="m-3">
             <label className="">Branch Name : </label>
             <Dropdown
@@ -369,7 +319,31 @@ function Invoice2({}) {
           />
         </div>
         <hr className="my-2 border-black" />
+        {/* Invoice Form */}
         <div className="relative">
+        <Button
+            className="z-50 border p-3 rounded-full bg-blue-500 text-white absolute right-3 top-0 cursor-pointer"
+            onClick={AddBtn}
+            disabled={
+              !(
+                invoiceData?.desc &&
+                invoiceData?.hsn &&
+                invoiceData?.purity &&
+                invoiceData?.weight &&
+                invoiceData?.rate &&
+                invoiceData?.qty &&
+                invoiceData?.mcharg &&
+                invoiceData?.total &&
+                invoiceData?.disc &&
+                invoiceData?.sgst &&
+                invoiceData?.igst &&
+                invoiceData?.cgst &&
+                invoiceData?.nettotal
+              )
+            }
+          >
+            <PiPlusBold />
+          </Button>
           <div className="m-3">
             <label className="">Description</label>
             <input
@@ -380,9 +354,9 @@ function Invoice2({}) {
               onChange={invoiceDataHandler}
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <div className="flex">
-              <div className="m-3 grid">
+          <div className="grid gap-3 grid-cols-3 md:grid-cols-6 lg:grid-cols-12 ">
+            
+              <div className=" grid">
                 <label className="">HSN Code </label>
                 <input
                   type="text"
@@ -393,19 +367,18 @@ function Invoice2({}) {
                   className="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">Purity </label>
                 <InputNumber
                   useGrouping={false}
-                  minFractionDigits={2}
                   placeholder="0000"
                   name="purity"
-                  value={invoiceData?.purity || 0}
+                  value={invoiceData?.purity}
                   onChange={(e) => invoiceDataHandler(e.originalEvent)}
                   inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">Weight (g) </label>
                 <InputNumber
                   useGrouping={false}
@@ -416,10 +389,9 @@ function Invoice2({}) {
                   onChange={(e) => invoiceDataHandler(e.originalEvent)}
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
+            
               </div>
-            </div>
-            <div className="flex">
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">Rate </label>
                 <InputNumber
                   useGrouping={false}
@@ -429,13 +401,12 @@ function Invoice2({}) {
                   value={invoiceData?.rate || 0}
                   onChange={(e) => invoiceDataHandler(e.originalEvent)}
                   inputClassName="w-32 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
-                />
+                />  
               </div>
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">Qty. </label>
                 <InputNumber
                   useGrouping={false}
-                  minFractionDigits={2}
                   placeholder="0000"
                   name="qty"
                   value={invoiceData?.qty || 0}
@@ -443,9 +414,9 @@ function Invoice2({}) {
                   inputClassName="w-32 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="text-sm">
-                  Making Chrg. <strong>%</strong>{" "}
+                  Make Chrg.<strong>%</strong>
                 </label>
                 <InputNumber
                   useGrouping={false}
@@ -454,15 +425,13 @@ function Invoice2({}) {
                   name="mcharg"
                   value={invoiceData?.mcharg || 0}
                   onChange={(e) => invoiceDataHandler(e.originalEvent)}
-                  inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
+                  inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-            </div>
-            <div className="flex">
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">Total </label>
                 <InputNumber
-                  useGrouping={false}
+                  useGrouping={true}
                   minFractionDigits={2}
                   disabled
                   placeholder="0000"
@@ -472,7 +441,7 @@ function Invoice2({}) {
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">
                   Disc. <strong>%</strong>
                 </label>
@@ -486,7 +455,7 @@ function Invoice2({}) {
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">
                   SGST <strong>%</strong>
                 </label>
@@ -500,9 +469,7 @@ function Invoice2({}) {
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-            </div>
-            <div className="flex">
-              <div className="m-3 grid">
+              <div className=" grid">
                 <label className="">
                   CGST <strong>%</strong>
                 </label>
@@ -516,7 +483,7 @@ function Invoice2({}) {
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className="m-3 grid">
+              <div className="grid">
                 <label className="">
                   IGST <strong>%</strong>
                 </label>
@@ -530,28 +497,23 @@ function Invoice2({}) {
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-              <div className=" m-3 grid">
-                <label className="">NET TOTAL </label>
+              <div className=" grid">
+                <label className="">NET TOTAL</label>
                 <InputNumber
-                  useGrouping={false}
-                  minFractionDigits={2}
+                  useGrouping={true}
+                  minFractionDigits={2} 
                   placeholder="0000"
                   name="nettotal"
-                  value={invoiceData?.nettotal || 0}
+                  value={invoiceData?.nettotal}
                   onChange={(e) => invoiceDataHandler(e.originalEvent)}
                   disabled
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
                 />
               </div>
-            </div>
+          
           </div>
-          <button
-            className="border p-3 rounded-full bg-blue-500 text-white absolute right-3 top-0 cursor-pointer"
-            onClick={AddBtn}
-          >
-            <PiPlusBold />
-          </button>
         </div>
+         {/* Invoice Form end*/}
 
         <div className="relative overflow-x-auto mx-0 py-3 flex md:justify-center ">
           <table className="overflow-x-scroll lg:overflow-x-hidden ">
@@ -620,7 +582,7 @@ function Invoice2({}) {
           </table>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid-cols-9">
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-6 lg:grid -cols-9 relative">
           <div className=" grid">
             <label className="">Total Amt.</label>
             <InputNumber
@@ -679,17 +641,17 @@ function Invoice2({}) {
               options={PyMode}
               value={formData?.mode}
               optionLabel="mode"
-              placeholder="Select mode"
+              placeholder="Select"
               optionValue="mode"
               name="mode"
               onChange={formDataHandler}
-              className="focus:shadow-none border border-gray-300 shadow-gray-400 shadow-sm "
+              className="border-gray-300 border shadow-gray-400 shadow-sm  py-0 px-0 w-full"
             />
           </div>
-          <div className=" grid">
+          <div className="grid">
             <label className="">Bank </label>
             <Dropdown
-              placeholder="Select bank"
+              placeholder="Select"
               options={PyBank}
               value={formData?.bank}
               optionLabel="bank"
@@ -697,7 +659,7 @@ function Invoice2({}) {
               name="bank"
               onChange={formDataHandler}
               disabled={formData?.mode === "Bank" ? false : true}
-              className="focus:shadow-none border border-gray-300 shadow-gray-400 shadow-sm "
+              className="border-gray-300 border shadow-gray-400 shadow-sm  w-full"
             />
           </div>
           <div className=" grid">
@@ -723,7 +685,7 @@ function Invoice2({}) {
               placeholder="0000"
               name="paidamt"
               value={formData?.paidamt}
-              onChange={(e)=>formDataHandler(e.originalEvent)}
+              onChange={(e)=>setFormData({...formData,paidamt:e.value})}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
           </div>

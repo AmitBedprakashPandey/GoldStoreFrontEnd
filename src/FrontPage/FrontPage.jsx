@@ -22,7 +22,7 @@ export default function FrontPage(params) {
   const [matrial, setMaterial] = useState([]);
 
   const UserData = {
-    name : "Shubhlakshmi jewelery",
+    name : "Shubh Lakshmi Jewelery",
     ownerimg : OwnerImage,
     ownername:"SHRI VEER BABU SONY",
     phone1:7011457639,

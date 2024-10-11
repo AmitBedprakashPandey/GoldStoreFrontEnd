@@ -10,8 +10,7 @@ import { BiEdit, BiInfoCircle, BiTrash, BiX } from "react-icons/bi";
 import toast, { Toast, toastConfig } from "react-simple-toasts";
 import Loading from "./Loading";
 import { Dialog } from "primereact/dialog";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { Modal } from "antd";
+import {confirmDialog } from "primereact/confirmdialog";
 import { Button } from "primereact/button";
 import { PiUpload } from "react-icons/pi";
 
@@ -25,8 +24,6 @@ export default function Branch(params) {
   const [openModel, setOpenModel] = useState(false);
   const [branch, setBranch] = useState();
   const [id, setId] = useState();
-  const [modal2Open, setModal2Open] = useState(false);
-  const [modal3Open, setModal3Open] = useState(false);
   const dispatch = useDispatch();
   const { Branch, loading } = useSelector((state) => state.Branchs);
 
@@ -46,7 +43,6 @@ export default function Branch(params) {
   const deleteData = (id) => {
     dispatch(deleteBranch(id)).then((res) => {
       toast(res?.payload?.message);
-      setModal2Open(false);
     });
   };
 

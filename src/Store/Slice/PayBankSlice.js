@@ -1,6 +1,4 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
 import axios from "axios";
 
 const url = process.env.React_APP_API_URL;
@@ -43,13 +41,13 @@ export const deletePyBank = createAsyncThunk(
   "PyBank/delete",
   async (PyBankId, { rejectWithValue }) => {
     try {
-   const response =    await axios.delete(`${url}/bank/${PyBankId}/${localStorage.getItem('user')}`, {
+      const response = await axios.delete(`${url}/bank/${PyBankId}/${localStorage.getItem('user')}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${localStorage.getItem("token")}`,
         },
       });
-      return response.data;
+      return response.data; // assuming response contains a success message or the deleted bank ID
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -109,10 +107,42 @@ const PyBanksSlice = createSlice({
       })
       .addCase(createPyBank.fulfilled, (state, action) => {
         state.loading = false;
-        state.PyBank.push(action.payload); // assuming the payload is the newly created Bank
+        state.PyBank.push(action.payload.data); // assuming the payload is the newly created Bank
         state.error = null;
+        state.message = action.payload.message;
       })
       .addCase(createPyBank.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updatePyBank.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePyBank.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.PyBank.findIndex(bank => bank._id === action.payload.data._id);
+        if (index !== -1) {
+          state.PyBank[index] = action.payload.data; // update the specific bank
+        }
+        state.message = action.payload.message;
+        state.error = null;
+      })
+      .addCase(updatePyBank.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deletePyBank.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePyBank.fulfilled, (state, action) => {
+        state.loading = false;
+        state.PyBank = state.PyBank.filter(bank => bank._id !== action.payload.data._id); // assuming payload contains the deleted bank ID
+        state.error = null;
+        state.message = action.payload.message;
+      })
+      .addCase(deletePyBank.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

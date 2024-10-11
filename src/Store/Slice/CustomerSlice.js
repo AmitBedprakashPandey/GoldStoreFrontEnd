@@ -116,7 +116,7 @@ const customersSlice = createSlice({
         state.error = null;
       })
       .addCase(createCustomer.fulfilled, (state, action) => {
-        state.Customer.push(action.payload); // assuming the payload is the newly created customer
+        state.Customer.push(action.payload?.data); // assuming the payload is the newly created customer
         state.loading = false;
         state.message = action.payload.message;
         state.error = null;
@@ -131,10 +131,10 @@ const customersSlice = createSlice({
       })
       .addCase(updateCustomer.fulfilled, (state, action) => {
         const index = state.Customer.findIndex(
-          (customer) => customer._id === action.payload._id
+          (customer) => customer._id === action.payload?.data?._id
         );
         if (index !== -1) {
-          state.Customer[index] = action.payload; // update the customer in the state
+          state.Customer[index] = action.payload?.data  ; // update the customer in the state
         }
         state.loading = false;
         state.message = action.payload.message;

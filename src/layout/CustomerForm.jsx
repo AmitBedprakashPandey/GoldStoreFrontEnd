@@ -1,15 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchAllCustomers,
   createCustomer,
-  updateCustomer,
-  clearNotifications
+  updateCustomer
 } from "../Store/Slice/CustomerSlice";
 import { BiInfoCircle } from "react-icons/bi";
-import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import { confirmDialog } from "primereact/confirmdialog";
 import Loading from "../Components/Loading";
-import { Toast } from "primereact/toast";
 import moment from "moment";
 import { fetchAllState } from "../Store/Slice/StateSlice";
 import RippleButton from "../Components/RippleButton";
@@ -85,9 +82,9 @@ console.error(error);
         <form className="mb-14 grid md:grid-cols-2 gap-3">
           {[
             { label: "Party Name", name: "name", type: "text", required: true },
-            { label: "Enter Address", name: "address", type: "text" },
-            { label: "Enter State", name: "state", type: "select", options: state },
-            { label: "Enter City", name: "city", type: "text" },
+            { label: "Enter Address", name: "address", type: "text", required: true },
+            { label: "Enter State", name: "state", type: "select", options: state , required: true},
+            { label: "Enter City", name: "city", type: "text", required: true },
             { label: "Enter Pin Code", name: "pincode", type: "tel",required: true  },
             { label: "Enter Mobile no.", name: "mobile", type: "tel", required: true },
             { label: "Enter Phone no.", name: "phone", type: "tel" },

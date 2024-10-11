@@ -96,7 +96,7 @@ const PyModesSlice = createSlice({
     clearNotifications(state) {
       state.message = null;
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -120,7 +120,7 @@ const PyModesSlice = createSlice({
       })
       .addCase(createPyMode.fulfilled, (state, action) => {
         state.loading = false;
-state.message = action.payload.message
+        state.message = action.payload.message;
         state.PyMode.push(action.payload.data); // assuming the payload is the newly created mode
         state.error = null;
       })
@@ -133,16 +133,15 @@ state.message = action.payload.message
         state.error = null;
       })
       .addCase(updatePyMode.fulfilled, (state, action) => {
-        
         const index = state.PyMode.findIndex(
-          (payMode) => payMode._id  === action.payload.data._id
+          (payMode) => payMode._id === action.payload.data._id
         ); // remove the branch from the state
-        if(index !== -1 ){
-          state.PyMode[index] = action.payload.data
+        if (index !== -1) {
+          state.PyMode[index] = action.payload.data;
         }
-        
+
         state.loading = false;
-        state.message = action.payload.message
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(updatePyMode.rejected, (state, action) => {
@@ -154,12 +153,11 @@ state.message = action.payload.message
         state.error = null;
       })
       .addCase(deletePyMode.fulfilled, (state, action) => {
-        
         state.PyMode = state.PyMode.filter(
           (branch) => branch._id !== action.payload.data._id
         ); // remove the branch from the state
         state.loading = false;
-        state.message = action.payload.message
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(deletePyMode.rejected, (state, action) => {
