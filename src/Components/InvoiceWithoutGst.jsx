@@ -474,7 +474,7 @@ function Invoice2() {
                 invoiceData?.qty &&
                 invoiceData?.mcharg &&
                 invoiceData?.total &&
-                invoiceData?.disc &&                 
+                // invoiceData?.disc &&                 
                 invoiceData?.nettotal
               )
             }
