@@ -50,6 +50,9 @@ export const loginSlice = createSlice({
       localStorage.removeItem("token");
       sessionStorage.removeItem("printData");
     },
+    messageClear:(state)=>{
+      state.message = null
+    },
     setUser: (state, action) => {
       state.user = action.payload;
     },
@@ -89,6 +92,6 @@ export const loginSlice = createSlice({
   },
 });
 
-export const { logout, setUser } = loginSlice.actions;
+export const { logout, setUser,messageClear } = loginSlice.actions;
 
 export default loginSlice.reducer;
