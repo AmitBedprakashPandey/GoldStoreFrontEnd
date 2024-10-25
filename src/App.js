@@ -17,11 +17,13 @@ import FrontPage from "./FrontPage/FrontPage";
 import LivePrice from "./Components/LivePrice";
 import Settings from "./Components/Settings";
 import WebsiteSetting from "./Setting/WebsiteSetting";
+import ForgetPasswordForm from "./layout/ForgetPasswordForm";
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<FrontPage />} />
+        <Route path="/forgetpassword" element={<ForgetPasswordForm />} />
           <Route path="/print" element={<Print />} />
           <Route path="/printgst" element={<PrintGST />} />
         <Route path="/crm" element={<HomePage />}>

@@ -66,7 +66,7 @@ function Print(params) {
             <div className="flex flex-col w-72">
               <label className="flex gap-3 items-center text-md font-bold">
                 Payment Mode :{" "}
-                <span className="font-normal">{paramdata?.formData?.mode}</span>
+                <span className="font-normal capitalize">{paramdata?.formData?.mode}</span>
               </label>
               <label className="flex gap-3 items-center text-md font-bold">
                 Delivery Mode : <span className="font-normal"></span>
@@ -137,7 +137,7 @@ function Print(params) {
               <div className="w-full px-3 flex flex-col">
                 <label className="flex gap-14 text-sm font-bold">
                   Party PAN :
-                  <span className="font-normal">
+                  <span className="font-normal uppercase">
                     {paramdata?.customer[0]?.pan || "-"}
                   </span>
                 </label>
@@ -149,7 +149,7 @@ function Print(params) {
                 </label>
                 <label className="flex gap-11 text-sm font-bold">
                   GSTIN / UIN :{" "}
-                  <span className="font-normal">
+                  <span className="font-normal uppercase">
                     {paramdata?.customer[0]?.gst || "-"}
                   </span>
                 </label>
@@ -216,28 +216,28 @@ function Print(params) {
                       {doc?.purity}
                     </td>
                     <td className=" border-black text-center  border w-16">
-                      {doc?.weight}
+                      {parseFloat(doc?.weight).toFixed(2)}
                     </td>
                     <td className=" border-black text-center  border w-16">
-                      {doc?.mcharg}
+                      {parseFloat(doc?.mcharg).toFixed(2)}
                     </td>
                     <td className=" border-black text-center  border w-16">
                       {doc?.qty}
                     </td>
                     <td className=" border-black text-center  border w-16">
-                      {doc?.rate}
+                    {parseFloat(doc?.rate).toFixed(2)}
                     </td>
                     <td className=" border-black text-center  border w-16">
-                      {doc?.sgst}
+                    {parseFloat(doc?.sgst).toFixed(2)}
                     </td>
                     <td className=" border-black text-center  border w-16">
-                      {doc?.cgst}
+                    {parseFloat(doc?.cgst).toFixed(2)}
                     </td>
                     <td className=" border-black text-center  border w-16">
-                      {doc?.igst}
+                    {parseFloat(doc?.igst || 0).toFixed(2)}
                     </td>
                     <td className=" border-black text-center  border border-r-0 w-28">
-                      {doc?.nettotal}
+                      {parseFloat(doc?.nettotal).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -256,7 +256,8 @@ function Print(params) {
                     colSpan={4}
                     className=" text-xs border-black border border-r-0 w-16"
                   >
-                    {paramdata?.formData.tdisc}
+                      {parseFloat(paramdata?.formData.tdisc || 0).toFixed(2)}
+
                   </th>
                 </tr>
                 <tr className="text-xs">
@@ -271,7 +272,7 @@ function Print(params) {
                     colSpan={4}
                     className=" border-black border border-r-0 w-16"
                   >
-                    {paramdata?.formData.ttax}
+                    {parseFloat(paramdata?.formData.ttax || 0).toFixed(2)}
                   </th>
                 </tr>
                 <tr className="text-xs">
@@ -285,7 +286,7 @@ function Print(params) {
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16 pl-3"
                   >
-                    {parseFloat(paramdata?.formData.gtotal).toFixed()}
+                    {parseFloat(paramdata?.formData.gtotal || 0).toFixed(2)}
                   </th>
                 </tr>
               </tfoot>

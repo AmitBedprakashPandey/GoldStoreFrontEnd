@@ -447,7 +447,7 @@ function Invoice2() {
               />
             </div>
             <div className="grid">
-              <label className="">Net total {invoiceData?.nettotal}</label>
+              <label className="">Net total</label>
               <InputNumber
                 useGrouping={true}
                 placeholder="0000"

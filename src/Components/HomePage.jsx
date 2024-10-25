@@ -31,6 +31,7 @@ function HomePage() {
       style={{ backgroundImage: `url(${BgCover})` }}
     >
       <Navbar />
+
       <div
         className={`w-full h-full ${
           params?.pathname === "/crm" ? "" : "bg-white"

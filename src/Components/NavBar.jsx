@@ -108,7 +108,7 @@ function NavBar() {
   return (
     <>
       <ConfirmDialog />
-      <div className=" bg-blue- py-4 px-3 lg:px-24 lg:py-2  text-2xl flex justify-between items-center shadow-slate-400 shadow-m z-50">
+      <div className="bg-yellow-600 py-4 px-3 lg:px-24 lg:py-2  text-2xl flex justify-between items-center shadow-slate-600 shadow-md z-50">
         <div className="flex gap-3 items-center">
           <Button
             icon={<PiListBold size={30} />}
@@ -181,7 +181,7 @@ const NavBarLinks = ({ user, confirmLogout }) => (
       <NavBarDropdown label="Report" links={reportLinks} />
       <li className="relative">
         <div className="dropdownbtn text-white flex items-center gap-3 py-2">
-          <Avatar size="normal" shape="circle" label={user?.substring(0, 1)} className="uppercase bg-transparent border" />
+          <Avatar size="normal" shape="circle" label={user?.substring(0, 1)} style={{ backgroundColor: '#caccd1', color: '#00205b' }} className=" uppercase bg-transparent border" />
           <span className="text-base italic truncate">{user}</span>
           <PiCaretDownBold size={16} />
         </div>

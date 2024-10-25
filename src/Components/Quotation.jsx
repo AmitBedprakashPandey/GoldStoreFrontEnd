@@ -141,14 +141,14 @@ function Invoices(params) {
                   </td>
                   <td className="py-3 px-2 w-16 text-start">
                     {doc?.invoice.map((doc, index) => (
-                      <span key={index}>{doc.rate || 0}</span>
+                      <span key={index}>{parseFloat(doc.rate || 0).toFixed(2)},</span>
                     ))}
                   </td>
                   <td className="py-3 px-2 w-16 text-start">
                     {parseFloat(doc.ttax || 0).toFixed(2)}
                   </td>
-                  <td className="py-3 px-2 w-16 text-start">{doc.balamt}</td>
-                  <td className="py-3 px-2 w-16 text-start">{doc.gtotal}</td>
+                  <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.balamt).toFixed(2)}</td>
+                  <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.gtotal).toFixed(2)}</td>
                   <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
                   <td className="py-3 px-2 w-16 text-start">
                     {doc.status === false ? (

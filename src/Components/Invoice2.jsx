@@ -157,7 +157,15 @@ function Invoice2({}) {
     const tamt = invoiceArray?.reduce((accumulator, current) => accumulator + current.total,0);
     const gtotal = invoiceArray?.reduce((accumulator, current) =>accumulator + Number(current.nettotal),0);
     const tdisc = invoiceArray?.reduce((accumulator, current) => accumulator + Number(current.disc) ,0);
-    const ttax = invoiceArray?.reduce((accumulator, current) =>accumulator + (Number(current.igst) + Number(current.cgst) + Number(current.sgst) ),0);
+    const igst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.igst) || 0), 0);
+    const cgst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.cgst) || 0), 0);
+    const sgst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.sgst) || 0), 0);
+    
+    // console.log(cgst + igst + sgst);
+    
+    
+    // const ttax = invoiceArray?.reduce((accumulator, current) =>accumulator + (Number(current.igst) + Number(current.cgst) + Number(current.sgst) ),0);
+    const ttax = cgst + igst + sgst;
     const balamt = formData?.gtotal - formData?.paidamt || gtotal;
     
     setFormData({...formData,tamt,gtotal,tdisc,ttax,balamt});
@@ -504,7 +512,7 @@ function Invoice2({}) {
                   minFractionDigits={2} 
                   placeholder="0000"
                   name="nettotal"
-                  value={invoiceData?.nettotal}
+                  value={parseFloat(invoiceData?.nettotal || 0).toFixed(0)}
                   onChange={(e) => invoiceDataHandler(e.originalEvent)}
                   disabled
                   inputClassName="w-28 py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
@@ -522,8 +530,8 @@ function Invoice2({}) {
               <th className="w-20 flex py-3 justify-center ">Wight</th>
               <th className="w-10 flex py-3 justify-center  ">Qty.</th>
               <th className="w-32 flex py-3 justify-center  ">Make Charg.%</th>
-              <th className="w-16 flex py-3 justify-center  ">Rate</th>
-              <th className="w-16 flex py-3 justify-center  ">Amt.</th>
+              <th className="w-24 flex py-3 justify-center  ">Rate</th>
+              <th className="w-24 flex py-3 justify-center  ">Amt.</th>
               <th className="w-16 flex py-3 justify-center  ">SGST</th>
               <th className="w-16 flex py-3 justify-center  ">CGST</th>
               <th className="w-16 flex py-3 justify-center  ">IGST</th>
@@ -547,10 +555,10 @@ function Invoice2({}) {
                   <td className="flex h-full items-center w-32 px-10  ">
                     {parseFloat(doc?.mcharg || 0).toFixed(2)}
                   </td>
-                  <td className="flex h-full items-center justify-center   w-16  ">
+                  <td className="flex h-full items-center justify-center text-xs  w-24  ">
                     {parseFloat(doc?.rate || 0).toFixed(2)}
                   </td>
-                  <td className="flex h-full items-center justify-center  w-16  ">
+                  <td className="flex h-full items-center justify-center text-xs w-24  ">
                     {parseFloat(doc?.total || 0).toFixed(2)}
                   </td>
                   <td className="flex h-full items-center justify-center   w-16  ">
@@ -617,7 +625,7 @@ function Invoice2({}) {
               placeholder="0000"
               name="tottax"
               disabled
-              value={formData?.ttax || 0}
+              value={parseFloat(formData?.ttax || 0).toFixed(2)}
               onChange={formDataHandler}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
@@ -630,7 +638,7 @@ function Invoice2({}) {
               placeholder="0000"
               disabled
               name="gtotal"
-              value={formData?.gtotal || 0}
+              value={parseFloat(formData?.gtotal || 0).toFixed(2)}
               onChange={formDataHandler}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
@@ -684,7 +692,7 @@ function Invoice2({}) {
               minFractionDigits={2}
               placeholder="0000"
               name="paidamt"
-              value={formData?.paidamt}
+              value={parseFloat(formData?.paidamt).toFixed(2)}
               onChange={(e)=>setFormData({...formData,paidamt:e.value})}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
@@ -697,7 +705,7 @@ function Invoice2({}) {
               placeholder="0000"
               name="balamt"
               disabled
-              value={formData?.balamt}
+              value={parseFloat(formData?.balamt).toFixed(2)}
               onChange={formDataHandler}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />

@@ -121,7 +121,7 @@ function Print() {
               <div className="w-full px-3 flex flex-col">
                 <label className="flex gap-3 text-sm font-bold">
                   Party PAN :
-                  <span className="font-normal">
+                  <span className="font-normal uppercase">
                     {paramdata?.customer[0]?.pan || "-"}
                   </span>
                 </label>
@@ -214,7 +214,7 @@ function Print() {
                     colSpan={4}
                     className=" border-black border border-r-0 text-center w-16  pl-3"
                   >
-                    {parseFloat(paramdata?.formData?.tdisc).toFixed(2)}
+                    {parseFloat(paramdata?.formData?.tdisc || 0).toFixed(2)}
                   </th>
                 </tr>
                 <tr className="text-xs">

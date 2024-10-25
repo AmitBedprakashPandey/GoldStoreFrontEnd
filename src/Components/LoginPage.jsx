@@ -44,7 +44,6 @@ export default function LoginPage() {
     if (loginUser.fulfilled.match(resultAction)) {
       const token = localStorage.getItem("token");
       if (token) {
-
         navigate("/crm");
         handleFetchData();
       }
@@ -101,6 +100,15 @@ export default function LoginPage() {
                 required
                 className="w-full rounded-md py-3 px-2 text-gray-900 shadow-md ring-1 ring-gray-300 placeholder-gray-400 focus:ring-2 focus:ring-indigo-600"
               />
+              <div className="w-full pt-2 flex justify-end">
+                <a
+                  href="/forgetpassword"
+                  target="_blank"
+                  className="text-blue-700"
+                >
+                  forgot password ?
+                </a>
+              </div>
             </div>
           </form>
 
@@ -108,7 +116,7 @@ export default function LoginPage() {
             type="button"
             onClick={loginBtn}
             disabled={!formData.email || !formData.pass}
-            className="mt-10 w-full flex justify-center rounded-md bg-indigo-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 disabled:bg-indigo-700 disabled:cursor-not-allowed"
+            className="mt-5 w-full flex justify-center rounded-md bg-indigo-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 disabled:bg-indigo-700 disabled:cursor-not-allowed"
           >
             Sign in
           </button>
