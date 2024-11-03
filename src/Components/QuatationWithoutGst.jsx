@@ -50,32 +50,32 @@ function QuotationWithoutGst(params) {
   };
 
   return (
-    <div className="pt-5">
+    <div className="pt-5 bg-white h-screen">
       {loading && <Loading />}
       {Model && <ViewPrint id={id} close={() => setModel(false)} />}
       <div className=" mx-auto w-12/12 md:w-9/12 lg:w-4/12    ">
-        <div className="grid grid-cols-1 md:grid-cols-3 bg-white m-3 p-3 gap-3 md:gap-5 shadow-gray-400 shadow-md border-gray-300 border rounded-md">
-          <div className="grid md:grid-cols-1">
-            <label className="font-semibold">From : </label>
+        <div className="flex gap-3">
+          <div className="grid">
+            <label className="font-medium text-xs">From : </label>
             <input
               type="date"
               value={moment(from).format("YYYY-MM-DD")}
               onChange={(e) => setFrom(e.target.value)}
-              className="w-full py-3 border px-3"
+                 className="w-full border border-black/30 px-3 rounded-lg"
             />
           </div>
-          <div className="grid md:grid-cols-1">
-            <label className="font-semibold">To : </label>
+          <div className="grid">
+            <label className="font-medium text-xs">To : </label>
             <input
               type="date"
-              className="w-full py-3 border px-3"
+                 className="w-full border border-black/30 px-3 rounded-lg"
               value={moment(to).format("YYYY-MM-DD")}
               onChange={(e) => setTo(e.target.value)}
             />
           </div>
           <div className="">
             <button
-              className="flex gap-3 text-lg text-white font-bold items-center justify-center bg-blue-500 py-5 px-10 rounded-xl w-full lg:mt-8"
+              className="flex gap-3 text-lg text-white font-bold items-center justify-center bg-blue-500  px-5 rounded-xl w-full mt-4"
               onClick={findData}
             >
               <PiMagnifyingGlassDuotone />
@@ -86,44 +86,44 @@ function QuotationWithoutGst(params) {
       </div>
 
       <div className=" mx-auto w-12/12 h-9/12 md:w-9/12 lg:12/12">
-        <div className="relative overflow-x-auto bg-white m-3 p-3 shadow-md shadow-slate-500 rounded-md border">
-          <table className="w-full ">
+      <div className="relative overflow-x-auto bg-white mt-3 shadow shadow-slate-800">
+      <table className="w-full customTableBorder">
             <thead className="sticky -top-3">
               <tr className="text-sm bg-gray-200">
-                <th className="py-3 px-2 w-20 text-start">#</th>
-                <th className="py-3 px-2 w-20 text-start capitalize">
+                <th className="py-0.5 px-2 text-xs w-20 text-center">#</th>
+                <th className="py-0.5 px-2 text-xs w-20 text-center capitalize">
                   Bill No.
                 </th>
-                <th className="py-3 px-2 w-56 text-start capitalize">
+                <th className="py-0.5 px-2 text-xs w-56 text-start capitalize">
                   Customer
                 </th>
-                <th className="py-3 px-2 w-56 text-start capitalize">
+                <th className="py-0.5 px-2 text-xs w-56 text-start capitalize">
                   Decription
                 </th>
-                <th className="py-3 px-2 w-16 text-start capitalize">weight</th>
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">weight</th>
 
-                <th className="py-3 px-2 w-16 text-start capitalize">Rate</th>
-                <th className="py-3 px-2 w-16 text-start capitalize">
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Rate</th>
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">
                   Bal. Amit
                 </th>
-                <th className="py-3 px-2 w-16 text-start capitalize">
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">
                   Grnd. Amt
                 </th>
-                <th className="py-3 px-2 w-16 text-start capitalize">Mode</th>
-                <th className="py-3 px-2 w-16 text-start capitalize">Status</th>
-                <th className="py-3 px-2 w-16 text-start capitalize">Action</th>
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Mode</th>
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Status</th>
+                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Action</th>
               </tr>
             </thead>
             <tbody className="overflow-hidden overflow-y-scroll ">
               {invoiceArray?.map((doc, index) => (
                 <tr
                   key={index}
-                  className="text-sm bg-gray-50 border-b border-slate-500"
+                  className="text-xs bg-gray-50 border-b border-slate-500"
                 >
-                  <td className="py-3 px-2 w-20 text-start">{index + 1}</td>
-                  <td className="py-3 px-2 w-20 text-start">{doc.quot}</td>
-                  <td className="py-3 px-2 w-56 text-start">{doc.customer}</td>
-                  <td className="py-3 px-2 w-56 text-start">
+                  <td className="py-0.5 px-2 w-20 text-center">{index + 1}</td>
+                  <td className="py-0.5 px-2 w-20 text-center">{doc.quot}</td>
+                  <td className="py-0.5 px-2 w-56 text-start">{doc.customer}</td>
+                  <td className="py-0.5 px-2 w-56 text-start">
                     {doc?.invoice.map((doc, index) => (
                       <span key={index}>{doc.desc}</span>
                     ))}
@@ -142,32 +142,32 @@ function QuotationWithoutGst(params) {
                   <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.balamt).toFixed(2)}</td>
                   <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.gtotal).toFixed(2)}</td>
                   <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
-                  <td className="py-3 px-2 w-16 text-start">
+                  <td className="px-2 w-16 text-start">
                     {doc.status === false ? (
                       <PiCheck
-                        size={36}
+                        size={20}
                         strokeWidth={5}
                         absoluteStrokeWidth
                         color="green"
                       />
                     ) : (
                       <PiX
-                        size={36}
+                        size={20}
                         strokeWidth={5}
                         absoluteStrokeWidth
                         color="red"
                       />
                     )}
                   </td>
-                  <td className="py-3 px-2 w-16 text-start">
+                  <td className="px-3 w-16 text-start">
                     <button
-                      className="bg-blue-500 p-3 rounded-full text-white"
+                      className="bg-blue-500 p-1 rounded-full text-white"
                       onClick={() => {
                         setId(doc._id);
                         setModel(true);
                       }}
                     >
-                      <PiEye />
+                      <PiEye size={15} />
                     </button>
                   </td>
                 </tr>

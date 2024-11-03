@@ -84,21 +84,21 @@ export default function Mode() {
       >
         <ModeFormModel id={modeId} />
       </Dialog>
-      <div className="flex justify-center h-screen bg-white pt-5 ">
-        <div className="flex flex-col mx-2 ">
-          <div className="my-5 text uppercase font-bold">
-            <label className="">Payment Mode</label>
+      <div className="flex justify-center h-screen bg-white">
+        <div className="flex flex-col">
+          <div className="text uppercase font-bold">
+            <label className="text-xs">Payment Mode</label>
           </div>
           <div className="grid">
-            <label>Enter Payment Mode</label>
+            <label className="text-xs">Enter Payment Mode</label>
             <input
-              className="w-full py-3 border my-2 px-3 rounded-lg shadow-gray-300 shadow-md"
+              className="w-full py-2 border px-3 rounded-lg shadow-gray-300 shadow-md"
               placeholder="Enter Payment Mode"
               value={pymode}
               onChange={(e) => setPyMode(e.target.value)}
             />
             <button
-              className="bg-green-500 hover:bg-green-800 duration-300 py-3 rounded-lg my-2 disabled:bg-green-700"
+              className="bg-green-500 hover:bg-green-800 duration-300 py-2 rounded-lg my-2 text-white disabled:bg-green-700"
               onClick={saveMode}
               disabled={pymode ? false : true}
             >
@@ -109,17 +109,17 @@ export default function Mode() {
           <table>
             <thead>
               <tr className="bg-gray-200 w-full">
-                <th className="w-60 py-3 px-4 text-start">Mode</th>
-                <th className="w-48 text-start">Action</th>
+                <th className="w-60 text-xs py-3 px-4 text-start">Mode</th>
+                <th className="w-48 text-xs text-start">Action</th>
               </tr>
             </thead>
             <tbody>
               {PyMode.map((doc, index) => (
-                <tr key={index} className="py-2">
-                  <td className="px-4">{doc.mode}</td>
-                  <td className="flex items-center gap-3 py-2">
+                <tr key={index} className="">
+                  <td className="px-4 text-xs">{doc.mode}</td>
+                  <td className="flex items-center gap-2 py-0.5">
                     <button
-                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-3 text-white"
+                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-2 text-white"
                       onClick={() => {
                         setModeId(doc._id);
                         setModeOpenModel(true);
@@ -128,7 +128,7 @@ export default function Mode() {
                       <PiPencilLine size={16} />
                     </button>
                     <button
-                      className="bg-red-500 hover:bg-red-800 duration-300 rounded-full p-3 text-white "
+                      className="bg-red-500 hover:bg-red-800 duration-300 rounded-full p-2 text-white "
                       onClick={() => deleteAction(doc._id)}
                     >
                       <PiTrash size={16} />

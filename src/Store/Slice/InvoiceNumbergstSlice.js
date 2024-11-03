@@ -32,6 +32,7 @@ export const fetchOneInvoiceNumberGst = createAsyncThunk(
           Authorization: `${localStorage.getItem("token")}`,
         },
       });
+     
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);

@@ -33,7 +33,7 @@ function HomePage() {
       <Navbar />
 
       <div
-        className={`w-full h-full ${
+        className={`w-full h-auto ${
           params?.pathname === "/crm" ? "" : "bg-white"
         }`}
       >

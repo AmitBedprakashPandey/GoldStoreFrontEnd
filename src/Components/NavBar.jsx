@@ -41,7 +41,7 @@ function NavBar() {
 
   const confirmLogout = useCallback(() => {
     confirmDialog({
-      closable: false,
+      closable: false,      
       message: "Are you sure you want to logout?",
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
@@ -108,29 +108,32 @@ function NavBar() {
   return (
     <>
       <ConfirmDialog />
-      <div className="bg-yellow-600 py-4 px-3 lg:px-24 lg:py-2  text-2xl flex justify-between items-center shadow-slate-600 shadow-md z-50">
-        <div className="flex gap-3 items-center">
+      <div className="bg-yellow-600 py-1 px-3 lg:px-24 flex justify-between items-center shadow-black/50 shadow-md z-50">
+        <div className="flex items-center">
           <Button
-            icon={<PiListBold size={30} />}
+            icon={<PiListBold size={20} />}
             onClick={() => setOpen(true)}
             className=" lg:hidden text-white"
           />
+          <div className="flex items-center gap-2">
+
           <Avatar
             shape="circle"
             image={Company?.logo}
             alt="Company Logo"
-            className="w-8 h-8 md:w-10 lg:w-14"
-          />
-          <label className="text-white uppercase font-bold text-xs md:text-lg lg:text-xl">
+            className="w-6 lg:w-[40px]"
+            />
+          <label className="text-white uppercase font-bold text-xs">
             {Company?.name}
           </label>
+            </div>
         </div>
-        <div className="lg:hidden flex items-center gap-2">
+        <div className="lg:hidden flex items-center">
           <Link to="/crm" className="text-white">
-            <PiHouseDuotone />
+            <PiHouseDuotone size={15} />
           </Link>
           <Button
-            icon={<PiPowerBold />}
+            icon={<PiPowerBold size={15} />}
             onClick={confirmLogout}
             className="text-white"
           />
@@ -164,7 +167,7 @@ const NavLinkList = ({ links, onClose }) => (
         key={to}
         to={to}
         onClick={onClose}
-        className="text-base py-3 px-5 w-full hover:bg-blue-100 capitalize duration-300 cursor-pointer"
+        className="text-xs text-nowrap px-2 py-1.5 hover:bg-yellow-200 capitalize duration-300 cursor-pointer"
       >
         {label}
       </Link>
@@ -180,15 +183,15 @@ const NavBarLinks = ({ user, confirmLogout }) => (
       <NavBarDropdown label="Invoice" links={invoiceLinks} />
       <NavBarDropdown label="Report" links={reportLinks} />
       <li className="relative">
-        <div className="dropdownbtn text-white flex items-center gap-3 py-2">
-          <Avatar size="normal" shape="circle" label={user?.substring(0, 1)} style={{ backgroundColor: '#caccd1', color: '#00205b' }} className=" uppercase bg-transparent border" />
-          <span className="text-base italic truncate">{user}</span>
-          <PiCaretDownBold size={16} />
+        <div className="dropdownbtn text-white py-1.5 flex items-center gap-1">
+          <Avatar shape="circle" label={user?.substring(0, 1)} style={{ backgroundColor: '#caccd1', color: '#00205b' }} className=" uppercase bg-transparent border w-6 h-6" />
+          <span className="text-xs italic truncate">{user}</span>
+          <PiCaretDownBold size={10} />
         </div>
-        <div className="dropdown-menu overflow-hidden w-48 bg-white rounded-md duration-300 shadow-md absolute top-9 right-0 z-50">
+        <div className="dropdown-menu overflow-hidden w-32 bg-white rounded-md duration-300 shadow-md absolute top-8 right-0 z-50">
           <button
             type="button"
-            className="w-full flex items-center gap-3 text-start px-4 py-2 text-lg hover:bg-blue-100 capitalize duration-300 cursor-pointer"
+            className="w-full flex items-center gap-2 text-start px-3 py-1 text-sm hover:bg-yellow-100 capitalize duration-300 cursor-pointer"
             onClick={confirmLogout}
           >
             <PiPowerBold /> Logout
@@ -201,7 +204,7 @@ const NavBarLinks = ({ user, confirmLogout }) => (
 
 const NavBarLink = ({ to, label }) => (
   <li>
-    <Link to={to} className="dropdownbtn text-base font-semibold text-white">
+    <Link to={to} className="dropdownbtn text-xs font-normal text-white">
       {label}
     </Link>
   </li>
@@ -210,10 +213,11 @@ const NavBarLink = ({ to, label }) => (
 const NavBarDropdown = ({ label, links }) => (
   <li>
     <div className="relative">
-      <button className="dropdownbtn text-base font-semibold py-3 text-white">
+      <button className="dropdownbtn text-xs py-1.5 font-normal text-white">
         {label}
       </button>
-      <div className="dropdown-menu overflow-hidden  w-64 bg-white rounded-md duration-300 shadow-md absolute -left-16 z-50">
+      <div className="dropdown-menu w-auto bg-white rounded-md duration-300 shadow-md shadow-slate-600 absolute right-0 z-50">
+        <div className="bg-white z-50 w-3 h-3 absolute -top-1.5 rotate-45 right-3"></div>
         <NavLinkList links={links} />
       </div>
     </div>

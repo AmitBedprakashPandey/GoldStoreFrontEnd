@@ -245,7 +245,7 @@ function Invoice2() {
     });
   };
   return (
-    <div className="lg:mx-16 ">
+    <div className="lg:mx-16 h-screen bg-white">
       {loading && <Loading />}
       {error && error}
       <Dialog

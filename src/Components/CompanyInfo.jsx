@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { confirmDialog } from "primereact/confirmdialog";
+import { Avatar } from "primereact/avatar";
+import Loading  from "./Loading";
 import {
   fetchByUser,
   createCompany,
@@ -9,6 +11,7 @@ import {
 } from "../Store/Slice/CompanySlice";
 import { fetchAllState } from "../Store/Slice/StateSlice";
 import toast, { toastConfig } from "react-simple-toasts";
+import { Steps } from "primereact/steps";
 import {
   PiCamera,
   PiFloppyDisk,
@@ -29,10 +32,11 @@ import { BiInfoCircle } from "react-icons/bi";
 import Compressor from "compressorjs";
 import { state } from "./TextUtilits";
 import { InputNumber } from "primereact/inputnumber";
+
 function CompanyInfo() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { Company } = useSelector((state) => state.Company);
+  const { Company ,loading } = useSelector((state) => state.Company);
   const User = localStorage.getItem("user");
   const [buttonName, setButtonName] = useState("u");
   const [formData, setformData] = useState(Company);
@@ -46,6 +50,41 @@ function CompanyInfo() {
     className:
       "bg-black w-72 h-16 rounded-full uppercase text-white py-5 text-center shadow-slate-800 shadow-md",
   });
+
+  const itemRenderer = (item, itemIndex) => {
+    const isActiveItem = activeIndex === itemIndex;
+    const backgroundColor = isActiveItem ? '#0079c1' : '#caccd1';
+    const textColor = isActiveItem ? 'var(--surface-b)' : 'var(--text-color-secondary)';
+
+    return (
+        <div className="flex flex-col items-center gap-1">
+            <span
+                className="inline-flex w-8 h-8 items-center justify-center z-1 p-2 rounded-full cursor-pointer"
+                style={{ backgroundColor: backgroundColor, color: textColor}}
+                onClick={() => setActiveIndex(itemIndex)}
+                >
+                <i>{item.icon} </i>
+            </span>
+            <small className="text-[8pt]">{item.label}</small>
+        </div>
+    );
+};
+
+  const items = [
+    {
+      icon:<PiBuildings size={20}/>,
+        label: 'Company Info',
+        template : (item) => itemRenderer(item,0)
+    },
+    {icon:<PiInfoBold size={20}/>,
+        label: 'Founder Info',
+        template : (item) => itemRenderer(item,1)
+    },
+    // {icon:<PiSlideshow size={20}/>,
+    //     label: 'Banner',
+    //     template : (item) => itemRenderer(item,2)
+    // }
+];
 
   useEffect(() => {
     dispatch(fetchAllState());
@@ -235,66 +274,23 @@ function CompanyInfo() {
     const newArray = bannerList.filter((_, index) => index !== indexBanner);
     setBannerList(newArray);
   };
+  
 
   return (
-    <>
+    <div className="h-screen bg-white">
       {/* <ConfirmDialog /> */}
+      {loading && <Loading /> }
 
-      <div>
-        <div className="w-full flex justify-center py-5">
-          <div className="flex gap-5  px-4 justify-around items-center">
-            <div className="flex flex-col items-center">
-              <button
-                onClick={() => setActiveIndex(0)}
-                className={`${
-                  activeIndex === 0 ? "bg-cyan-500" : "bg-white"
-                } border-2 border-cyan-500 w-14 h-14 rounded-full flex justify-center items-center`}
-              >
-                <PiBuildings
-                  size={30}
-                  color={activeIndex === 0 ? "#fff" : "#000"}
-                />
-              </button>
-              <small className="text-nowrap">Company Info</small>
-            </div>
-            <hr className="w-12 border border-slate-400" />
-            <div className="flex flex-col items-center">
-              <button
-                onClick={() => setActiveIndex(1)}
-                className={`${
-                  activeIndex === 1 ? "bg-cyan-500" : "bg-white"
-                } border-2 border-cyan-500 w-14 h-14 rounded-full flex justify-center items-center`}
-              >
-                <PiInfoBold
-                  size={30}
-                  color={activeIndex === 1 ? "#fff" : "#000"}
-                />
-              </button>
-              <small className="text-nowrap">Owner Info</small>
-            </div>
-            <hr className="w-12 border border-slate-400" />
-            <div className="flex flex-col items-center">
-              <button
-                onClick={() => setActiveIndex(2)}
-                className={`${
-                  activeIndex === 2 ? "bg-cyan-500" : "bg-white"
-                } border-2 border-cyan-500 w-14 h-14 rounded-full flex justify-center items-center`}
-              >
-                <PiSlideshow
-                  size={30}
-                  color={activeIndex === 2 ? "#fff" : "#000"}
-                />
-              </button>
-              <small>Banner</small>
-            </div>
-          </div>
+      <div className="flex flex-col items-center relative bg-white">
+        
+        <div className="max-w-xl pt-3 w-full">
+            <Steps model={items} activeIndex={activeIndex} readOnly={false} className="w-full" />
         </div>
+
         {activeIndex === 0 && (
           <div className="w-full flex justify-center">
-            <div
-              className={`w-full max-w-[600px] p-3  rounded-md shadow-md shadow-slate-500 bg-white `}
-            >
-              <h1 className="text-lg font-bold text-center py-5">
+            <div className={`max-w-lg w-full px-3`}>
+              <h1 className="text-md uppercase font-semibold text-center py-5">
                 Company Info
               </h1>
               <div className="flex flex-col gap-5 items-center">
@@ -310,7 +306,7 @@ function CompanyInfo() {
                   {selectedImage ? (
                     <img
                       src={selectedImage}
-                      className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border"
+                      className="w-20 h-20 rounded-full shadow-gray-500 shadow border"
                     />
                   ) : (
                     <div className="w-[120px] h-[120px] rounded-full shadow-gray-500 shadow-md border flex justify-center items-center">
@@ -319,127 +315,128 @@ function CompanyInfo() {
                   )}
                   <label
                     htmlFor="logoimg"
-                    className="absolute bottom-0 right-0 border-black border rounded-full p-2 bg-white"
+                    className="absolute bottom-0 right-0 border-black/30 border rounded-full p-0.5 bg-white"
                   >
-                    <PiCamera size={20} />
+                    <PiCamera size={20} color="#52565e" />
                   </label>
                 </div>
-                <div className="flex flex-col my-1 w-full">
-                  <label className="">Company Name</label>
+                <div className="flex flex-col w-full">
+                  <label className="text-xs">Company Name</label>
                   <input
                     placeholder="Enter company name"
                     name="name"
                     value={formData?.name}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-2 px-2 rounded-md"
                   />
                 </div>
               </div>
               <div className="flex flex-col my-1">
-                <label className="">Address </label>
+                <label className="text-xs">Address </label>
                 <input
                   placeholder="Enter address"
                   name="address"
                   value={formData?.address}
                   onChange={formDataHandler}
-                  className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  className="border shadow-slate-200 text-sm shadow py-2 px-2 rounded-md"
                 />
               </div>
               <div className="grid md:grid-cols-3 gap-3 my-1">
                 <div className="flex flex-col w-full">
-                  <label className="">State </label>
+                  <label className="text-xs">State </label>
+                  
                   <select
                     placeholder="Enter address"
                     name="state"
                     value={formData?.state}
                     onChange={formDataHandler}
-                    className="w-full border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="w-full border shadow-slate-200 shadow py-1.5 px-2 rounded-md"
                   >
                     <option selected disabled>
                       --select State--
                     </option>
                     {state.map((doc, index) => (
                       <option key={index} value={doc}>
-                        {doc}
+                        <small>{doc}</small>
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="flex flex-col">
-                  <label className="">City </label>
+                  <label className="text-xs">City </label>
                   <input
                     placeholder="Enter address"
                     name="city"
                     value={formData?.city}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className="">Pin code </label>
+                  <label className="text-xs">Pin code </label>
                   <input
                     placeholder="Enter address"
                     name="pincode"
                     value={formData?.pincode}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                   />
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-3 my-1">
                 <div className="flex flex-col w-full">
-                  <label className="">Office Number </label>
+                  <label className="text-xs">Office Number </label>
                   <input
                     placeholder="Enter address"
                     name="office"
                     value={formData?.office}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                   />
                 </div>
                 <div className="flex flex-col w-full">
-                  <label className="">Mobile Number </label>
+                  <label className="text-xs">Mobile Number </label>
                   <input
                     placeholder="Enter address"
                     name="mobile"
                     value={formData?.mobile}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                   />
                 </div>
               </div>
               <div className="flex flex-col w-full">
-                <label className="">Email </label>
+                <label className="text-xs">Email </label>
                 <input
                   type="email"
                   placeholder="Enter address"
                   name="email"
                   value={formData?.email}
                   onChange={formDataHandler}
-                  className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                  className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                 />
               </div>
               <div className="grid md:grid-cols-2 gap-3 my-1">
                 <div className="flex flex-col w-full">
-                  <label className="">PAN Number </label>
+                  <label className="text-xs">PAN Number </label>
                   <input
                     type="text"
                     placeholder="Enter address"
                     name="pan"
                     value={formData?.pan}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                   />
                 </div>
                 <div className="flex flex-col w-full">
-                  <label className="">GST Number </label>
+                  <label className="text-xs">GST Number </label>
                   <input
                     type="text"
                     placeholder="Enter address"
                     name="gst"
                     value={formData?.gst}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-1.5 px-2 rounded-md"
                   />
                 </div>
               </div>
@@ -447,15 +444,16 @@ function CompanyInfo() {
                 <Button
                   onClick={() => setActiveIndex(1)}
                   label="Next"
-                  className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                  className="flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-1.5 rounded-lg shadow-gray-400 shadow-md text-white font-semibold"
                 ></Button>
               </div>
             </div>
           </div>
         )}
+
         {activeIndex === 1 && (
           <div className="w-full flex justify-center">
-            <div className="w-full max-w-[600px] p-3 bg-white rounded-md shadow-md shadow-slate-500">
+            <div className="w-full max-w-[600px] p-3 bg-white rounded-md">
               <div className="flex flex-col items-center w-full">
                 <div className="relative w-24 h-24">
                   <input
@@ -467,8 +465,9 @@ function CompanyInfo() {
                     className="hidden"
                   />
                   {selectedImage2 ? (
-                    <img
-                      src={selectedImage2}
+                    <Avatar
+                    shape="circle"
+                      image={selectedImage2}                      
                       className="w-24 h-24 rounded-full shadow-gray-500 shadow-md border"
                     />
                   ) : (
@@ -490,7 +489,7 @@ function CompanyInfo() {
                     name="owner"
                     value={formData?.owner}
                     onChange={formDataHandler}
-                    className="border shadow-slate-200 shadow-md py-3 px-2 rounded-md"
+                    className="border shadow-slate-200 text-sm shadow py-2 px-2 rounded-md"
                   />
                 </div>
                 <div className="flex items-center my-3 w-full gap-3">
@@ -572,8 +571,10 @@ function CompanyInfo() {
                   className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
                 ></Button>
                 <Button
-                  onClick={() => setActiveIndex(2)}
-                  label="Next"
+                  // onClick={() => setActiveIndex(2)}
+                  onClick={confirm2}
+                  // label="Next"
+                  label="upload"
                   className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
                 ></Button>
               </div>
@@ -581,7 +582,7 @@ function CompanyInfo() {
           </div>
         )}
 
-        {activeIndex === 2 && (
+        {/* {activeIndex === 2 && (
           <div className="w-full flex justify-center">
             <div className="w-full max-w-[600px] p-3 bg-white rounded-md shadow-md shadow-slate-500">
               <div className="w-full">
@@ -669,9 +670,9 @@ function CompanyInfo() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
-    </>
+    </div>
   );
 }
 

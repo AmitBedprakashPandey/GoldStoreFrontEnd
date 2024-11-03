@@ -23,6 +23,7 @@ function CreateCustomer() {
   const [id, setId] = useState();
   const toast = useRef();
   const dispatch = useDispatch();
+
   const { Customer, loading, message, error } = useSelector(
     (state) => state.Customers
   );
@@ -84,26 +85,30 @@ function CreateCustomer() {
             setId(newData?._id);
           }}
           icon={<PiPencilLine />}
-          className="bg-blue-500 hover:bg-blue-700 duration-300 h-8 w-8 text-white rounded-full"
+          className="bg-blue-500 hover:bg-blue-700 duration-300 h-6 w-6 text-white rounded-full"
         />
         <Button
           onClick={() => deleteAction(newData?._id)}
           icon={<PiTrash />}
-          className="bg-red-500 hover:bg-red-700 duration-300 h-8 w-8 text-white rounded-full"
+          className="bg-red-500 hover:bg-red-700 duration-300 h-6 w-6 text-white rounded-full"
         />
       </div>
     );
   };
 
   const footer = () => {
-    return <div>Total Customer : {Customer.length}</div>;
+    return <div className="text-xs">Total Customer : {Customer.length}</div>;
   };
 
   return (
     <>
+      {loading && <Loading />}
+
       <Toast ref={toast} position="bottom-center" />
+
       <Dialog
         maximized
+        draggable={false}
         closable={false}
         header={openMode === "update" ? "Update Customer" : "Create Customer"}
         visible={openMenu}
@@ -117,10 +122,9 @@ function CreateCustomer() {
         />
       </Dialog>
 
-      {loading && <Loading />}
-      <div className="grid md:mx-5">
+      <div className="bg-white p-2 h-screen">
         <Button
-          className="bg-blue-500 min-w-20 lg max-w-48 m-3 flex justify-center  hover:bg-blue-800 duration-300 font-normal text-white px-5 py-3 gap-3"
+          className="bg-blue-500 my-3 flex justify-center  hover:bg-blue-800 duration-300 font-bold text-white px-3 py-2 text-xs gap-2"
           onClick={CreateBtn}
         >
           <PiPlusBold />
@@ -131,7 +135,7 @@ function CreateCustomer() {
           value={Customer}
           size="small"
           rows={10}
-          paginator
+          // paginator
           footer={footer}
           style={{ minWidth: "320px" }}
           className=""
@@ -139,24 +143,57 @@ function CreateCustomer() {
           <Column
             field="name"
             header="Party Name"
-            className="min-w-48 max-w-48 truncate"
+            headerClassName="text-xs"
+            className="truncate text-xs"
           />
           <Column
             field="address"
             header="Address"
-            className="min-w-48 max-w-48 truncate "
+            headerClassName="text-xs"
+            className="truncate text-xs max-w-40"
           />
-          <Column field="phone" header="Phone No." className="min-w-48" />
-          <Column field="mobile" header="Mobile No." />
-          <Column field="email" header="Email" />
-          <Column field="gst" header="GST No." />
-          <Column field="city" header="City" />
+          <Column
+            field="phone"
+            header="Phone No."
+            headerClassName="text-xs"
+            className="truncate text-xs"
+          />
+          <Column
+            field="mobile"
+            header="Mobile No."
+            headerClassName="text-xs"
+            className="truncate text-xs"
+          />
+          <Column
+            field="email"
+            header="Email"
+            headerClassName="text-xs"
+            className="truncate text-xs max-w-32"
+          />
+          <Column
+            field="gst"
+            header="GST No."
+            headerClassName="text-xs"
+            className="truncate text-xs max-w-32"
+          />
+          <Column
+            field="city"
+            header="City"
+            headerClassName="text-xs"
+            className="truncate text-xs"
+          />
           <Column
             field="date"
             header="Date"
+            headerClassName="text-xs"
+            className="truncate text-xs max-w-32"
             body={(e) => <p>{moment(e?.date).format("DD/MM/YYYY")}</p>}
           />
-          <Column header="Action" body={actionBodyTemplate} />
+          <Column
+            header="Action"
+            body={actionBodyTemplate}
+            headerClassName="text-xs"
+          />
         </DataTable>
       </div>
     </>

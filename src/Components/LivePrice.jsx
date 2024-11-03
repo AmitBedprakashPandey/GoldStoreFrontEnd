@@ -17,6 +17,7 @@ import moment from "moment";
 import { motion } from "framer-motion";
 import { createLivePrice, livePriceAll } from "../Store/Slice/LivePriceSlice";
 import { useDispatch, useSelector } from "react-redux";
+import Loading from "./Loading";
 
 export default function LivePrice(params) {
   const dispatch = useDispatch();
@@ -37,7 +38,6 @@ export default function LivePrice(params) {
     (state) => state.LivePrice
   );
   useEffect(() => {
-    dispatch(livePriceAll());
     const caretList = [];
     for (let index = 0; index < 24; index++) {
       caretList.push({ name: index + 1 + " Carat" });
@@ -47,7 +47,7 @@ export default function LivePrice(params) {
 
   useEffect(() => {
     dispatch(livePriceAll());
-  }, [livePrice]);
+  }, []);
 
   const formDataHandler = (e) => {
     setFormData({
@@ -106,7 +106,8 @@ export default function LivePrice(params) {
     setPublicPrice(indexToRemove);
   };
   return (
-    <div className="px-10 pt-5 bg-white flex-1">
+    <div className="px-10 py-3 h-screen bg-white">
+      {loading && <Loading />}
       <Dialog
         visible={visible}
         onHide={() => setVisible(false)}
@@ -130,15 +131,15 @@ export default function LivePrice(params) {
         </div>
       </Dialog>
       <div className="flex justify-between gap-3 items-center">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <Button
-            icon={<PiListBold />}
+            icon={<PiListBold size={15} />}
             onClick={() => setVisible(true)}
-            className="border-2 h-10"
+            className=""
           />
-          <h1 className="text-nowrap text-md font-bold flex items-center gap-2">
+          <h1 className="text-nowrap text-xs font-bold flex items-center gap-2">
             Live Price{" "}
-            <p className="text-red-500 text-base">
+            <p className="text-red-500 text-xs">
               ({moment(Date()).format("DD/MM/YYYY")})
             </p>
           </h1>
@@ -147,21 +148,14 @@ export default function LivePrice(params) {
           <Button
             label="Public"
             disabled={publicPrice.length === 0}
-            icon={<PiCloudArrowUpDuotone />}
+            icon={<PiCloudArrowUpDuotone size={15} />}
             onClick={publicHandler}
-            className="hidden md:block gap-3 font-normal px-5 py-1.5 md:flex justify-center text-white bg-blue-700 hover:bg-blue-800 duration-300"
-          />
-          <Button
-            // label="Public"
-            disabled={publicPrice.length === 0}
-            icon={<PiCloudArrowUpDuotone />}
-            onClick={publicHandler}
-            className="md:hidden py-2 font-normal flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 duration-300"
+            className="text-xs gap-2 px-2 py-1.5 flex justify-center text-white bg-blue-700 hover:bg-blue-800 duration-300"
           />
         </div>
       </div>
       <div className="grid my-3">
-        <label htmlFor="material" className="text-slate-400 font-medium">
+        <label htmlFor="material" className="text-slate-400 font-normal text-xs">
           Select Material{" "}
         </label>
         <Dropdown
@@ -180,7 +174,7 @@ export default function LivePrice(params) {
       </div>
       {formData.material === "Gold" && (
         <div className="grid my-3">
-          <label htmlFor="carat" className="text-slate-400 font-medium">
+          <label htmlFor="carat" className="text-slate-400 font-normal text-xs">
             Select Carat{" "}
           </label>
           <Dropdown
@@ -206,7 +200,7 @@ export default function LivePrice(params) {
             checked={formData.prefix === "kg"}
             className="border-2 w-6 h-6 rounded-full"
           />
-          <label htmlFor="ingredient1" className="ml-2">
+          <label htmlFor="ingredient1" className="ml-2 font-normal text-xs">
             Kg
           </label>
         </div>
@@ -219,7 +213,7 @@ export default function LivePrice(params) {
             checked={formData.prefix === "g"}
             className="border-2 w-6 h-6 rounded-full"
           />
-          <label htmlFor="ingredient2" className="ml-2">
+          <label htmlFor="ingredient2" className="ml-2 font-normal text-xs">
             Grams
           </label>
         </div>
@@ -228,7 +222,7 @@ export default function LivePrice(params) {
       <div className="grid my-3">
         <label
           htmlFor="weight"
-          className="flex gap-2 text-slate-400 font-medium"
+          className="flex text-slate-400 font-normal text-xs"
         >
           Enter <p className="uppercase">({formData.prefix})</p>
         </label>
@@ -245,7 +239,7 @@ export default function LivePrice(params) {
       </div>
 
       <div className="grid my-3">
-        <label htmlFor="material" className="text-slate-400 font-medium">
+        <label htmlFor="material" className="text-slate-400 font-normal text-xs">
           Enter Amount
         </label>
         <InputNumber
@@ -262,7 +256,7 @@ export default function LivePrice(params) {
 
       <div className="w-full flex justify-center">
         <Button
-          icon={<PiPlusBold size={20} />}
+          icon={<PiPlusBold size={15} />}
           label="Add"
           disabled={
             formData.material &&
@@ -273,7 +267,7 @@ export default function LivePrice(params) {
               : true
           }
           onClick={addPriceListHandler}
-          className="gap-3 py-4 px-40 flex justify-center uppercase text-white bg-blue-700 hover:bg-blue-800 duration-300"
+          className="gap-3 py-2 text-xs px-40 flex justify-center uppercase text-white bg-blue-700 hover:bg-blue-800 duration-300"
         />
       </div>
 
@@ -314,18 +308,18 @@ const GoldItems = ({ data, dele }) => {
         animate={{ scale: 1 }}
         transition={{ ease: "easeInOut", duration: 0.5 }}
         className={`${
-          data?.material === "Gold" ? "bg-yellow-300" : "bg-gray-300"
-        } relative m-3 text-black capitalize rounded-full w-32 h-16 flex justify-center flex-col items-center`}
+          data?.material === "Gold" ? "bg-yellow-500" : "bg-gray-300"
+        } relative m-2 text-black capitalize rounded-full p-1.5 flex justify-center flex-col items-center`}
       >
         <p className="text-xs">
           {data?.material} {data?.carat} {data?.weight}
           {data?.prefix}
         </p>
-        <strong> ₹ {data?.price}/-</strong>
+          <InputNumber prefix="₹" suffix="/-" value={data?.price} inputClassName="bg-transparent w-24 text-center disabled:text-black" disabled />
         <Button
           onClick={() => dele()}
           icon={<PiTrashDuotone color="#fff" />}
-          className="absolute -top-2.5 right-0 bg-red-500 w-5 "
+          className="absolute -top-2 right-0 bg-red-500 w-5 h-5"
         />
       </motion.div>
     </>

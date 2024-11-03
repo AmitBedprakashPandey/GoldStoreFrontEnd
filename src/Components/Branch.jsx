@@ -59,7 +59,7 @@ export default function Branch(params) {
   };
 
   return (
-    <>
+    <div className="h-screen bg-white p-2">
       {/* <ConfirmDialog /> */}
 
       <Dialog
@@ -76,19 +76,19 @@ export default function Branch(params) {
 
       {loading && <Loading />}
 
-      <div className="flex justify-center  pt-5">
-        <div className="grid place-content-center mx-2 w-auto p-5 bg-white ">
+      <div className="flex justify-center">
+        <div className="grid place-content-center mx-2 w-auto bg-white ">
           <div className="grid">
-            <label>Enter Branch</label>
+            <label className="text-xs">Enter Branch</label>
             <input
-              className="w-full py-3 border my-2 px-3 rounded-lg shadow-gray-300 shadow-md"
+              className="w-full py-2 border px-3 rounded-lg shadow-gray-200 shadow"
               placeholder="Enter Branch"
               value={branch}
               onChange={(e) => setBranch(e.target.value)}
             />
             <Button
               label="save"
-              className="bg-green-500 hover:bg-green-800 duration-300 text-white uppercase py-3 rounded-lg my-2 disabled:bg-green-600"
+              className="bg-green-500 hover:bg-green-800 duration-300 text-xs text-white uppercase py-3 rounded-lg my-2 disabled:bg-green-600"
               onClick={confirm1}
               disabled={branch ? false : true}
             ></Button>
@@ -97,17 +97,17 @@ export default function Branch(params) {
           <table>
             <thead>
               <tr className="bg-gray-50 w-full">
-                <th className="w-60 py-3 px-4 text-start">Branch</th>
-                <th className="w-48 px-4 text-start">Action</th>
+                <th className="w-60 py-3 px-4 text-start text-xs">Branch</th>
+                <th className="w-48 px-4 text-start text-xs">Action</th>
               </tr>
             </thead>
             <tbody>
               {Branch.map((doc, index) => (
-                <tr className="py-2 h-16">
-                  <td className="px-4 h-full">{doc.branch}</td>
-                  <td className="h-full px-4">
+                <tr className="py-2">
+                  <td className="px-4 text-xs">{doc.branch}</td>
+                  <td className="px-4">
                     <Button
-                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-3 text-white"
+                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-2 text-white"
                       onClick={() => {
                         setId(doc._id);
                         setOpenModel(true);
@@ -116,7 +116,7 @@ export default function Branch(params) {
                       <BiEdit size={16} />
                     </Button>
                     <Button
-                      className="bg-red-500 ml-3 hover:bg-red-800 duration-300 rounded-full p-3 text-white "
+                      className="bg-red-500 ml-3 hover:bg-red-800 duration-300 rounded-full p-2 text-white "
                       onClick={() =>
                         confirmDialog({
                           message: "Are you sure you want to delete ?",
@@ -140,7 +140,7 @@ export default function Branch(params) {
  
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

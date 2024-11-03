@@ -53,7 +53,7 @@ export default function BankMode() {
   }, []);
 
   return (
-    <>
+    <div className="h-screen bg-white">
       {loading && <Loading />}
       <Dialog
         header="Update Bank"
@@ -64,49 +64,48 @@ export default function BankMode() {
         <BankFormModel id={bankId} />
       </Dialog>
 
-      <div className="flex justify-center pt-5">
-        <div className="grid place-content-center mx-2 bg-white w-auto p-5 ">
-          <div className="my-5 text uppercase font-bold">
-            <label>Payment Bank</label>
+      <div className="flex justify-center">
+        <div className="grid place-content-center mx-2 bg-white w-auto">
+          <div className="uppercase font-bold">
+            <label className="text-xs">Payment Bank</label>
           </div>
           <div className="grid">
-            <label>Enter Payment Bank</label>
+            <label className="text-xs">Enter Payment Bank</label>
             <input
-              className="w-full py-3 border my-2 px-3 rounded-lg shadow-gray-300 shadow-md"
+              className="w-full border py-2 px-3 rounded-lg shadow-gray-200 shadow"
               placeholder="Enter Payment Bank"
               value={pybank}
               onChange={(e) => setPyBank(e.target.value)}
             />
             <button
-              className="flex justify-center items-center gap-3 text-white font-bold bg-green-500 hover:bg-green-800 duration-300 py-3 rounded-lg my-2 disabled:bg-green-700"
+              className="flex justify-center items-center gap-2 text-white font-bold bg-green-500 hover:bg-green-800 duration-300 py-2 rounded-lg my-2 disabled:bg-green-700"
               onClick={saveBank}
               disabled={!pybank}
             >
-              <PiFloppyDisk />
               Save
             </button>
           </div>
 
           <table>
             <thead>
-              <tr className="bg-gray-50 w-full">
-                <th className="w-60 py-3 px-4 text-start">Bank</th>
-                <th className="w-48 px-4 text-start">Action</th>
+              <tr className="bg-gray-200 w-full">
+                <th className="w-60 py-3 text-xs px-4 text-start">Bank</th>
+                <th className="w-48 px-4 text-xs text-start">Action</th>
               </tr>
             </thead>
             <tbody>
               {PyBank?.map((doc) => (
-                <tr key={doc._id} className="py-2 h-14">
-                  <td className="px-4">{doc.bank}</td>
-                  <td className="h-full px-4">
+                <tr key={doc._id} className="">
+                  <td className="px-4 text-xs">{doc.bank}</td>
+                  <td className="px-4 py-1">
                     <Button
-                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-3 text-white"
+                      className="bg-blue-500 hover:bg-blue-800 duration-300 rounded-full p-2 text-white"
                       onClick={() => handleEdit(doc._id)}
                     >
                       <PiNotePencil size={16} />
                     </Button>
                     <Button
-                      className="bg-red-500 ml-4 hover:bg-red-800 duration-300 rounded-full p-3 text-white"
+                      className="bg-red-500 ml-4 hover:bg-red-800 duration-300 rounded-full p-2 text-white"
                       onClick={() =>
                         confirmDialog({
                           message: "Are you sure you want to delete ?",
@@ -128,7 +127,7 @@ export default function BankMode() {
           </table>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

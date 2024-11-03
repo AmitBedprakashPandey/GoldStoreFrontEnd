@@ -79,7 +79,7 @@ console.error(error);
       {loading && <Loading />}
       {/* <ConfirmDialog /> */}
       <div className="p-3 z-40 bg-white relative overflow-hidden">
-        <form className="mb-14 grid md:grid-cols-2 gap-3">
+        <form className="mb-16 grid md:grid-cols-2 gap-3">
           {[
             { label: "Party Name", name: "name", type: "text", required: true },
             { label: "Enter Address", name: "address", type: "text", required: true },
@@ -95,7 +95,7 @@ console.error(error);
             { label: "Enter Anniversary Date", name: "anndate", type: "date", value: aB, onChange: setAB },
           ].map((field, index) => (
             <div key={index} className="grid grid-cols-1">
-              <label className="py-1">
+              <label className="py-1 text-xs">
                 {field.label}
                 {field.required && <span className="text-red-500 text-3x1">*</span>}
               </label>
@@ -104,7 +104,7 @@ console.error(error);
                   name={field.name}
                   value={customerData[field.name] || ""}
                   onChange={(e) => setCustomerData({ ...customerData, [e.target.name]: e.target.value })}
-                  className="outline outline-1 rounded-md px-2 py-3 text-sm"
+                  className="outline outline-1 rounded-md px-2 py-2 text-sm"
                 >
                   <option value="" disabled>
                     --Select State--
@@ -122,26 +122,26 @@ console.error(error);
                   value={field.value || customerData[field.name] || ""}
                   onChange={(e) => (field.onChange ? field.onChange(e.target.value) : setCustomerData({ ...customerData, [e.target.name]: e.target.value }))}
                   placeholder={field.label}
-                  className="text-sm py-3 px-3 outline outline-1 rounded-md"
+                  className="text-sm py-2 px-3 outline outline-1 rounded-md"
                   required={field.required}
                 />
               )}
             </div>
           ))}
         </form>
-        <div className="z-50 fixed md:absolute bottom-0 left-0 right-0 bg-white flex justify-end gap-4 py-3 px-5 border-t-2">
+        <div className="z-50 fixed md:absolute bottom-0 left-0 right-0 bg-white flex justify-end gap-4 py-2 px-5 border-t-2">
           {Mode === "save" ? (
             <RippleButton
               type="button"
               disabled={!customerData.name || !customerData.address || !customerData.state || !customerData.city || !customerData.mobile || !customerData.pincode}
-              className="py-2 px-4 hover:bg-green-800 duration-300 bg-green-500 font-semibold rounded-md uppercase text-sm disabled:cursor-not-allowed disabled:bg-green-700 text-white"
+              className="py-2 px-4 hover:bg-green-800 duration-300 bg-green-500 font-semibold rounded-md uppercase text-xs disabled:cursor-not-allowed disabled:bg-green-700 text-white"
               open={() => confirmAction("save")}
               name="save"
             />
           ) : (
             <RippleButton
               type="button"
-              className="py-2 px-4 hover:bg-blue-800 duration-300 bg-blue-500 font-semibold rounded-md uppercase text-sm text-white"
+              className="py-2 px-4 hover:bg-blue-800 duration-300 bg-blue-500 font-semibold rounded-md uppercase text-xs text-white"
               open={() => confirmAction("update")}
               name="update"
             />
@@ -149,7 +149,7 @@ console.error(error);
           <button
             type="button"
             onClick={close}
-            className="py-2 px-4 hover:bg-red-800 duration-300 bg-red-500 font-semibold uppercase rounded-md text-sm text-white"
+            className="py-2 px-4 hover:bg-red-800 duration-300 bg-red-500 font-semibold uppercase rounded-md text-xs text-white"
           >
             Close
           </button>
