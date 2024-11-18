@@ -108,7 +108,8 @@ function NavBar() {
   return (
     <>
       <ConfirmDialog />
-      <div className="bg-yellow-600 py-1 px-3 lg:px-24 flex justify-between items-center shadow-black/50 shadow-md z-50">
+      <div className="bg-yellow-600 py-1 px-3 lg:px-24 flex justify-between items-center shadow-black/30 shadow-md z-50">
+       
         <div className="flex items-center">
           <Button
             icon={<PiListBold size={20} />}
@@ -128,6 +129,7 @@ function NavBar() {
           </label>
             </div>
         </div>
+       
         <div className="lg:hidden flex items-center">
           <Link to="/crm" className="text-white">
             <PiHouseDuotone size={15} />

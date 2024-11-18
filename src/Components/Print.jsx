@@ -3,9 +3,15 @@ import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
 import moment from "moment";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { BiPrinter, BiShareAlt,BiDownload } from "react-icons/bi";
+import Loading from "./Loading";
 function Print() {
   const componentRef = useRef();
   const [paramdata, setParamData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const storedData = sessionStorage.getItem("printData");
     if (storedData) {
@@ -19,31 +25,131 @@ function Print() {
     }
   }, [paramdata]);
 
+  const handleShareImg = async () => {
+    setIsLoading(true);
+    try {
+
+      if (!componentRef.current) {
+        console.error("Component reference is null or undefined.");
+        return;
+      }
+
+      const element = componentRef.current;
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL("image/png");
+
+ // Create a link element for downloading the image
+      const link = document.createElement("a");
+      link.href = imgData;
+      link.download = "invoice.png"; // Set the filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link); // Clean up the DOM
+
+      // const pdf = new jsPDF({
+      //   orientation: "portrait",
+      //   unit: "px",
+      //   format: "a4",
+      // });
+
+      // const width = pdf.internal.pageSize.getWidth();
+      // const height = (canvas.height * width ) / canvas.width;
+
+      // pdf.addImage(imgData, "PNG", 0, 0, width, height);
+
+      // pdf.save("invoice.pdf");
+
+      // const pdfBlob = pdf.output("blob");
+
+      // Check if navigator.share is supported
+    //   if (navigator.share) {
+    //     const file = new File([pdfBlob], "invoice.pdf", {
+    //       type: "application/pdf",
+    //     });
+    //     await navigator.share({
+    //       files: [file],
+    //       title: "Invoice",
+    //       text: "Here is your invoice.",
+    //     });
+    //   } else {
+    //     alert("Sharing is not supported on this device.");
+    //   }
+
+  } catch (error) {
+      console.error("Error sharing PDF:", error);
+    }finally{
+      setIsLoading(false)
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsLoading(true);
+    try {
+      const element = componentRef.current;
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [canvas.width, canvas.height],
+      });
+      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+
+      const pdfBlob = pdf.output("blob");
+
+      // Check if navigator.share is supported
+      if (navigator.share) {
+        const file = new File([pdfBlob], "invoice.pdf", { type: "application/pdf" });
+        await navigator.share({
+          files: [file],
+          title: "Invoice",
+          text: "Here is your invoice.",
+        });
+      } else {
+        alert("Sharing is not supported on this device.");
+      }
+    } catch (error) {
+      console.error("Error sharing PDF:", error);
+    }finally{
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="w-screen bg-slate-400">
+    <div className="w-screen flex justify-center pt-5">
+      {isLoading && <Loading/>}
+         <div className="flex gap-3 absolute left-0 m-3">
       <ReactToPrint
         trigger={() => (
-          <button className="absolute z-50 m-3 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3">
-            Print
+          <button className=" z-50  rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-3 py-2">
+            <BiPrinter size={25} />
           </button>
         )}
         content={() => componentRef.current}
       />
-      <div className="A4Page p-3 " ref={componentRef}>
+      <button  onClick={handleShareImg} className="z-50 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-3 py-2">
+            <BiShareAlt size={25} />
+          </button>
+          <button  onClick={handleDownloadPDF} className="z-50 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-3 py-2">
+            <BiDownload size={25} />
+          </button>
+      </div>
+      <div className="A4Page p-3  " ref={componentRef}>
         <div className="border-black border-2">
           <div className="flex justify-between items-center p-2">
-            <div className="w-28 h-28 flex justify-between items-center">
+            <div className="print:w-28 print:h-28 w-14 flex justify-between items-center">
               <img src={paramdata?.company?.logo} />
             </div>
             <div className="text-center">
-              <h3 className="text-lg font-semibold">JAI MATA DI</h3>
-              <h1 className="font-bold text-3xl uppercase">
+              <h3 className="print:text-lg font-semibold">JAI MATA DI</h3>
+              <h1 className="font-bold print:text-3xl uppercase">
                 {paramdata?.company?.name}
               </h1>
-              <h3 className="text-lg font-semibold">TAX INVOICE</h3>
+              <h3 className="print:text-lg font-semibold">TAX INVOICE</h3>
             </div>
-            <div>
-              <img src={Holmark} width={100} alt="holmart" />
+            <div className="print:w-28 w-14">
+              <img src={Holmark} alt="holmart" />
             </div>
           </div>
           <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
@@ -174,7 +280,7 @@ function Print() {
                     <td className="border-black  text-center border border-l-0 w-5 py-2">
                       {index + 1}
                     </td>
-                    <td className=" border-black text-start border w-40 pl-3">
+                    <td className="capitalize border-black text-start border w-40 pl-3">
                       {doc?.desc}
                     </td>
                     <td className=" border-black text-center  border w-10">

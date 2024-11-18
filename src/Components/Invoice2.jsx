@@ -147,7 +147,11 @@ function Invoice2({}) {
     const igst = Number(invoiceData?.igst) || 0; 
     
     const discountedTotal = total -  (total * invoiceData?.disc || 0) / 100;
-    const totalGST = (discountedTotal * sgst) / 100 + (discountedTotal * cgst) / 100 + (discountedTotal * igst) / 100;
+    
+    const totalGST = 
+    (discountedTotal * sgst) / 100 +
+    (discountedTotal * cgst) / 100 + 
+    (discountedTotal * igst) / 100;
 
 
     const nettotal = discountedTotal + totalGST 
@@ -160,16 +164,18 @@ function Invoice2({}) {
     const tdisc = invoiceArray?.reduce((accumulator, current) => accumulator + Number(current.disc) ,0);
     const igst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.igst) || 0), 0);
     const cgst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.cgst) || 0), 0);
-    const sgst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.sgst) || 0), 0);
+    const sgst = invoiceArray?.reduce((accumulator, current) => accumulator + (Number(current.sgst) || 0), 0);    
     
-    // console.log(cgst + igst + sgst);
+    const discAmt = (tamt * tdisc) / 100 ;
+    const amt = tamt - discAmt ;
     
-    
-    // const ttax = invoiceArray?.reduce((accumulator, current) =>accumulator + (Number(current.igst) + Number(current.cgst) + Number(current.sgst) ),0);
     const ttax = cgst + igst + sgst;
+    const taxAmt = (amt *ttax  ) / 100;    
+    
     const balamt = formData?.gtotal - formData?.paidamt || gtotal;
     
-    setFormData({...formData,tamt,gtotal,tdisc,ttax,balamt});
+    setFormData({...formData,tamt,gtotal,tdisc : discAmt,ttax:taxAmt,balamt});
+
   },[invoiceArray,formData?.paidamt]);
 
   const printWithGST = () => {
@@ -194,6 +200,7 @@ function Invoice2({}) {
       disptch(UpdateInvoiceNumberGst(Company._id)).then(() => {
         disptch(fetchOneInvoiceNumberGst(Company._id));
         printWithGST();
+        window.location.reload();
       });
     });
   };
@@ -639,7 +646,7 @@ function Invoice2({}) {
               placeholder="0000"
               disabled
               name="gtotal"
-              value={parseFloat(formData?.gtotal || 0).toFixed(2)}
+              value={parseFloat(formData?.gtotal || 0).toFixed()}
               onChange={formDataHandler}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
@@ -675,14 +682,14 @@ function Invoice2({}) {
             <label className="text-sm">Cheque no. </label>
             <InputNumber
               useGrouping={false}
-              minFractionDigits={2}
+              
               disabled={
                 formData?.bank && formData?.mode === "Bank" ? false : true
               }
               placeholder="0000"
               name="pycheq"
               value={formData?.pycheq}
-              onChange={formDataHandler}
+              onChange={(e)=>formDataHandler(e.originalEvent)}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
           </div>
@@ -693,7 +700,7 @@ function Invoice2({}) {
               minFractionDigits={2}
               placeholder="0000"
               name="paidamt"
-              value={parseFloat(formData?.paidamt).toFixed(2)}
+              value={parseFloat(formData?.paidamt || 0).toFixed(2)}
               onChange={(e)=>setFormData({...formData,paidamt:e.value})}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
@@ -706,7 +713,7 @@ function Invoice2({}) {
               placeholder="0000"
               name="balamt"
               disabled
-              value={parseFloat(formData?.balamt).toFixed(2)}
+              value={parseFloat(formData?.balamt).toFixed(0)}
               onChange={formDataHandler}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />

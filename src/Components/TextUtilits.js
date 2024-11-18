@@ -16,6 +16,7 @@ export const state = [
     "Jharkhand",
     "Karnataka",
     "Kerala",
+    "Delhi",
     "Madhya Pradesh",
     "Maharashtra",
     "Manipur",

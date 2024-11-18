@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchAllInvoices, updateInvoice } from "../Store/Slice/InvoiceSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DataTable } from "primereact/datatable";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
 import moment from "moment";
 import { PiCheck, PiEye, PiX, PiPrinterDuotone, PiMagnifyingGlassDuotone } from "react-icons/pi";
-
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
-
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
-import { Column } from "primereact/column";
-function Invoices(params) {
+import { BiDownload, BiShareAlt } from "react-icons/bi";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+function Invoices() {
   const dispatch = useDispatch();
   const [from, setFrom] = useState();
   const [id, setId] = useState();
@@ -50,9 +50,6 @@ function Invoices(params) {
     setInvoiceArray(filteredArray);
   };
 
-  const indexNumberBody = () => {};
-
-  const actionBody = () => {};
 
   return (
     <div className="p-3 h-screen bg-white">
@@ -80,7 +77,7 @@ function Invoices(params) {
           </div>
           <div className="">
           <button
-            className="flex gap-3 text-lg text-white font-bold items-center justify-center bg-blue-500  px-5 rounded-xl w-full mt-4"
+            className="flex gap-3 text-xs text-white font-bold items-center justify-center bg-blue-500  px-5 rounded-xl w-full mt-4"
             onClick={findData}
           >
             <PiMagnifyingGlassDuotone />Find
@@ -192,7 +189,7 @@ const ViewPrint = ({ close, id }) => {
   const dispatch = useDispatch();
   const componentRef = useRef();
   const [print, setPrint] = useState();
-
+  const [isLoading, setIsLoading] = useState(false);
   const { Company } = useSelector((state) => state.Company);
   const { Invoices, loading } = useSelector((state) => state.Invoices);
   const { Customer } = useSelector((state) => state.Customers);
@@ -209,24 +206,111 @@ const ViewPrint = ({ close, id }) => {
   const onUnDoCancel = () => {
     dispatch(updateInvoice({ ...print, status: false })).then(() => close());
   };
+
+  const handleShareImg = async () => {
+    setIsLoading(true);
+    try {
+
+      if (!componentRef.current) {
+        console.error("Component reference is null or undefined.");
+        return;
+      }
+
+      const element = componentRef.current;
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL("image/png");
+
+  // Fallback: Download the image if sharing is not supported
+  const link = document.createElement("a");
+  link.href = imgData;
+  link.download = "invoice.png"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link); // Clean up the DOM
+
+      // Convert the image data URL to a Blob
+      const response = await fetch(imgData);
+      const blob = await response.blob();
+      const file = new File([blob], "invoice.png", { type: "image/png" });
+
+
+
+    //  // Check if navigator.share is supported
+    //   if (navigator.share) {
+    //     await navigator.share({
+    //       files: [file],
+    //       title: "Invoice",
+    //       text: "Here is your invoice.",
+    //     });
+    //   } else {
+    //     // Fallback: Download the image if sharing is not supported
+    //     const link = document.createElement("a");
+    //     link.href = imgData;
+    //     link.download = "invoice.png"; // Set the filename
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link); // Clean up the DOM
+    //   }
+
+    } catch (error) {
+        console.error("Error sharing PDF:", error);
+      }finally{
+        setIsLoading(false)
+      }
+    };
+
+  const handleDownloadPDF = async () => {
+    setIsLoading(true);
+    try {
+      const element = componentRef.current;
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [canvas.width, canvas.height],
+      });
+      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+
+      const pdfBlob = pdf.output("blob");
+
+      // Check if navigator.share is supported
+      if (navigator.share) {
+        const file = new File([pdfBlob], "invoice.pdf", { type: "application/pdf" });
+        await navigator.share({
+          files: [file],
+          title: "Invoice",
+          text: "Here is your invoice.",
+        });
+      } else {
+        alert("Sharing is not supported on this device.");
+      }
+    } catch (error) {
+      console.error("Error sharing PDF:", error);
+    }finally{
+      setIsLoading(false);
+    }
+  };
   return (
     <>
+    {isLoading && <Loading />}
       <div
-        className="fixed top-0 bottom-0 left-0 right-0 z-50 overflow-y-auto overflow-x-hidden"
+        className="fixed top-0 bottom-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden flex justify-center"
         style={{ backgroundColor: "rgb(0,0,0,0.65)" }}
       >
-        <div className="md:fixed flex items-center top-0 z-50 m-3">
+
+        <div className="absolute top-5 left-5 w-full z-50 flex gap-3">
           <ReactToPrint
             trigger={() => (
-              <button className="flex  items-center  gap-3 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-10 py-3 uppercase">
-                <PiPrinterDuotone />
-                print
+              <button className="flex  items-center  gap-2 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-5 py-2 uppercase">
+                <PiPrinterDuotone />  Print
               </button>
             )}
             content={() => componentRef.current}
           />
           <button
-            className="ml-3 rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
+            className="rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-5 py-2 uppercase"
             onClick={print?.status === true ? onUnDoCancel : onCancel}
           >
             {print?.status === true ? "undo cancel" : "cancel"}
@@ -235,11 +319,19 @@ const ViewPrint = ({ close, id }) => {
           <button
             type="button"
             onClick={close}
-            className="ml-3   rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-10 py-3 uppercase"
+            className="rounded-md text-white hover:bg-red-600 duration-300 bg-red-500 px-5 py-2 uppercase"
           >
             Close
           </button>
+
+          <button  onClick={handleShareImg} className="z-50 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-3 py-2">
+            <BiShareAlt size={25} />
+          </button>
+          <button  onClick={handleDownloadPDF} className="z-50 rounded-md text-white hover:bg-blue-600 duration-300 bg-blue-500 px-3 py-2">
+            <BiDownload size={25} />
+          </button>
         </div>
+
         <div className="A4Page p-3 relative" ref={componentRef}>
           {print?.status === true ? (
             <img
@@ -250,9 +342,10 @@ const ViewPrint = ({ close, id }) => {
           ) : (
             ""
           )}
+
           <div className="border-black border-2">
             <div className="flex justify-between items-center p-2">
-              <div className="w-28 h-24 ">
+              <div className="w-20">
                 <img
                   src={Company.logo}
                   className="w-full h-full"
@@ -260,60 +353,50 @@ const ViewPrint = ({ close, id }) => {
                 />
               </div>
               <div className="text-center">
-                <h3 className="text-lg font-semibold">JAI MATA DI</h3>
-                <h1 className="font-bold text-3xl uppercase">
+                <h3 className="text-xs font-semibold">JAI MATA DI</h3>
+                <h1 className="font-bold text-2xl uppercase">
                   {Company?.name}
                 </h1>
-                <h3 className="text-lg font-semibold">TAX INVOICE</h3>
+                <h3 className="text-xs font-semibold">TAX INVOICE</h3>
               </div>
-              <div className="w-28 h-24">
+              <div className="w-20">
                 <img src={Holmark} width={100} alt="holmart" />
               </div>
             </div>
-            <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
+            <div className="border-black border border-l-0 border-r-0 px-3 pb-3 flex justify-between">
               <div className="flex flex-col">
-                <label className="text-lg">
+                <label className="text-xs">
                   Invoice No : <span>{print?.quot}</span>
                 </label>
-                <label className="text-lg">
+                <label className="text-xs ">
                   Date :{" "}
                   <span>{moment(print?.quotdate).format("DD-MM-YYYY")}</span>
                 </label>
-                <label className="text-lg">
+                <label className="text-xs">
                   State Code : <span></span>
                 </label>
               </div>
               <div className="flex flex-col w-72">
-                <label className="text-lg">Payment Mode : {print?.mode}</label>
-                <label className="text-lg">
+                <label className="text-xs">Payment Mode : {print?.mode}</label>
+                <label className="text-xs">
                   Delivery Mode : <span></span>
                 </label>
-                <label className="text-lg">
+                <label className="text-xs">
                   Place of Supply : <span></span>
                 </label>
               </div>
             </div>
+           
             <div className="flex justify-between">
-              <div className="w-full">
-                <div className="px-3 h-7 border-black border border-t-0 border-r-0 border-l-0">
-                  <label className="text-lg">
+              <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
+               <div className="h-6 px-3 pb-3 border-black border border-t-0 border-l-0 border-r-0">
+                  <label className="text-xs">
                     <span></span>
                   </label>
                 </div>
-              </div>
-              <div className="w-full">
-                <div className="px-3 border-black border border-t-0 border-r-0">
-                  <label className="text-lg">
-                    Customer Details <span></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
                 <div className="px-3 py-2 h-32 ">
-                  <label className="flex">
-                    <label className="w-[120px] font-bold">Billed to :</label>
+                  <label className="flex h-28">
+                    <label className="w-[120px] font-bold text-nowrap">Billed to :</label>
                     <ul className="">
                       <li className="text-md text-blue-700 font-bold mt-1 capitalize">
                         {Company?.name}
@@ -340,8 +423,13 @@ const ViewPrint = ({ close, id }) => {
                 </div>
               </div>
               <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
-                <div className="px-3 py-2 h-32 ">
-                  <label className="flex text-lg">
+              <div className="h-6 px-3  border-black border border-t-0 border-l-0 border-r-0">
+                  <label className="text-xs pb-4">
+                    Customer Details <span></span>
+                  </label>
+                </div>
+                <div className="px-3 py-2 h-28 border ">
+                  <label className="flex text-xs">
                     <label className="w-[120px] text-sm font-bold">
                       Shipped to :
                     </label>
@@ -556,6 +644,7 @@ const ViewPrint = ({ close, id }) => {
             </div>
           </div>
         </div>
+
       </div>
     </>
   );

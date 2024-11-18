@@ -111,8 +111,15 @@ function Invoice2() {
     const tdisc = invoiceArray?.reduce((accumulator, current) => accumulator + current.disc,0);
     const gtotal = invoiceArray?.reduce((accumulator, current) =>accumulator + current.nettotal,0);
     const balamt = formData?.gtotal - formData?.paidamt || gtotal;
+
+    const discAmt = (tamt * tdisc) / 100 ;
+    const amt = tamt - discAmt ;
+
     
-    setFormData({...formData,tamt,tdisc,gtotal,balamt});
+    
+    
+    
+    setFormData({...formData,tamt,tdisc:discAmt,gtotal:amt,balamt});
   },[invoiceArray,formData?.paidamt]);
 
   const AddBtn = () => {
@@ -199,6 +206,8 @@ function Invoice2() {
           balamt: 0,
         });
         setButtonLable("save");
+    
+        window.location.reload();
       })
     );
   };
@@ -542,10 +551,10 @@ function Invoice2() {
           <div className=" grid">
             <label className="">Total Amt.</label>
             <InputNumber
-              placeholder="0000"
+              placeholder="0000"              
               disabled
               name="tamt"
-              useGrouping={false}
+              useGrouping={true}
               maxFractionDigits={2}
               value={formData?.tamt}
               onChange={(e) => formDataHandler(e.originalEvent)}
@@ -559,7 +568,7 @@ function Invoice2() {
               placeholder="0000"
               name="tdisc"
               useGrouping={false}
-              value={formData?.tdisc}
+              value={Number(formData?.tdisc)}
               onChange={(e) => formDataHandler(e.originalEvent)}
               inputClassName="w-full py-3 px-3 border-gray-300 border shadow-gray-400 shadow-sm"
             />
