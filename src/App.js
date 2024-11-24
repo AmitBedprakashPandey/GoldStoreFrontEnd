@@ -1,7 +1,7 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
-import PrintGST from "./Components/PrintWithGST";
 import Print from "./Components/Print";
+import PrintGST from "./Components/PrintWithGST";
 import CreateCustomer from "./Components/CreateCustomer";
 import Quotation from "./Components/Quotation";
 import InvoiceWithoutGst from "./Components/InvoiceWithoutGst";
@@ -18,14 +18,21 @@ import LivePrice from "./Components/LivePrice";
 import Settings from "./Components/Settings";
 import WebsiteSetting from "./Setting/WebsiteSetting";
 import ForgetPasswordForm from "./layout/ForgetPasswordForm";
+import GstBillPrint from "./Components/GstBillPrint";
+import GstBillWithoutPrint from "./Components/GstBillWithoutPrint";
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<FrontPage />} />
         <Route path="/forgetpassword" element={<ForgetPasswordForm />} />
-        <Route path="/print" element={<Print />} />
-        <Route path="/printgst" element={<PrintGST />} />
+        
+        <Route path="/printinvoicegst" element={<PrintGST />} />
+        <Route path="/print" element={<Print/>} />
+
+        <Route path="/printwithoutgst" element={<GstBillWithoutPrint />} />        
+        <Route path="/printgst" element={<GstBillPrint />} />
+
         <Route path="/crm" element={<HomePage />}>
           <Route path="login" element={<LogingPage />} />
           <Route path="setting" element={<Settings />}>

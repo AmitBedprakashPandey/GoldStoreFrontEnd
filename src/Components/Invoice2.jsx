@@ -186,7 +186,7 @@ function Invoice2({}) {
       invoice: invoiceArray,
     };
     sessionStorage.setItem("printData", JSON.stringify(data));
-    window.open("/printgst", "_blank");
+    window.open("/printinvoicegst", "_blank");
   };
   const save = () => {
     disptch(

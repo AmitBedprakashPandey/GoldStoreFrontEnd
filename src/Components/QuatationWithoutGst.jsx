@@ -7,19 +7,27 @@ import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
 import Cancel from "../asstes/cancel.png";
 import moment from "moment";
-import { PiCheck, PiEye, PiX, PiMagnifyingGlassDuotone } from "react-icons/pi";
+import { PiCheck, PiEye, PiX, PiMagnifyingGlassDuotone, PiFilePdf, PiFileXls } from "react-icons/pi";
 import "./print.css";
 import Holmark from "../asstes/download-removebg-preview.png";
 import ReactToPrint from "react-to-print";
 import { fetchOnePrint } from "../Store/Slice/PrintWithoutGstSlice";
 import { fetchByUser } from "../Store/Slice/CompanySlice";
 import { fetchAllCustomers } from "../Store/Slice/CustomerSlice";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Button } from "primereact/button";
+
 function QuotationWithoutGst(params) {
   const dispatch = useDispatch();
+  const DataTableRef = useRef(null);
   const [from, setFrom] = useState();
   const [id, setId] = useState();
   const [Model, setModel] = useState(false);
   const [to, setTo] = useState();
+  const { Company } = useSelector((state) => state.Company);
+  const { Customer } = useSelector((state) => state.Customers);
+
   const { Invoices, loading } = useSelector(
     (state) => state.InvoicesWithoutGst
   );
@@ -45,9 +53,143 @@ function QuotationWithoutGst(params) {
 
     return isDateInRange;
   });
+
   const findData = () => {
     setInvoiceArray(filteredArray);
   };
+
+  const printWithGST = (data) => {
+    const datas = {
+      company: Company,
+      customer: Customer.filter((doc) => doc.name === data.customer),      
+     invoice: data?._id,
+    };        
+    console.log(datas);
+    
+    sessionStorage.setItem("printData", JSON.stringify(datas));
+    window.open("/printwithoutgst", "_blank");
+  };
+
+  const exportPdf = () => {
+    import("jspdf").then((jsPDF) => {
+      import("jspdf-autotable").then(() => {
+        const doc = new jsPDF.default();
+
+         // Add header
+      doc.setFontSize(16);
+      doc.text("Quotation Report", 105, 10, { align: "center" }); // Centered header
+      doc.text(Company?.name, 105, 16, { align: "center" }); // Centered header
+      doc.setFontSize(8);
+      doc.text(`Generated on: ${moment().format("DD-MM-YYYY HH:mm:ss")}`, 105, 20, { align: "center" });
+
+  
+        const tableBody = invoiceArray.map((invoice) => [
+          invoice.quot,
+          invoice.customer,
+          invoice.invoice.map((doc) => doc.desc).join(", "), // Description
+          invoice.invoice.map((doc) => doc.weight).join("/"), // Weight
+          invoice.invoice.map((doc) => doc.rate).join("/"), // Rate
+          parseFloat(invoice.balamt).toFixed(0), // Balance Amount
+          parseFloat(invoice.gtotal).toFixed(0), // Grand Total
+          invoice.mode,
+          invoice.status ? "Paid" : "Pending", // Status
+        ]);
+  
+        const tableHead = [
+          "Bill No.",
+          "Customer",
+          "Description",
+          "Weight (g)",
+          "Rate",
+          "Bal. Amt",
+          "Grnd. Amt",
+          "Mode",
+          "Status",
+        ];
+  
+        doc.autoTable({
+          head: [tableHead],
+          body: tableBody,
+          startY:25,
+          theme: "grid",
+        });
+  
+        doc.save("invoices.pdf");
+      });
+    });
+  };
+
+  const exportExcel = () => {
+    import("xlsx").then((xlsx) => {
+      // Prepare data for the Excel sheet
+      const data = invoiceArray.map((invoice) => ({
+        "Bill No.": invoice.quot,
+        Customer: invoice.customer,
+        Description: invoice.invoice.map((doc) => doc.desc).join(", "),
+        "Weight (g)": invoice.invoice.map((doc) => doc.weight).join("/"),
+        Rate: invoice.invoice.map((doc) => doc.rate).join("/"),
+        "Bal. Amt": parseFloat(invoice.balamt).toFixed(0),
+        "Grnd. Amt": parseFloat(invoice.gtotal).toFixed(0),
+        Mode: invoice.mode,
+        Status: invoice.status ? "Paid" : "Pending",
+      }));
+  
+      // Create a worksheet and workbook
+      const worksheet = xlsx.utils.json_to_sheet(data);
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Invoices");
+  
+      // Export the Excel file
+      xlsx.writeFile(workbook, "invoices.xlsx");
+    });
+  };
+
+  const discriptionBody=(rowData)=>{
+    return(
+      <div>
+        {rowData?.invoice.map((doc)=>(doc?.desc + ","))}
+      </div>
+    )
+    
+    
+    }
+    const weightBody=(rowData)=>{
+      return(
+        <div>
+          {rowData?.invoice.map((doc)=>(doc?.weight + "/"))}
+        </div>
+      )
+      
+    }
+    const rateBody=(rowData)=>{
+        console.log(rowData);
+        return(
+          <div>
+    
+            {rowData?.invoice.map((doc)=>(doc?.rate + "/"))}
+          </div>
+        )
+        
+    }
+    const balAmtBody=(rowData)=>{
+      console.log(rowData);
+      return(
+        <div>
+          {parseFloat(rowData?.balamt).toFixed(0)}
+        </div>
+      )
+      
+    }
+    
+    const header = (
+      <div className="flex justify-between items-center gap-2">      
+          <label>Quotaion List</label>
+          <div className="flex gap-3">
+          <Button type="button" icon={<PiFileXls color="#fff" size={30} />}  severity="success" onClick={exportExcel} className="bg-blue-500" rounded  data-pr-tooltip="XLS" />
+          <Button type="button" icon={<PiFilePdf color="#fff" size={30} />} severity="warning" onClick={exportPdf} className="bg-green-500" rounded data-pr-tooltip="PDF" />
+          </div>
+      </div>
+    );
 
   return (
     <div className="pt-5 bg-white h-screen">
@@ -84,98 +226,27 @@ function QuotationWithoutGst(params) {
           </div>
         </div>
       </div>
+ <div className="mx-auto w-12/12 h-9/12 md:w-9/12 lg:12/12">
+      <DataTable
+      value={invoiceArray}
+      showGridlines={true}     
+      header={header} 
+      ref={DataTableRef}
+      tableStyle={{minWidth:"500px"}}
+      >
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="Bill No."  field="quot"  />
+<Column headerClassName="p-0" bodyClassName="p-0 " header="Customer" field="customer"  />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="Discription"  body={discriptionBody} />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="weight (g)" field="customer" body={weightBody}  />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="Rate" field="customer" body={rateBody}  />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header=" Bal. Amit" field="balamt" body={balAmtBody} />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header=" Grnd. Amt" field="customer" body={(rowData)=>parseFloat(rowData?.gtotal).toFixed(0)}  />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="Mode" field="customer"  body={(rowData)=>rowData?.mode}/>
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="Status" field="customer" body={(rowData)=>rowData?.status ? <PiX size={20} /> : <PiCheck size={20} />} />
+<Column headerClassName="p-0" bodyClassName="p-0 text-center" header="Action" body={(rowData) => <Button icon={<PiEye size={20} />} onClick={()=>printWithGST(rowData)} />}  />
 
-      <div className=" mx-auto w-12/12 h-9/12 md:w-9/12 lg:12/12">
-      <div className="relative overflow-x-auto bg-white mt-3 shadow shadow-slate-800">
-      <table className="w-full customTableBorder">
-            <thead className="sticky -top-3">
-              <tr className="text-sm bg-gray-200">
-                <th className="py-0.5 px-2 text-xs w-20 text-center">#</th>
-                <th className="py-0.5 px-2 text-xs w-20 text-center capitalize">
-                  Bill No.
-                </th>
-                <th className="py-0.5 px-2 text-xs w-56 text-start capitalize">
-                  Customer
-                </th>
-                <th className="py-0.5 px-2 text-xs w-56 text-start capitalize">
-                  Decription
-                </th>
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">weight</th>
-
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Rate</th>
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">
-                  Bal. Amit
-                </th>
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">
-                  Grnd. Amt
-                </th>
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Mode</th>
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Status</th>
-                <th className="py-0.5 px-2 w-16 text-xs text-start capitalize">Action</th>
-              </tr>
-            </thead>
-            <tbody className="overflow-hidden overflow-y-scroll ">
-              {invoiceArray?.map((doc, index) => (
-                <tr
-                  key={index}
-                  className="text-xs bg-gray-50 border-b border-slate-500"
-                >
-                  <td className="py-0.5 px-2 w-20 text-center">{index + 1}</td>
-                  <td className="py-0.5 px-2 w-20 text-center">{doc.quot}</td>
-                  <td className="py-0.5 px-2 w-56 text-start">{doc.customer}</td>
-                  <td className="py-0.5 px-2 w-56 text-start">
-                    {doc?.invoice.map((doc, index) => (
-                      <span key={index}>{doc.desc}</span>
-                    ))}
-                  </td>
-
-                  <td className="py-3 px-2 w-28 text-start">
-                    {doc?.invoice.map((doc, index) => (
-                      <span key={index}>{doc.weight || 0}</span>
-                    ))}
-                  </td>
-                  <td className="py-3 px-2 w-16 text-start">
-                    {doc?.invoice.map((doc, index) => (
-                      <span key={index}>{doc.rate || 0}</span>
-                    ))}
-                  </td>
-                  <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.balamt).toFixed(2)}</td>
-                  <td className="py-3 px-2 w-16 text-start">{parseFloat(doc.gtotal).toFixed(2)}</td>
-                  <td className="py-3 px-2 w-16 text-start">{doc.mode}</td>
-                  <td className="px-2 w-16 text-start">
-                    {doc.status === false ? (
-                      <PiCheck
-                        size={20}
-                        strokeWidth={5}
-                        absoluteStrokeWidth
-                        color="green"
-                      />
-                    ) : (
-                      <PiX
-                        size={20}
-                        strokeWidth={5}
-                        absoluteStrokeWidth
-                        color="red"
-                      />
-                    )}
-                  </td>
-                  <td className="px-3 w-16 text-start">
-                    <button
-                      className="bg-blue-500 p-1 rounded-full text-white"
-                      onClick={() => {
-                        setId(doc._id);
-                        setModel(true);
-                      }}
-                    >
-                      <PiEye size={15} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      </DataTable>
+    </div>
     </div>
   );
 }

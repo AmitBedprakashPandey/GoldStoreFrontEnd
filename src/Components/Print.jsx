@@ -34,17 +34,41 @@ function Print() {
         return;
       }
 
+
       const element = componentRef.current;
       const canvas = await html2canvas(element);
       const imgData = canvas.toDataURL("image/png");
 
- // Create a link element for downloading the image
+       // Convert the Base64 image to a Blob
+    const response = await fetch(imgData);
+    const blob = await response.blob();
+
+     // Check if navigator.share is supported
+     if (navigator.share) {
+      const file = new File([blob], "invoice.png", { type: "image/png" });
+
+      await navigator.share({
+        files: [file],
+        title: "Invoice",
+        text: "Here is your invoice.",
+      });
+    } else {
+      // Fallback: Download the image if sharing is not supported
       const link = document.createElement("a");
       link.href = imgData;
-      link.download = "invoice.png"; // Set the filename
+      link.download = "invoice.png";
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link); // Clean up the DOM
+      document.body.removeChild(link);
+    }
+
+ // Create a link element for downloading the image
+      // const link = document.createElement("a");
+      // link.href = imgData;
+      // link.download = "invoice.png"; // Set the filename
+      // document.body.appendChild(link);
+      // link.click();
+      // document.body.removeChild(link); // Clean up the DOM
 
       // const pdf = new jsPDF({
       //   orientation: "portrait",
@@ -85,36 +109,31 @@ function Print() {
   const handleDownloadPDF = async () => {
     setIsLoading(true);
     try {
+      if (!componentRef.current) {
+        console.error("Component reference is null or undefined.");
+        return;
+      }
+  
       const element = componentRef.current;
       const canvas = await html2canvas(element);
       const imgData = canvas.toDataURL("image/png");
-
+  
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "px",
         format: [canvas.width, canvas.height],
       });
+  
       pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-
-      const pdfBlob = pdf.output("blob");
-
-      // Check if navigator.share is supported
-      if (navigator.share) {
-        const file = new File([pdfBlob], "invoice.pdf", { type: "application/pdf" });
-        await navigator.share({
-          files: [file],
-          title: "Invoice",
-          text: "Here is your invoice.",
-        });
-      } else {
-        alert("Sharing is not supported on this device.");
-      }
+      pdf.save("invoice.pdf"); // Save the PDF locally with the filename "invoice.pdf"
+  
     } catch (error) {
-      console.error("Error sharing PDF:", error);
-    }finally{
+      console.error("Error downloading PDF:", error);
+    } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="w-screen flex justify-center pt-5">
@@ -135,140 +154,170 @@ function Print() {
             <BiDownload size={25} />
           </button>
       </div>
-      <div className="A4Page p-3  " ref={componentRef}>
-        <div className="border-black border-2">
-          <div className="flex justify-between items-center p-2">
-            <div className="print:w-28 print:h-28 w-14 flex justify-between items-center">
+      <div className="A4Page p-3" ref={componentRef}>
+        <div className="border-black border">
+          
+          <div className="flex justify-between px-5 py-2">
+            <div className="w-28">
               <img src={paramdata?.company?.logo} />
             </div>
             <div className="text-center">
-              <h3 className="print:text-lg font-semibold">JAI MATA DI</h3>
-              <h1 className="font-bold print:text-3xl uppercase">
+              <h3 className="text-md font-semibold">JAI MATA DI</h3>
+              <h1 className="font-bold text-xl uppercase">
                 {paramdata?.company?.name}
               </h1>
-              <h3 className="print:text-lg font-semibold">TAX INVOICE</h3>
+              <h3 className="text-xs font-semibold">TAX INVOICE</h3>
             </div>
-            <div className="print:w-28 w-14">
-              <img src={Holmark} alt="holmart" />
+            <div className="w-20">
+              <img src={Holmark}  alt="holmart" />
             </div>
           </div>
-          <div className="border-black border border-l-0 border-r-0 px-3 py-2 flex justify-between">
+          
+          <div className="flex justify-between pb-3 pt-1.5 px-3 relative border border-l-0 border-r-0 border-black">
             <div className="flex flex-col">
-              <label className=" flex gap-3 text-md font-bold">
-                Invoice No :
-                <span className="font-normal">{paramdata?.formData?.quot}</span>
-              </label>
-              <label className="flex gap-14 text-md font-bold">
-                Date :
+              <div className="flex gap-4 items-center text-xs font-bold">
+                Invoice No :{" "}
+                <span className="font-normal">{paramdata?.formData.quot}</span>
+              </div>
+              <label className="flex gap-12 items-center text-xs font-bold">
+                Date :{" "}
                 <span className="font-normal">
-                  {moment(paramdata?.formData?.quotdate).format("DD-MM-YYYY")}
+                  {moment(paramdata?.quotdate).format("DD-MM-YYYY")}
                 </span>
               </label>
-              {/* <label className="text-md font-bold">
-                State Code : <span></span>
+              {/* <label className="flex gap-3 items-center text-xs font-bold">
+                State Code : <span className="font-normal capitalize"></span>
               </label> */}
             </div>
             <div className="flex flex-col w-72">
-              <label className=" flex gap-3 text-md font-bold">
+              <label className="flex gap-3 items-center text-xs font-bold">
                 Payment Mode :
-                <span className="flex gap-3 font-normal">{paramdata?.formData?.mode}</span>
+                <span className="font-normal capitalize">
+                  {paramdata?.formData?.mode}
+                </span>
               </label>
-              <label className="flex gap-3 text-md font-bold">
+              <label className="flex gap-3 items-center text-xs font-bold">
                 Delivery Mode : <span className="font-normal"></span>
               </label>
-              <label className="flex gap-3 text-md font-bold">
+              {/* <label className="flex gap-3 items-center text-xs font-bold">
                 Place of Supply : <span className="font-normal"></span>
-              </label>
+              </label> */}
             </div>
           </div>
-
+          
           <div className="flex justify-between">
-            <div className="w-full border-black border border-t-0 border-l-0 border-r-0 border-b-0">
-              <div className="px-3 h-32 ">
-                <label className="flex text-lg py-3">
-                  <label className="text-sm font-bold w-[120px]">
-                    Billed to :
-                  </label>
-                  <ul className="text-sm capitalize">
-                    <li className="uppercase font-bold">{paramdata?.company?.name}</li>
-                    <li>{paramdata?.company?.address}</li>
-                  </ul>
+
+            <div className="w-full border-black">
+            <div className="h-6 flex items-center pl-3 border-b border-black">
+                <label className="text-xs font-bold">
+                  {""}<span></span>
                 </label>
               </div>
-              <div className="w-full px-3 flex flex-col">
-                <label className="flex gap-14 text-sm font-bold">
-                  Party PAN :
-                  <span className="font-normal uppercase">{paramdata?.company?.pan}</span>
+              <div className="p-2">
+                <div className="flex gap-3 text-lg h-24 ">
+                  <label className="text-nowrap text-xs font-bold">
+                    Billed to :
+                  </label>
+                  <ul className="text-xs capitalize">
+                    <li className="uppercase font-bold">
+                      {paramdata?.company?.name}
+                    </li>
+                    <li className="capitalize">{paramdata?.company?.address}</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="w-full p-3 flex flex-col">
+                <label className="flex gap-14 items-center text-xs font-bold">
+                  Party PAN :{" "}
+                  <span className="font-normal uppercase text-xs">
+                    {paramdata?.company?.pan}
+                  </span>
                 </label>
-                <label className="flex gap-3 text-sm font-bold">
+                <label className="flex gap-4 items-center text-xs font-bold">
                   Party Mobile No. :{" "}
                   <span className="font-normal">
                     {paramdata?.company?.mobile}
                   </span>
                 </label>
-                <label className="flex gap-12 text-sm font-bold">
+                <label className="flex gap-11 items-center text-xs font-bold">
                   GSTIN / UIN :{" "}
-                  <span className="font-normal uppercase">{paramdata?.company?.gst}</span>
+                  <span className="font-normal uppercase">
+                    {paramdata?.company?.gst}
+                  </span>
                 </label>
               </div>
             </div>
-            <div className="w-full border-black border border-t-0 border-b-0 border-r-0">
-              <div className="px-3 h-32 ">
-                <label className="flex gap-3 text-lg py-2">
-                  <label className="text-sm font-bold">
-                    Shipped to :
-                  </label>
-                  <ul className="text-sm  capitalize">
-                    <li className="uppercase  font-bold">{paramdata?.customer[0]?.name}</li>
-                    <li>{paramdata?.customer[0]?.address || "-"}</li>
-                  </ul>
+
+            <div className="w-full border-black border-l">
+            <div className="h-6 flex justify-start items-center px-3 border-b border-black">
+                <label className="    text-xs font-bold">
+                  <span></span>
                 </label>
               </div>
-              <div className="w-full px-3 flex flex-col">
-                <label className="flex gap-3 text-sm font-bold">
+              <div className="p-2">
+                <div className="flex gap-3 h-24 ">
+                  <label className="text-nowrap text-xs font-bold">
+                    Shipped to :
+                  </label>
+                  <ul className="text-xs">
+                    <li className="uppercase font-bold">
+                      {paramdata?.customer[0]?.name}
+                    </li>
+                    <li className="capitalize">{paramdata?.customer[0]?.address}</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="w-full p-3 flex flex-col">
+                <label className="flex gap-14 text-xs font-bold">
                   Party PAN :
                   <span className="font-normal uppercase">
                     {paramdata?.customer[0]?.pan || "-"}
                   </span>
                 </label>
-                <label className="flex gap-3 text-sm font-bold">
+                <label className="flex gap-3 text-xs font-bold">
                   Party Mobile No. :
                   <span className="font-normal">
                     {paramdata?.customer[0]?.mobile || "-"}
+                  </span>
+                </label>
+                <label className="flex gap-11 text-xs font-bold">
+                  GSTIN / UIN :{" "}
+                  <span className="font-normal uppercase">
+                    {paramdata?.customer[0]?.gst || "-"}
                   </span>
                 </label>
               </div>
             </div>
           </div>
           <div>
-            <table>
+            <table >
               <thead>
                 <tr className="text-xs">
-                  <th className="border-black border border-l-0 border-r-0  text-center  w-8">
+                  <th className="uppercase text-center w-5 -pt-2 pb-3">
                     SN.
                   </th>
-                  <th className=" border-black text-center  border w-72">
+                  <th className="uppercase text-center w-64 -pt-2 print:pt-3 pb-3">
                     Description Goods
                   </th>
-                  <th className=" border-black text-center  border w-10">
+                  <th className="uppercase text-center w-10 -pt-2 print:pt-3 pb-3">
                     HSN
                   </th>
-                  <th className=" border-black text-center  border w-16">
-                    PURITY
+                  <th className="uppercase text-center w-16 -pt-2 print:pt-3 pb-3">
+                    Purity
                   </th>
-                  <th className=" border-black text-center  border w-16">
-                    WEIGHT IN (grams)
+                  <th className="uppercase text-center w-16 -pt-2 print:pt-3 pb-3">
+                    Weight. (g)
                   </th>
-                  <th className=" border-black text-center  border w-16">
+                  <th className="uppercase text-center w-16 -pt-2 print:pt-3 pb-3">
                     MAKING CHARGES
                   </th>
-                  <th className=" border-black text-center  border w-16">
+                  <th className="uppercase text-center w-16 -pt-2 print:pt-3 pb-3">
                     QTY.
                   </th>
-                  <th className=" border-black text-center  border w-16">
+                  <th className="uppercase text-center w-16 -pt-2 print:pt-3 pb-3">
                     RATE
-                  </th>
-                  <th className=" border-black text-center  border border-r-0 w-28">
+                  </th>                  
+                  <th className="uppercase text-center w-36 -pt-2 print:pt-3 pb-3">
                     TOTAL
                   </th>
                 </tr>
@@ -276,73 +325,87 @@ function Print() {
 
               <tbody>
                 {paramdata?.invoice?.map((doc, index) => (
-                  <tr key={index} className="text-xs">
-                    <td className="border-black  text-center border border-l-0 w-5 py-2">
-                      {index + 1}
+                  <tr className="text-xs ">
+                    <td className="text-center w-5 py-1.5  print:pt-3 pb-3">
+                      1
                     </td>
-                    <td className="capitalize border-black text-start border w-40 pl-3">
+                    <td className="capitalize text-start pl-3 w-40  print:pt-3 pb-3">
                       {doc?.desc}
                     </td>
-                    <td className=" border-black text-center  border w-10">
+                    <td className="text-center w-10  print:pt-3 pb-3">
                       {doc?.hsn}
                     </td>
-                    <td className=" border-black text-center  border w-16">
+                    <td className="text-center w-16  print:pt-3 pb-3">
                       {doc?.purity}
                     </td>
-                    <td className=" border-black text-center  border w-16">
-                      {doc?.weight}
+                    <td className="text-center w-16  print:pt-3 pb-3">
+                      {parseFloat(doc?.weight).toFixed(2)}
                     </td>
-                    <td className=" border-black text-center  border w-16">
-                      {doc?.mcharg}
+                    <td className="text-center w-16  print:pt-3 pb-3">
+                      {parseFloat(doc?.mcharg).toFixed(2)}
                     </td>
-                    <td className=" border-black text-center  border w-16">
+                    <td className="text-center w-16  print:pt-3 pb-3">
                       {doc?.qty}
                     </td>
-                    <td className=" border-black text-center  border w-16">
-                      {doc?.rate}
-                    </td>
-                    <td className=" border-black text-center  border border-r-0 w-28">
-                      {parseFloat(doc?.total).toFixed(2)}
+                    <td className="text-center w-16  print:pt-3 pb-3">
+                      {parseFloat(doc?.rate).toFixed(2)}
+                    </td>                    
+                    <td className="text-center w-28  print:pt-3 pb-3">
+                      {parseFloat(doc?.nettotal).toFixed(2)}
                     </td>
                   </tr>
                 ))}
               </tbody>
 
               <tfoot>
-                <tr className="text-xs">
+                <tr>
                   <th
                     colSpan={8}
-                    className="border-black border border-l-0 border-r-0 w-5 text-end pr-3"
+                    className="text-xs  print:pb-3 print:pt-0 pt-3 pb-3 border-black border border-l-0 w-5 text-end pr-3"
                   >
                     Total Discount
                   </th>
+
                   <th
-                    colSpan={4}
-                    className=" border-black border border-r-0 text-center w-16  pl-3"
+                    // colSpan={4}
+                    className=" print:pt-3 pt-3 pb-3 text-xs border-black border border-r-0 w-16"
                   >
-                    {parseFloat(paramdata?.formData?.tdisc || 0).toFixed(2)}
+                    {parseFloat(paramdata?.formData.tdisc || 0).toFixed(2)}
                   </th>
                 </tr>
-                <tr className="text-xs">
+                <tr>
                   <th
                     colSpan={8}
-                    className="border-black border border-l-0 border-r-0 w-5 text-end pr-3"
+                    className="text-xs  print:pt-3 pt-3 pb-3 border-black text-end pr-3 border border-l-0 w-5"
+                  >
+                    Total Tax
+                  </th>
+
+                  <th
+                    // colSpan={4}
+                    className="text-xs  print:pt-3 pt-3 pb-3 border-black border border-r-0 w-16"
+                  >
+                    {parseFloat(paramdata?.formData.ttax || 0).toFixed(2)}
+                  </th>
+                </tr>
+                <tr>
+                  <th
+                    colSpan={8}
+                    className="text-xs  print:pt-3 pt-3 pb-3 border-black border border-l-0 border-r-0 w-5 text-end pr-3"
                   >
                     Grand Total
                   </th>
                   <th
-                    colSpan={4}
-                    className=" border-black border border-r-0 text-center w-16 pl-3"
+                    // colSpan={4}
+                    className="text-xs print:pt-3 pt-3 pb-3 border-black border border-r-0 text-center w-16 pl-3"
                   >
-                    {parseFloat(
-                      Number(paramdata?.formData?.tamt) -
-                        Number(paramdata?.formData?.tdisc)
-                    ).toFixed()}
+                    {parseFloat(paramdata?.formData.gtotal || 0).toFixed(0)}
                   </th>
                 </tr>
               </tfoot>
             </table>
           </div>
+
           <div className="text-xs p-3">
             <p>Terms & Condition</p>
             <p>Ε.&.Ο.Ε.</p>
@@ -370,16 +433,15 @@ function Print() {
             </p>
           </div>
           <div className="flex justify-around">
-            <div className="w-28 h-28 flex flex-col items-center">
-              <div className="h-24 w-24 border-black border-b"></div>
+            <div className="w-32 h-32 flex flex-col items-center">
+              <div className="h-28 w-28 border-black border-b"></div>
               <p className="text-xs py-2 ">Auth Signatory</p>
             </div>
-            <div className="w-32 h-28 flex flex-col items-center">
-              <div className="h-24 w-24 border-black border-b"></div>
+            <div className="w-32 h-32 flex flex-col items-center">
+              <div className="h-28 w-28 border-black border-b"></div>
               <p className="text-xs py-2">Customer's Signature</p>
             </div>
           </div>
-
           <div className="flex justify-around text-xs py-5 px-4">
             <label>
               BANK : <span>HDFC BANK</span>
