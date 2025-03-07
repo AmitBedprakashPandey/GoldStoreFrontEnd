@@ -81,7 +81,7 @@ const InvoiceIdSlice = createSlice({
       })
       .addCase(fetchOneInvoicesNumber.fulfilled, (state, action) => {
         state.loading = false;
-        state.InvoicesNumber = action.payload?.number;
+        state.InvoicesNumber = action.payload;
         state.error = null;
       })
       .addCase(fetchOneInvoicesNumber.rejected, (state, action) => {

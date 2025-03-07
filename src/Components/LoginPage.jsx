@@ -14,6 +14,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { Company } = useSelector((state) => state.Company);
   const { error } = useSelector((state) => state.Auth);
+  const user = localStorage.getItem("user");
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -22,17 +23,11 @@ export default function LoginPage() {
   }, [navigate]);
 
   const handleFetchData = () => {
-    const user = localStorage.getItem("user");
-    dispatch(fetchByUser(user));
     dispatch(fetchAllCustomers());
     dispatch(fetchAllPyBank());
     dispatch(fetchAllBranch());
     dispatch(fetchAllPyMode());
   };
-
-  useLayoutEffect(() => {
-    handleFetchData(); // Dispatch the actions on layout effect, if needed
-  }, []);
 
   const formDataHandler = useCallback((e) => {
     const { name, value } = e.target;
@@ -42,13 +37,16 @@ export default function LoginPage() {
   const loginBtn = useCallback(async () => {
     const resultAction = await dispatch(loginUser(formData));
     if (loginUser.fulfilled.match(resultAction)) {
-      const token = localStorage.getItem("token");
-      if (token) {
-        navigate("/crm");
-        handleFetchData();
+      dispatch(fetchByUser(user));
+      if (localStorage.getItem("token")) {
+        if(Company) {
+          navigate("/crm");
+        }else{
+          navigate("/crm/master/company");
+        }
       }
     }
-  }, [dispatch, formData, navigate, Company]);
+  }, [dispatch, formData, navigate]);
 
   return (
     <div className="bg-sky-50 fixed inset-0 z-50 flex justify-center items-center">

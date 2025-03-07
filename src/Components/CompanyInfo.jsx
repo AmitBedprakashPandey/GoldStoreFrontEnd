@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { confirmDialog } from "primereact/confirmdialog";
@@ -36,10 +36,10 @@ import { InputNumber } from "primereact/inputnumber";
 function CompanyInfo() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { Company ,loading } = useSelector((state) => state.Company);
+  const { Company, loading,error,message } = useSelector((state) => state.Company);
   const User = localStorage.getItem("user");
-  const [buttonName, setButtonName] = useState("u");
-  const [formData, setformData] = useState(Company);
+  const [buttonName, setButtonName] = useState("s");
+  const [formData, setformData] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImage2, setSelectedImage2] = useState(null);
   const [bannerList, setBannerList] = useState([]);
@@ -86,20 +86,24 @@ function CompanyInfo() {
     // }
 ];
 
-  useEffect(() => {
-    dispatch(fetchAllState());
-    dispatch(fetchByUser(User)).then((doc) => {
-      if (doc.payload.message) {
-        setButtonName("s");
-      } else {
-        setformData(doc.payload);
-        setSelectedImage(doc.payload.logo);
-        setSelectedImage2(doc.payload.ownerimg);
-        setBannerList(doc.payload?.banner);
-        setButtonName("u");
-      }
-    });
-  }, [dispatch]);
+useLayoutEffect(()=>{
+  dispatch(fetchAllState());
+  dispatch(fetchByUser(User));  
+},[dispatch])
+
+  useEffect(() => {       
+     if(!Company){
+      setButtonName("s");
+     }    
+     else{
+      setformData(Company);
+      setSelectedImage(Company?.logo);
+      setSelectedImage2(Company?.ownerimg);
+      setBannerList(Company?.banner);
+      setButtonName("u");
+     }
+    
+  }, [Company]);
 
   const formDataHandler = (e) => {
     setformData({
@@ -120,7 +124,7 @@ function CompanyInfo() {
     ).then((doc) => {
       if (!doc.error) {
         setTimeout(() => {
-          navigate("/");
+          navigate("/crm");
         }, 2000);
       }
     });
@@ -281,7 +285,7 @@ function CompanyInfo() {
       {/* <ConfirmDialog /> */}
       {loading && <Loading /> }
 
-      <div className="flex flex-col items-center relative bg-white">
+      <div className="flex flex-col items-center relative ">
         
         <div className="max-w-xl pt-3 w-full">
             <Steps model={items} activeIndex={activeIndex} readOnly={false} className="w-full" />
@@ -570,13 +574,22 @@ function CompanyInfo() {
                   label="Back"
                   className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
                 ></Button>
+                {buttonName === "s" ? 
+                <Button
+                  // onClick={() => setActiveIndex(2)}
+                  onClick={confirm1}
+                  // label="Next"
+                  label="SAVE"
+                  className="btn flex items-center justify-center gap-3 capitalize hover:bg-green-800 duration-300 bg-green-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
+                ></Button> : 
                 <Button
                   // onClick={() => setActiveIndex(2)}
                   onClick={confirm2}
                   // label="Next"
                   label="upload"
                   className="btn flex items-center justify-center gap-3 capitalize hover:bg-blue-800 duration-300 bg-blue-500 px-10 py-3 rounded-lg shadow-gray-400 shadow-md text-white font-bold"
-                ></Button>
+                ></Button>              
+              }
               </div>
             </div>
           </div>

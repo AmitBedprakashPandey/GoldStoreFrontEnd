@@ -83,12 +83,10 @@ const CompanySlice = createSlice({
       .addCase(fetchByUser.fulfilled, (state, action) => {
         state.loading = false;
         state.Company = action.payload;
-        localStorage.setItem("companyid",action.payload._id)
         state.error = null;
       })
       .addCase(fetchByUser.rejected, (state, action) => {
         state.loading = false;
-        state.Company = null;
         state.error = action.payload;
       })
       .addCase(createCompany.pending, (state) => {
@@ -98,8 +96,6 @@ const CompanySlice = createSlice({
       .addCase(createCompany.fulfilled, (state, action) => {
         state.Company = action.payload.data; // assuming the payload is the newly created company
         state.loading = false;
-       
-        
         state.message = action.payload.message;
         state.error = null;
       })

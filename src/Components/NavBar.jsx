@@ -15,7 +15,7 @@ import { logout } from "../Store/Slice/AuthSlice";
 import { Avatar } from "primereact/avatar";
 import { PanelMenu } from "primereact/panelmenu";
 import { Button } from "primereact/button";
-
+import { fetchByUser } from "../Store/Slice/CompanySlice";
 function NavBar() {
   const [open, setOpen] = useState(false);
   const { Company } = useSelector((state) => state.Company);
@@ -26,13 +26,14 @@ function NavBar() {
     if (!localStorage.getItem("token")) {
       navigate("/crm/login");
     }
-  }, [dispatch, navigate]);
+    dispatch(fetchByUser(localStorage.getItem("user")));
+  }, [navigate,dispatch]);
 
   useEffect(() => {
     if (Company?.name) {
       document.title = Company.name.toUpperCase();
     }
-  }, [Company, dispatch]);
+  }, [Company]);
 
   const logoutBtn = useCallback(() => {
     dispatch(logout());
@@ -219,7 +220,7 @@ const NavBarDropdown = ({ label, links }) => (
         {label}
       </button>
       <div className="dropdown-menu w-auto bg-white rounded-md duration-300 shadow-md shadow-slate-600 absolute right-0 z-50">
-        <div className="bg-white z-50 w-3 h-3 absolute -top-1.5 rotate-45 right-3"></div>
+        <div className="bg-white -z-50 w-3 h-3 absolute -top-1.5 rotate-45 right-3"></div>
         <NavLinkList links={links} />
       </div>
     </div>

@@ -77,7 +77,7 @@ function Invoice2() {
 
   useLayoutEffect(() => {
     disptch(fetchOneInvoicesNumber()).then((doc) => {
-      setInvoiceId(Number(doc.payload?.number));
+      setInvoiceId(Number(doc.payload));
     });
     disptch(fetchAllBranch());
     disptch(fetchAllCustomers());
@@ -114,11 +114,6 @@ function Invoice2() {
 
     const discAmt = (tamt * tdisc) / 100 ;
     const amt = tamt - discAmt ;
-
-    
-    
-    
-    
     setFormData({...formData,tamt,tdisc:discAmt,gtotal:amt,balamt});
   },[invoiceArray,formData?.paidamt]);
 

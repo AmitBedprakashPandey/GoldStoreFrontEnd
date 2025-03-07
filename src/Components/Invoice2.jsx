@@ -80,9 +80,8 @@ function Invoice2({}) {
   useEffect(() => {
     disptch(fetchAllBranch());
     disptch(fetchAllCustomers());
-    disptch(fetchOneInvoiceNumberGst(Company._id)).then((doc) => {
-      setInvoiceId(Number(doc.payload?.number));
-      
+    disptch(fetchOneInvoiceNumberGst()).then((doc) => {
+      setInvoiceId(Number(doc.payload));      
     });
     disptch(fetchAllPyBank());
     disptch(fetchAllPyMode());
@@ -252,7 +251,7 @@ function Invoice2({}) {
   return (
     <div className="lg:mx-16 h-screen bg-white ">
       {loading && <Loading />}
-      {error && error}
+      {/* {error && error} */}
       <Dialog
         header="Create Customer"
         visible={modal3Open}
@@ -464,6 +463,7 @@ function Invoice2({}) {
                 <InputNumber
                   useGrouping={false}
                   minFractionDigits={2}
+                  maxLength={6}
                   placeholder="0000"
                   name="disc"
                   value={invoiceData?.disc || 0}
@@ -478,6 +478,7 @@ function Invoice2({}) {
                 <InputNumber
                   useGrouping={false}
                   minFractionDigits={2}
+                  maxLength={6}
                   placeholder="0000"
                   name="sgst"
                   value={invoiceData?.sgst || 0}
@@ -492,6 +493,7 @@ function Invoice2({}) {
                 <InputNumber
                   useGrouping={false}
                   minFractionDigits={2}
+                  maxLength={6}
                   placeholder="0000"
                   name="cgst"
                   value={invoiceData?.cgst || 0}
@@ -506,6 +508,7 @@ function Invoice2({}) {
                 <InputNumber
                   useGrouping={false}
                   minFractionDigits={2}
+                  maxLength={6}
                   placeholder="0000"
                   name="igst"
                   value={invoiceData?.igst || 0}
